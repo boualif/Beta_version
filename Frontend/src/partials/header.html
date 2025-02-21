@@ -1,6 +1,14 @@
 <meta name="google" content="notranslate" />
 <meta name="translator" content="Google Translate" />
 <style>
+  .flag-button.active .flag-icon {
+    color: #EF4444;
+    fill: #EF4444;
+  }
+  
+  .flag-button:hover .flag-icon {
+    color: #EF4444;
+  }
    .language-selector {
       position: relative;
       display: flex;
@@ -209,7 +217,85 @@
           </label>
           <!-- Dark Mode Toggler -->
         </li>
+          <!-- Reminder Menu Area -->
+         
+<li class="relative" x-data="{ dropdownOpen: false }" @click.outside="dropdownOpen = false">
+  <a class="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
+    href="#" @click.prevent="dropdownOpen = !dropdownOpen; getAllReminders();">
+    <svg class="fill-current duration-300 ease-in-out" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C10.0222 2 8.08879 2.58649 6.4443 3.6853C4.79981 4.78412 3.51809 6.3459 2.76121 8.17317C2.00433 10.0004 1.8063 12.0111 2.19215 13.9509C2.578 15.8907 3.53041 17.6725 4.92894 19.0711C6.32746 20.4696 8.10929 21.422 10.0491 21.8079C11.9889 22.1937 13.9996 21.9957 15.8268 21.2388C17.6541 20.4819 19.2159 19.2002 20.3147 17.5557C21.4135 15.9112 22 13.9778 22 12C22 10.6868 21.7413 9.38642 21.2388 8.17317C20.7363 6.95991 19.9997 5.85752 19.0711 4.92893C18.1425 4.00035 17.0401 3.26375 15.8268 2.7612C14.6136 2.25866 13.3132 2 12 2ZM12 20C10.4178 20 8.87104 19.5308 7.55544 18.6518C6.23985 17.7727 5.21447 16.5233 4.60897 15.0615C4.00347 13.5997 3.84504 11.9911 4.15372 10.4393C4.4624 8.88743 5.22433 7.46197 6.34315 6.34315C7.46197 5.22433 8.88743 4.4624 10.4393 4.15372C11.9911 3.84504 13.5997 4.00346 15.0615 4.60896C16.5233 5.21447 17.7727 6.23984 18.6518 7.55544C19.5308 8.87103 20 10.4177 20 12C20 14.1217 19.1572 16.1566 17.6569 17.6569C16.1566 19.1571 14.1217 20 12 20Z" fill="currentColor"/>
+      <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </a>
+  <span id="reminderCount" 
+  class="absolute -top-0.5 right-0 z-1 h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
+0
+</span>
+  <!-- Dropdown Start -->
+  <div x-show="dropdownOpen"
+    class="absolute -right-27 mt-2.5 flex h-90 w-75 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:right-0 sm:w-80">
+    <div class="px-4.5 py-3">
+      <div class="flex justify-between items-center">
+        <h5 class="text-sm font-medium text-bodydark2">Reminders</h5>
+        <button @click="showNewReminderModal()" 
+              class="text-sm text-green-500 hover:text-green-600">
+        New
+      </button>
+        <button @click="window.location.href='reminders.html'" 
+                class="text-sm text-blue-500 hover:text-blue-600">
+          View All
+        </button>
+      </div>
+    </div>
+  <!-- Reminders Section -->
+<!-- Reminders Section -->
+<div x-data="reminderApp()" x-init="init()" class="bg-white rounded-lg p-4 shadow">
+  
+  <!-- Smart Lists -->
+  <div class="space-y-2 mb-6">
+      <div @click="$store.reminders = await fetchReminders('today')" 
+           class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
+          <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <span class="flex-1">Today</span>
+          <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-sm" x-text="$store.counts.today">0</span>
+      </div>
 
+      <div @click="$store.reminders = await fetchReminders('scheduled')" 
+           class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
+          <svg class="w-5 h-5 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span class="flex-1">Scheduled</span>
+          <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-sm" x-text="$store.counts.scheduled">0</span>
+      </div>
+
+      <div @click="$store.reminders = await fetchReminders('flagged')" 
+           class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
+          <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path>
+          </svg>
+          <span class="flex-1">Flagged</span>
+          <span 
+    class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-sm" 
+    x-text="$store.counts.flagged"
+    data-flag-count
+>0</span>     </div>
+
+      <div @click="$store.reminders = await fetchReminders('completed')" 
+           class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
+          <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span class="flex-1">Completed</span>
+          <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-sm" x-text="counts.completed">0</span>
+      </div>
+  </div>
+    
+  </div>
+  <!-- Dropdown End -->
+</li>
         <!-- Notification Menu Area -->
         <li class="relative" x-data="{ dropdownOpen: false, notifying: true }" @click.outside="dropdownOpen = false">
           <a class="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
@@ -235,6 +321,7 @@
             </div>
 
             <ul id="notification" class="flex h-auto flex-col overflow-y-auto">
+                <!-- Les notifications seront chargées ici -->
               <!-- <li>
                 <a
                   class="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
@@ -526,10 +613,107 @@
       <!-- User Area -->
     </div>
   </div>
+  <!-- Add this before </header> -->
+  <div id="reminderModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+    <div class="relative min-h-screen flex items-center justify-center p-4">
+      <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-medium">New Reminder</h3>
+          <button onclick="closeReminderModal()" class="text-gray-400 hover:text-gray-500">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Dans la section form du modal -->
+        <form id="newReminderForm" onsubmit="createReminder(event)" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Title *</label>
+            <input type="text" name="title" required
+                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Due Date & Time *</label>
+            <input type="datetime-local" name="due_date" required
+                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Priority</label>
+            <select name="priority" 
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          
+          
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Notes</label>
+            <textarea name="notes" rows="3" 
+                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"></textarea>
+          </div>
+          
+          <div class="flex justify-end gap-3">
+            <button type="button" onclick="closeReminderModal()"
+                    class="px-4 py-2 text-gray-600 hover:text-gray-800">
+              Cancel
+            </button>
+            <button type="submit"
+                    class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+              Create
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </header>
 <!--Switcher de langues-->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script type="text/javascript">
+// Update reminder counts
+async function updateReminderCounts() {
+    try {
+        const response = await apiClient.get('/api/reminders/counts/', {
+            withCredentials: true,
+            headers: {
+                'X-CSRFToken': Cookies.get('csrftoken')
+            }
+        });
+        
+        const counts = response.data;
+        
+        // Update Alpine store
+        if (window.Alpine && window.Alpine.store('counts')) {
+            Object.entries(counts).forEach(([key, value]) => {
+                window.Alpine.store('counts')[key] = value;
+            });
+        }
+        
+        // Update UI elements
+        Object.entries(counts).forEach(([key, value]) => {
+            const elements = document.querySelectorAll(`[x-text="$store.counts.${key}"]`);
+            elements.forEach(el => {
+                el.textContent = value;
+            });
+        });
+        
+        // Update reminder badge
+        const reminderCount = document.getElementById('reminderCount');
+        if (reminderCount) {
+            reminderCount.textContent = counts.today;
+            reminderCount.style.display = counts.today > 0 ? 'flex' : 'none';
+        }
+    } catch (error) {
+        console.error('Error updating reminder counts:', error);
+    }
+}
     function googleTranslateElementInit() {
   new google.translate.TranslateElement({
     pageLanguage: 'en',
@@ -548,32 +732,290 @@
   }, 100);
 }
     </script>
+        <script src="js/notification.js" defer></script>
+        <script src="js/reminder.js" defer></script>
+
+
+
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-  // Your JavaScript code specific to the header
+async function toggleFlag(button) {
+  // Get the closest parent element with a reminder ID
+  const reminderElement = button.closest('[data-reminder-id]');
+  if (!reminderElement) {
+    console.error('Could not find reminder element');
+    return;
+  }
+  
+  const reminderId = reminderElement.dataset.reminderId;
+  if (!reminderId) {
+    console.error('No reminder ID found');
+    return;
+  }
+
+  const checkbox = button.parentElement.querySelector('input[type="checkbox"]');
+  const previousState = checkbox.checked;
+  
+  try {
+    console.log('Updating flag for reminder:', reminderId); // Debug log
+    
+    // Update UI immediately
+    button.classList.toggle('active');
+    checkbox.checked = !previousState;
+    
+    if (checkbox.checked) {
+      button.querySelector('.flag-icon').style.color = '#EF4444';
+      button.querySelector('.flag-icon').style.fill = '#EF4444';
+    } else {
+      button.querySelector('.flag-icon').style.color = '#9CA3AF';
+      button.querySelector('.flag-icon').style.fill = 'none';
+    }
+
+    // Make API call
+    const response = await apiClient.post('/api/reminders/update-flag/', {
+      reminder_id: reminderId,
+      is_flagged: checkbox.checked
+    }, {
+      withCredentials: true,
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken'),
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log('Flag update response:', response.data); // Debug log
+
+    // Update counts
+    if (window.Alpine && window.Alpine.store('counts')) {
+      const currentCount = parseInt(window.Alpine.store('counts').flagged || '0');
+      const newCount = checkbox.checked ? currentCount + 1 : Math.max(0, currentCount - 1);
+      window.Alpine.store('counts').flagged = newCount;
+      
+      // Update UI elements
+      document.querySelectorAll('[x-text="$store.counts.flagged"]')
+        .forEach(el => el.textContent = newCount);
+    }
+
+    await updateReminderCounts();
+
+  } catch (error) {
+    console.error('Error updating flag status:', error);
+    // Revert UI on error
+    button.classList.toggle('active');
+    checkbox.checked = previousState;
+    if (checkbox.checked) {
+      button.querySelector('.flag-icon').style.color = '#EF4444';
+      button.querySelector('.flag-icon').style.fill = '#EF4444';
+    } else {
+      button.querySelector('.flag-icon').style.color = '#9CA3AF';
+      button.querySelector('.flag-icon').style.fill = 'none';
+    }
+    await updateReminderCounts();
+  }
+}
+
+
+
+
+
+
+
+
+// Update the fetchReminders function to handle flagged reminders
+async function fetchReminders(filter) {
+  try {
+    const url = filter === 'flagged' 
+      ? '/api/reminders/flagged/'
+      : `/api/reminders/${filter}/`;
+      
+    const response = await apiClient.get(url, {
+      withCredentials: true,
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken')
+      }
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching reminders:', error);
+    throw error;
+  }
+}
+
+// Update the getAllReminders function to handle the response
+function getAllReminders() {
+  const remindersList = document.getElementById("remindersList");
+  if (!remindersList) {
+    console.error('Element remindersList not found');
+    return;
+  }
+  
+  remindersList.innerHTML = '';
+  
+  fetchReminders('today')
+    .then((reminders) => {
+      if (reminders.length === 0) {
+        remindersList.innerHTML = '<li class="px-4.5 py-3 text-sm text-gray-500">No reminders for today</li>';
+        return;
+      }
+      
+      reminders.forEach((reminder) => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.className = "flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4";
+        
+        // Add flag indicator if reminder is flagged
+        if (reminder.is_flagged) {
+          const flagIcon = document.createElement('div');
+          flagIcon.className = 'absolute right-4 text-red-500';
+          flagIcon.innerHTML = `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 6a2 2 0 012-2h6.5l1 1H19l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2v4"></path>
+          </svg>`;
+          a.appendChild(flagIcon);
+        }
+        
+        // Rest of the reminder rendering code...
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'flex flex-col';
+        
+        const title = document.createElement('p');
+        title.className = 'text-sm font-medium text-black dark:text-white';
+        title.textContent = reminder.title;
+        
+        const notes = document.createElement('p');
+        notes.className = 'text-xs text-gray-500';
+        notes.textContent = reminder.notes || 'No description';
+        
+        const date = document.createElement('p');
+        date.className = 'text-xs text-gray-400';
+        const dueDate = new Date(reminder.due_date);
+        date.textContent = reminder.due_date ? `Due ${dueDate.toLocaleTimeString()}` : 'No due date';
+        
+        contentDiv.appendChild(title);
+        contentDiv.appendChild(notes);
+        contentDiv.appendChild(date);
+        
+        a.appendChild(contentDiv);
+        li.appendChild(a);
+        remindersList.appendChild(li);
+      });
+    })
+    .catch((error) => {
+      console.error("Error loading reminders:", error);
+      remindersList.innerHTML = '<li class="px-4.5 py-3 text-sm text-red-500">Error loading reminders</li>';
+    });
+}
+
+
+
+
+
+
+
+
+// Update loadHeaderReminders function
+async function loadHeaderReminders() {
+  const remindersList = document.getElementById("remindersList");
+  if (!remindersList) {
+    // If we're not on a page with the remindersList, just update counts
+    await updateReminderCounts();
+    return;
+  }
+  
+  try {
+    const response = await apiClient.get('/api/reminders/today/', {
+      withCredentials: true,
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken')
+      }
+    });
+    
+    remindersList.innerHTML = '';
+    const reminders = response.data;
+    
+    if (reminders.length === 0) {
+      remindersList.innerHTML = '<li class="px-4.5 py-3 text-sm text-gray-500">No reminders for today</li>';
+      return;
+    }
+    
+    reminders.forEach((reminder) => {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.className = "flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4";
+      
+      // Add flag indicator if reminder is flagged
+      if (reminder.is_flagged) {
+        const flagIcon = document.createElement('div');
+        flagIcon.className = 'absolute right-4 text-red-500';
+        flagIcon.innerHTML = `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M3 6a2 2 0 012-2h6.5l1 1H19l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2v4"></path>
+        </svg>`;
+        a.appendChild(flagIcon);
+      }
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'flex flex-col';
+      
+      const title = document.createElement('p');
+      title.className = 'text-sm font-medium text-black dark:text-white';
+      title.textContent = reminder.title;
+      
+      const notes = document.createElement('p');
+      notes.className = 'text-xs text-gray-500';
+      notes.textContent = reminder.notes || 'No description';
+      
+      const date = document.createElement('p');
+      date.className = 'text-xs text-gray-400';
+      const dueDate = new Date(reminder.due_date);
+      date.textContent = reminder.due_date ? `Due ${dueDate.toLocaleTimeString()}` : 'No due date';
+      
+      contentDiv.appendChild(title);
+      contentDiv.appendChild(notes);
+      contentDiv.appendChild(date);
+      
+      a.appendChild(contentDiv);
+      li.appendChild(a);
+      remindersList.appendChild(li);
+    });
+    
+    // Update counts after loading reminders
+    await updateReminderCounts();
+    
+  } catch (error) {
+    console.error("Error loading reminders:", error);
+    if (remindersList) {
+      remindersList.innerHTML = '<li class="px-4.5 py-3 text-sm text-red-500">Error loading reminders</li>';
+    }
+  }
+}
+// Modifiez la fonction existante getAllReminders pour utiliser loadHeaderReminders
+async function getAllReminders() {
+  await loadHeaderReminders();
+  await updateUICounts();
+}
   const apiClient = axios.create({
   baseURL: 'http://localhost:8000',
-  header: {
+    headers: {
     'Content-Type': 'application/json',
-    //Accept: 'a'
-  }
-})
-apiClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    const statusCode = error.response.status;
-    const errorMessage = error.response.data.message || 'An error occured';
-    if(statusCode === 403 ){
+        'Accept': 'application/json'
+    },
+    withCredentials: true  // Important pour les cookies de session
+});apiClient.interceptors.response.use(
+    response => response,
+    error => {
+        console.error('API Error:', error);
+        
+        // Ne redirigez vers signin que si c'est explicitement nécessaire
+        if (error.response?.status === 403 && 
+            !error.config.url.includes('get-candidate')) {
       window.location.href = "signin.html";
       localStorage.clear();
     }
+        
     return Promise.reject(error); 
   }
-  
 );
 console.log("Header script running!");
 let recruiterDataHeader = JSON.parse(localStorage.getItem("recruiterDataHeader"));
@@ -588,59 +1030,86 @@ else{
   const recruiterPosition = document.getElementById("recruiterPosition");
   recruiterPosition.textContent = recruiterDataHeader.position || "__";
 }
-function getNotifications(){
+function getNotifications() {
   const notification = document.getElementById("notification");
-  notification.innerHTML = '';
-axios
-  .get(`http://localhost:8000/api/get-notifications/`,
-  {
-        withCredentials: true,
+  if (!notification) {
+    console.error('Element notification non trouvé');
+    return;
   }
-  )
+  
+  notification.innerHTML = '';
+  
+  // Utiliser l'URL correcte
+  apiClient.get('/api/get-notifications/', {
+        withCredentials: true,
+    headers: {
+      'X-CSRFToken': Cookies.get('csrftoken')
+  }
+  })
   .then((response) => {
-    data = response.data;
-    console.log(data);
+    console.log('Réponse notifications:', response.data);
+    const data = response.data;
+    
     data.forEach((element) => {
       const li = document.createElement("li");
       const a = document.createElement("a");
-      a.className =
-        "flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 cursor-pointer dark:border-strokedark dark:hover:bg-meta-4";
-      a.onclick = function () {
-        axios
-          .get(`http://localhost:8000/api/get-notif/${element.id}/`)
-          .then((response) => {
-            console.log("Data updated successfully:", response.data);
-            sessionStorage.setItem(
-              "notificationData",
-              JSON.stringify(response.data)
-            );
-            // Redirect to the new page
-            window.location.href = "notification.html";
-          })
-          .catch((error) => {
-            console.error("Error updating data:", error);
+      a.className = "flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 cursor-pointer dark:border-strokedark dark:hover:bg-meta-4";
+      
+      a.onclick = async function() {
+        try {
+          // Vérifier que l'on a un job_id valide
+          if (!element.job_id) {
+            notifications.showError('Notification invalide : pas de job associé');
+            return;
+          }
+
+          await apiClient.post(`/api/notifications/${element.id_notification}/mark-read/`, {}, {
+            withCredentials: true,
+            headers: {
+              'X-CSRFToken': Cookies.get('csrftoken')
+            }
           });
+
+          if (element.type === 'job_assignment' && element.job_id) {
+            localStorage.setItem('fromNotification', 'true');
+            localStorage.setItem('notificationJobId', element.job_id);
+            window.location.href = `job-details-restricted.html?jobId=${element.job_id}&restricted=true`;
+          } else {
+            console.log('Type de notification non géré:', element);
+            notifications.showError('Type de notification non supporté');
+          }
+        } catch (error) {
+          console.error('Erreur lors du traitement de la notification:', error);
+          notifications.showError('Erreur lors du traitement de la notification');
+        }
       };
 
       const info = document.createElement("span");
       info.className = "text-black dark:text-white";
-      info.textContent = `${element.recruiter} ${element.content}`;
+      info.textContent = `${element.recruiter_name} ${element.content}`;
+      
       const date = document.createElement("p");
       date.className = "text-xs";
       date.textContent = element.date;
+
+      // Ajouter un indicateur pour les notifications non lues
+      if (!element.is_read) {
+        const unreadIndicator = document.createElement('div');
+        unreadIndicator.className = 'w-2 h-2 bg-blue-500 rounded-full absolute right-4';
+        a.appendChild(unreadIndicator);
+      }
 
       a.appendChild(info);
       a.appendChild(date);
       li.appendChild(a);
       notification.appendChild(li);
-      console.log("Data updated successfully:", response.data);
     });
   })
   .catch((error) => {
-    console.error("Error updating data:", error);
+    console.error("Erreur lors du chargement des notifications:", error);
+    notification.innerHTML = '<p class="text-red-500 p-4">Erreur lors du chargement des notifications</p>';
   });
 }
-
 function getRecruiter() {
 
   console.log("executing get recruiter");
@@ -674,7 +1143,6 @@ function profileRecruiter() {
     }, 50); // Delay of 50ms
 
 }
-
 function deleteCookie(name) {
     document.cookie = `${name}=; Max-Age=0; path=/; domain=localhost`;
 }
@@ -698,7 +1166,243 @@ function logout() {
 }
 </script>
 <script>
+  // Add these functions in your existing <script> section
+
+    function showNewReminderModal() {
+  const modal = document.getElementById('reminderModal');
+  modal.classList.remove('hidden');
+  loadReminderLists();
+}
+
+function closeReminderModal() {
+  const modal = document.getElementById('reminderModal');
+  modal.classList.add('hidden');
+  document.getElementById('newReminderForm').reset();
+}
+
+async function loadReminderLists() {
+  try {
+    const response = await apiClient.get('/api/reminder-lists/', {
+      withCredentials: true,
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken')
+      }
+    });
+    
+    const select = document.getElementById('reminderList');
+    select.innerHTML = '';
+    
+    response.data.forEach(list => {
+      const option = document.createElement('option');
+      option.value = list.id;
+      option.textContent = list.title;
+      select.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Error loading reminder lists:', error);
+    notifications.showError('Failed to load reminder lists');
+  }
+}
+// Fonction pour mettre à jour le compteur de rappels
+// Fonction pour mettre à jour le compteur de rappels
+async function updateReminderCount() {
+  try {
+    const response = await apiClient.get('/api/reminders/today/', {
+      withCredentials: true,
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken')
+      }
+    });
+    
+    const reminderCount = document.getElementById('reminderCount');
+    if (reminderCount) {
+      reminderCount.textContent = response.data.length;
+      reminderCount.style.display = response.data.length > 0 ? 'flex' : 'none';
+    }
+  } catch (error) {
+    console.error('Error updating reminder count:', error);
+  }
+}
+// Appeler la fonction au chargement et après création/suppression de rappels
+document.addEventListener('DOMContentLoaded', updateReminderCount);
+// First, let's add debug logging
+// Replace the createReminder function in header.html
+async function createReminder(event) {
+    event.preventDefault();
+    
+    try {
+        const form = event.target;
+        const dueDate = form.due_date.value;
+        
+        if (!dueDate) {
+            alert('Please select a due date for the reminder');
+            return;
+        }
+
+        const dateObj = new Date(dueDate);
+        
+        const reminderData = {
+            title: form.title.value,
+            notes: form.notes.value || "",
+            due_date: dateObj.toISOString(),
+            priority: form.priority.value || "medium",
+            is_completed: false,
+            is_flagged: form.querySelector('input[name="is_flagged"]')?.checked || false,
+            list: 34  // Ensure this list ID exists
+        };
+        
+        console.log('Creating reminder with data:', reminderData);
+        
+        const response = await apiClient.post('/api/reminders/create/', reminderData, {
+            withCredentials: true,
+            headers: {
+                'X-CSRFToken': Cookies.get('csrftoken'),
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        console.log('Created reminder:', response.data);
+        
+        closeReminderModal();
+        document.dispatchEvent(new CustomEvent('reminderCreated', {
+            detail: response.data
+        }));
+        
+        const calendarInstance = document.querySelector('[x-data="calendar"]')?.__x.$data;
+        if (calendarInstance) {
+            console.log('Refreshing calendar after reminder creation');
+            await calendarInstance.refreshCalendar();
+        }
+        
+        const notification = document.createElement('div');
+        notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow z-50';
+        notification.textContent = 'Reminder created successfully';
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+
+        await updateUICounts();
+        
+        return response.data;
+    } catch (error) {
+        console.error('Error creating reminder:', error);
+        const notification = document.createElement('div');
+        notification.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded shadow z-50';
+        notification.textContent = 'Failed to create reminder';
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+}
+
+// Add this helper function
+async function refreshCalendar() {
+    const calendarInstance = document.querySelector('[x-data="calendar"]')?.__x.$data;
+    if (calendarInstance) {
+        console.log('Refreshing calendar...');
+        await calendarInstance.loadReminders();
+        calendarInstance.generateCalendar();
+    }
+}
+// Helper function for notifications
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-4 right-4 px-4 py-2 rounded shadow z-50 ${
+        type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    } text-white`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+}
+// In reminder.js where you handle the createList function
+
+async function createList() {
+  try {
+    const response = await apiClient.post('/api/lists/create/', {  // Corrected URL
+      title: this.newListTitle
+    }, {
+      withCredentials: true,
+      headers: {
+        'X-CSRFToken': Cookies.get('csrftoken'),
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.status === 201) {
+      // Handle successful creation
+      this.userLists.push(response.data);
+      this.closeModal();
+    } else {
+      console.error('Error creating list:', response.data);
+    }
+  } catch (error) {
+    console.error('API Error: ', error);
+  }
+}
+// Helper function to update UI counts
+async function updateUICounts() {
+    try {
+        // Use the correct endpoint for reminders
+        const response = await apiClient.get('/api/reminders/', {
+            withCredentials: true,
+            headers: { 'X-CSRFToken': Cookies.get('csrftoken') }
+        });
+        
+        const reminders = response.data;
+        const today = new Date().toDateString();
+        
+        // Calculate counts
+        const counts = {
+            today: reminders.filter(r => new Date(r.due_date).toDateString() === today).length,
+            flagged: reminders.filter(r => r.is_flagged).length,
+            completed: reminders.filter(r => r.is_completed).length,
+            scheduled: reminders.filter(r => new Date(r.due_date) > new Date()).length
+        };
+        
+        // Update UI elements
+        Object.entries(counts).forEach(([key, value]) => {
+            const element = document.querySelector(`[x-text="counts.${key}"]`);
+            if (element) {
+                element.textContent = value;
+            }
+        });
+        
+        // Update reminder count badge
+        const reminderCount = document.getElementById('reminderCount');
+        if (reminderCount) {
+            reminderCount.textContent = counts.today;
+            reminderCount.style.display = counts.today > 0 ? 'flex' : 'none';
+        }
+        
+        return counts;
+    } catch (error) {
+        console.error('Error updating counts:', error);
+    }
+}
+
+function showNewReminderModal() {
+  const modal = document.getElementById('reminderModal');
+  modal.classList.remove('hidden');
+}
+
+// Helper function to close modal
+function closeReminderModal() {
+  const modal = document.getElementById('reminderModal');
+  modal.classList.add('hidden');
+  document.getElementById('newReminderForm').reset();
+}
+
+
+
   document.addEventListener('alpine:init', () => {
+    Alpine.store('counts', {
+        today: 0,
+        scheduled: 0,
+        flagged: 0,
+        completed: 0,
+        updateCount(type, value) {
+            this[type] = value;
+        }
+    });
+
       Alpine.data('search', () => ({
           query: '',
           results: [],
@@ -747,14 +1451,69 @@ function logout() {
               }
           },
   
-          handleResultClick(result) {
-          console.log('Clicked result:', result);
+          async handleResultClick(result) {
+    console.log('Starting handleResultClick with:', result);
+    try {
           if (result.type === 'candidate') {
-              // URL corrigée selon votre configuration
-              window.location.href = `/profile/${result.id}/`;
+            // Gestion des candidats
+            const response = await apiClient.get(`/api/get-candidate/${result.id}/`, {
+                withCredentials: true,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': Cookies.get('csrftoken')
+                }
+            });
+
+            if (response.data) {
+                localStorage.setItem('responseData', JSON.stringify(response.data));
+                window.location.href = `profile.html?candidateId=${result.id}`;
+            }
+        } 
+        else if (result.type === 'job') {
+            // Gestion des jobs
+            const response = await apiClient.get(`/job/get-job/${result.id}/`, {
+                withCredentials: true,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': Cookies.get('csrftoken')
+                }
+            });
+
+            if (response.data) {
+                // Stocker les données du job
+                localStorage.setItem('jobData', JSON.stringify(response.data));
+                
+                // Rediriger vers la page des détails du job
+                window.location.href = "job-details.html";
+            }
+        }
+        else if (result.type === 'client') {
+                      const response = await apiClient.get(`/${result.id}/get-client/`, {
+
+                        withCredentials: true,
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': Cookies.get('csrftoken')
+                        }
+                    });
+ 
+                    if (response.data) {
+                        localStorage.setItem('clientData', JSON.stringify(response.data));
+                        window.location.href = "profile-client.html";
           }
+                
+
+        }
+    } catch (error) {
+        console.error('Error in handleResultClick:', error);
+        console.error('Request URL:', error.config?.url);
+        console.error('Request details:', error.config);
+        this.error = `Failed to load ${result.type} details`;
+    }
       },
-  
           // When search icon or "See all results" is clicked
           viewAllResults() {
               if (this.query.trim()) {

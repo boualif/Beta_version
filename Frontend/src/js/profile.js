@@ -4,6 +4,58 @@ let hrManagement;
 
 let candidateData;
 let notes;
+
+// Au début de profile.js
+function displayCandidateProfile(data) {
+    try {
+        // Mettre à jour les variables globales
+        candidateData = data.candidateData;
+        notes = data.Notes;
+        
+        // Charger le profil
+        load_profile();
+    } catch (error) {
+        console.error('Error in displayCandidateProfile:', error);
+        showError('Error displaying profile data');
+    }
+}
+
+// Modifions l'event listener DOMContentLoaded
+/*document.addEventListener('DOMContentLoaded', () => {
+    // Vérifions toutes les sources possibles de l'ID
+    const urlParams = new URLSearchParams(window.location.search);
+    const candidateIdFromUrl = urlParams.get('candidateId');
+    
+    if (!candidateIdFromUrl) {
+        console.error('Aucun ID de candidat trouvé dans l\'URL');
+        showError('Error: No candidate ID found');
+        return;
+    }
+
+    // Fetch data from API
+    apiClient.get(`/api/get-candidate/${candidateIdFromUrl}/`, {
+        withCredentials: true,
+        headers: {
+            'X-CSRFToken': Cookies.get('csrftoken')
+        }
+    })
+    .then(response => {
+        if (!response.data) {
+            throw new Error('No data received');
+        }
+        
+        // Store in both storage systems for compatibility
+        localStorage.setItem('responseData', JSON.stringify(response.data));
+        localStorage.setItem('candidateData', JSON.stringify(response.data));
+        
+        // Display the profile
+        displayCandidateProfile(response.data);
+    })
+    .catch(error => {
+        console.error('Error loading candidate:', error);
+        showError('Failed to load candidate data');
+    });
+});*/
 /*window.onload = () => {
   const [navigation] = performance.getEntriesByType("navigation");
 
@@ -48,33 +100,33 @@ let notes;
 };*/
 
 window.onload = () => {
-  // Récupère l'ID du candidat depuis le localStorage
-  const idCandidate = getIdFromLocalStorage();
+  console.log("window.onload: This function is running!"); // VERIFY THIS RUNS
+  console.log("window.location.search:", window.location.search); // CHECK THE URL
+  const urlParams = new URLSearchParams(window.location.search);
+  let idCandidate = urlParams.get('candidateId');
+  console.log("urlParams.get('candidateId'):", urlParams.get('candidateId')); // CHECK THE ID FROM URL
 
   if (!idCandidate) {
-    console.error("Aucun ID de candidat trouvé dans le localStorage");
-    showError("Informations du candidat manquantes. Veuillez réessayer.");
-    return;
+      idCandidate = getIdFromLocalStorage();
   }
 
-  // Vérifie si la page a été rafraîchie
-  const isPageReloaded = performance.navigation.type === 1; // 1 = reload
-
-  if (isPageReloaded) {
-    // Si la page est rafraîchie, charge les données depuis le serveur
-    loadCandidateData(idCandidate);
-  } else {
-    // Sinon, charge les données depuis le localStorage
-    loadFromLocalStorage();
+  if (!idCandidate) {
+      console.error("Aucun ID de candidat trouvé dans l'URL ou le localStorage");
+      showError("Informations du candidat manquantes. Veuillez réessayer.");
+      return;
   }
+
+  loadCandidateData(idCandidate);
 };
 function getIdFromLocalStorage() {
+  console.log("getIdFromLocalStorage: This function is running!"); // VERIFY THIS RUNS
   try {
-    const responseData = JSON.parse(localStorage.getItem("responseData"));
-    return responseData?.candidateData?.id_candidate;
+      console.log("localStorage.getItem('responseData'):", localStorage.getItem("responseData")); // CHECK LOCAL STORAGE
+      const responseData = JSON.parse(localStorage.getItem("responseData"));
+      return responseData?.candidateData?.id_candidate;
   } catch (error) {
-    console.error("Error parsing localStorage data:", error);
-    return null;
+      console.error("JSON.parse error:", error, localStorage.getItem("responseData")); // LOG JSON PARSE ERRORS
+      return null;
   }
 }
 function loadFromLocalStorage() {
@@ -105,6 +157,7 @@ function loadFromLocalStorage() {
 }
 
 function loadCandidateData(idCandidate) {
+  console.log("Loading candidate data for ID:", idCandidate);
   apiClient.get(`/api/get-candidate/${idCandidate}/`, {
     withCredentials: true,
     timeout: 10000, // 10 second timeout
@@ -119,7 +172,6 @@ function loadCandidateData(idCandidate) {
     }
     
     // Store response data
-    localStorage.removeItem('responseData');
     localStorage.setItem('responseData', JSON.stringify(response.data));
     localStorage.setItem('profileData', JSON.stringify(response.data));
     
@@ -468,6 +520,38 @@ function load_app() {
       console.error("Error loading the external file:", error)
     );
 }
+// Date formatting helper functions
+function formatDateForDisplay(dateString) {
+  if (!dateString) return '';
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString; // Return original if invalid
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short'
+    });
+  } catch (error) {
+    console.warn('Error formatting date:', error);
+    return dateString;
+  }
+}
+
+function formatPeriodForDisplay(period) {
+  if (!period) return '';
+  return period.replace(/(\d{4})-(\d{2})/g, (_, year, month) => {
+    const date = new Date(year, month - 1);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short'
+    });
+  });
+}
+
+function formatExperienceDates(experience) {
+  const startDate = formatDateForDisplay(experience.StartDate);
+  const endDate = experience.EndDate ? formatDateForDisplay(experience.EndDate) : 'Present';
+  return `${startDate} - ${endDate}`;
+}
 
 function load_profile() {
   const originalDiv = document.getElementById("profile-cdd");
@@ -486,6 +570,33 @@ function load_profile() {
       targetDiv.innerHTML = data; // Insert the fetched content into the div
       main_content.appendChild(targetDiv); // Append the new div to the body or any other parent element
 
+     // Get the "Added at" date from the candidate data
+const addedAtDate = candidateData?.added_at;
+console.log("Structure candidateData:", candidateData); // Pour debug
+
+// Format the date and display in green button 
+if (addedAtDate) {
+    const formattedAddedAt = new Date(addedAtDate).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short', 
+        day: 'numeric'
+    });
+    document.getElementById("addedAtDisplay").textContent = formattedAddedAt;
+} else {
+    // Chemin alternatif si la première tentative échoue
+    const alternateDate = candidateData?.created_at || candidateData?.created_date;
+    if (alternateDate) {
+        const formattedDate = new Date(alternateDate).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+        document.getElementById("addedAtDisplay").textContent = formattedDate;
+    } else {
+        document.getElementById("addedAtDisplay").textContent = "No Date";
+        console.log()
+    }
+}
       // Save data to localStorage
 
       console.log("candidateData:::::::", candidateData);
@@ -538,16 +649,10 @@ function load_profile() {
         candidateData.candidateData.CandidateInfo.Country;
       document.getElementById("nationalityDisplay").textContent =
         candidateData.candidateData.CandidateInfo.Nationality;
-      const linksDisplay = document.getElementById('linksDisplay');
-
-      // Access the Links array
-      const linksArray = candidateData.candidateData.CandidateInfo.Links;
-
-      // Create clickable links with <a> tags
-      const linksHTML = linksArray.map(link => `<a href="https://${link}" target="_blank" class="hover:text-blue-500 hover:underline">${link}</a>`).join('  ,  ');
-
-      // Set the innerHTML of 'linksDisplay' to the created links
-      linksDisplay.innerHTML = linksHTML;
+        const linksDisplay = document.getElementById('linksDisplay');
+        const linksArray = candidateData?.candidateData?.CandidateInfo?.Links || [];
+        const linksHTML = linksArray.map(link => `<a href="https://${link}" target="_blank" class="hover:text-blue-500 hover:underline">${link}</a>`).join('  ,  ');
+        linksDisplay.innerHTML = linksHTML;
       notes.forEach((note) => {
         const notesContainer = document.getElementById("notesContainer");
         const container = document.createElement("div");
@@ -741,11 +846,15 @@ function load_profile() {
         // Adjust time class to make it smaller and positioned neatly
         time.className = "left-50 top-1 text-[10px] font-semibold uppercase";
         time.style.color = "#3a86ff"; // Consistent with experience section
-        time.textContent = degree.Date;
+        time.textContent = formatPeriodForDisplay(degree.Date) || 
+        `${formatDateForDisplay(degree.StartDate)} - ${formatDateForDisplay(degree.EndDate)}`;
 
         const p = document.createElement("p");
         p.className = "text-sm text-gray-600 dark:text-gray-400";
-        p.textContent = degree.CountryOrInstitute;
+        const startDate = formatDateForDisplay(degree.StartDate);
+        const endDate = formatDateForDisplay(degree.EndDate);
+        time.textContent = formatPeriodForDisplay(degree.Date) || 
+        `${formatDateForDisplay(degree.StartDate)} - ${formatDateForDisplay(degree.EndDate)}`;
 
         // Append elements in the correct order
         div.appendChild(h2);
@@ -803,7 +912,9 @@ function load_profile() {
       time.className = "sm:absolute left-0 translate-y-0.5 inline-flex items-center justify-center text-xs font-semibold uppercase w-20 h-5 mb-2 sm:mb-0";
       time.style.color = "#3a86ff";
       // Use Period instead of Periode
-      time.textContent = experience.Period;
+      const startDate = formatDateForDisplay(experience.StartDate);
+      const endDate = formatDateForDisplay(experience.EndDate);
+      time.textContent = formatExperienceDates(experience);
       const divTitle = document.createElement("div");
       divTitle.className = "font-medium text-lg text-indigo-500 mb-2 sm:mb-0";
       divTitle.style.fontFamily = "'Poppins', sans-serif";
@@ -1005,6 +1116,24 @@ const role = document.createElement("div");
   document.getElementById("inter-btn").className =
     "rounded px-3 py-1 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark";
 }
+function calculateTotalExperience(experiences) {
+  if (!Array.isArray(experiences) || experiences.length === 0) {
+    return 0;
+  }
+
+  let totalYears = 0;
+  experiences.forEach(exp => {
+    const startDate = new Date(exp.StartDate);
+    const endDate = exp.EndDate ? new Date(exp.EndDate) : new Date();
+    const years = (endDate - startDate) / (1000 * 60 * 60 * 24 * 365.25);
+    totalYears += years;
+  });
+
+  return Math.round(totalYears);
+}
+
+
+
 function load_interviews() {
   const originalDiv = document.getElementById("profile-cdd");
   if (originalDiv) {
@@ -1198,6 +1327,22 @@ function load_HR_Management() {
     return;
   }
 
+  // Load from localStorage *BEFORE* API Call
+  let storedHistory;
+  try {
+      storedHistory = JSON.parse(localStorage.getItem(`hrManagementHistory_${candidateData?.id_candidate}`));
+  } catch (e) {
+      console.warn("Error parsing hrManagementHistory from localStorage", e);
+      storedHistory = null;
+  }
+  if (storedHistory) {
+      console.log("Loaded hrManagementHistory from localStorage:", storedHistory);
+      candidateData.hrManagementHistory = storedHistory;  // Temporarily set
+      displayHRManagementHistory(storedHistory); //Display History Directly
+  } else{
+       candidateData.hrManagementHistory = []
+  }
+
   // Use a single promise chain for all operations
   fetch("management.html")
     .then((response) => {
@@ -1218,7 +1363,9 @@ function load_HR_Management() {
         setTimeout(() => {
           initializeDatePickers();
           edit = false;
-          hrManagement = candidateData.hrManagement || {};
+
+                  // Safely access hrManagement data
+                  hrManagement = candidateData?.hrManagement || {};
           
           // Load initial form values
           const setFormValue = (id, value) => {
@@ -1228,7 +1375,7 @@ function load_HR_Management() {
             }
           };
 
-          // Set initial values if they exist
+                  // Safely set initial values
           if (hrManagement.hr) {
             setFormValue("contractLocation", hrManagement.hr.contractLocation);
             if (hrManagement.hr.contractLocation) {
@@ -1249,14 +1396,15 @@ function load_HR_Management() {
       // Load all histories AFTER the main content is set
       return Promise.all([
         loadHRUpdates(),
-        loadValidationHistory(),
+              //loadValidationHistory(),
         loadTechnicValidationHistory(),
-        loadDirectionValidationHistory()
+              loadDirectionValidationHistory(),
+              loadServiceValidationHistory()
       ]);
     })
     .catch((error) => {
       console.error("Error in HR Management loading:", error);
-      //showError("");
+          showError("Failed to load HR Management data");
     });
 
   // Update navigation buttons
@@ -1273,7 +1421,194 @@ function load_HR_Management() {
     if (button) button.className = className;
   });
 }
+function toggleServiceHistory() {
+  const historyContainer = document.getElementById('validation-history-service');
+  const historyText = document.getElementById('history-text-valService'); // Updated ID
+  const historyIcon = document.getElementById('history-icon-valService');  // Updated ID
+  const localStorageKey = 'valServiceHistoryVisible'; // Unique storage key
 
+  // Get current state (using localStorage to persist the state)
+  let isVisible = localStorage.getItem(localStorageKey) === 'true';
+
+  // Toggle the state and update localStorage
+  isVisible = !isVisible;
+  localStorage.setItem(localStorageKey, isVisible);
+
+  if (isVisible) {
+    historyContainer.style.display = 'block';
+    historyText.textContent = 'Hide History';
+    historyIcon.style.transform = 'rotate(180deg)';
+    loadServiceValidationHistory(); // Load history when showing
+  } else {
+    historyContainer.style.display = 'none';
+    historyText.textContent = 'Show History';
+    historyIcon.style.transform = 'rotate(0deg)';
+  }
+}
+function createValidationHistoryToggle(containerId, loadHistoryFunction) {
+  const container = document.getElementById(containerId);
+  if (!container) {
+      console.error(`Container with ID "${containerId}" not found.`);
+      return;
+  }
+
+  const header = container.querySelector('.flex.justify-between.items-center');
+  if (!header) {
+      console.error(`Header not found in container "${containerId}".`);
+      return;
+  }
+
+  // Create the button dynamically
+  const toggleButton = document.createElement('button');
+  toggleButton.className = "flex items-center gap-2 px-4 py-2 text-sm font-medium text-black bg-white border border-stroke rounded-md hover:bg-gray-50 dark:border-strokedark dark:bg-boxdark dark:text-white";
+  toggleButton.innerHTML = `
+      <span id="history-text-${containerId}">Show History</span>
+      <svg id="history-icon-${containerId}" class="w-4 h-4 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+      `;
+
+  // Prepend button to the header
+  header.prepend(toggleButton);
+
+  // Load saved visibility state (if needed)
+  const localStorageKey = `${containerId}HistoryVisible`;
+  let isVisible = localStorage.getItem(localStorageKey) === 'true';  //Load the visibility state
+
+   //Initialize history content
+  const historyContent = container.querySelector('.validation-history-content');
+  if (!historyContent) {
+      console.error(`History content container with class "validation-history-content" not found within "${containerId}"`);
+      return;
+  }
+  historyContent.style.display = isVisible ? 'block' : 'none';
+
+  const historyTextSpan = toggleButton.querySelector(`#history-text-${containerId}`);
+  const historyIcon = toggleButton.querySelector(`#history-icon-${containerId}`);
+   //Set Intial state
+
+  historyTextSpan.textContent = isVisible ? 'Hide History' : 'Show History';
+  historyIcon.style.transform = isVisible ? 'rotate(180deg)' : 'rotate(0deg)';
+
+  toggleButton.addEventListener('click', () => {
+      isVisible = !isVisible;  //Toggle boolean here
+      localStorage.setItem(localStorageKey, isVisible);  //Save the current state
+
+      historyContent.style.display = isVisible ? 'block' : 'none';  //Toggle the history content for this function only!
+      historyTextSpan.textContent = isVisible ? 'Hide History' : 'Show History';
+      historyIcon.style.transform = isVisible ? 'rotate(180deg)' : 'rotate(0deg)';
+
+       //Check to ensure that it doesn't already exist
+       if (isVisible) {
+          loadHistoryFunction(); // Load history on show
+      }
+
+  });
+}
+function toggleTechnicHistory() {
+  const historyContainer = document.getElementById('validation-history-technic');
+  const historyText = document.getElementById('history-text-valTechnic');
+  const historyIcon = document.getElementById('history-icon-valTechnic');
+  const localStorageKey = 'valTechnicHistoryVisible';
+
+  let isVisible = localStorage.getItem(localStorageKey) === 'true';
+
+  isVisible = !isVisible;
+  localStorage.setItem(localStorageKey, isVisible);
+
+  if (isVisible) {
+      historyContainer.style.display = 'block';
+      historyText.textContent = 'Hide History';
+      historyIcon.style.transform = 'rotate(180deg)';
+      loadTechnicValidationHistory();
+  } else {
+      historyContainer.style.display = 'none';
+      historyText.textContent = 'Show History';
+      historyIcon.style.transform = 'rotate(0deg)';
+  }
+}
+function toggleDirectionHistory() {
+  const historyContainer = document.getElementById('validation-history-direction');
+  const historyText = document.getElementById('history-text-valDirection');
+  const historyIcon = document.getElementById('history-icon-valDirection');
+  const localStorageKey = 'valDirectionHistoryVisible';
+
+  let isVisible = localStorage.getItem(localStorageKey) === 'true';
+
+  isVisible = !isVisible;
+  localStorage.setItem(localStorageKey, isVisible);
+
+  if (isVisible) {
+    historyContainer.style.display = 'block';
+    historyText.textContent = 'Hide History';
+    historyIcon.style.transform = 'rotate(180deg)';
+    loadDirectionValidationHistory();
+  } else {
+    historyContainer.style.display = 'none';
+    historyText.textContent = 'Show History';
+    historyIcon.style.transform = 'rotate(0deg)';
+  }
+}
+
+function toggleHistoryVisibility(historyContainer) {
+    if (historyContainer.style.display === 'none') {
+        historyContainer.style.display = 'block'; // Show the container
+        // Optionally, load the history here if it's not already loaded
+        if (historyContainer.innerHTML.trim() === "") {  //Check if empty
+            if (historyContainer.id === "validation-history-service") {
+                loadServiceValidationHistory();
+            } else if (historyContainer.id === "validation-history-technic") {
+                loadTechnicValidationHistory();
+            } else if (historyContainer.id === "validation-history-direction") {
+                loadDirectionValidationHistory();
+            }
+        }
+    } else {
+        historyContainer.style.display = 'none';   // Hide the container
+    }
+}
+
+function displayHRManagementHistory(history) {
+  const historySection = document.getElementById('hr-management-history');
+  if (!historySection) {
+      console.error("History section not found");
+      return;
+  }
+
+  historySection.innerHTML = `
+        <h4 class="mb-6 text-xl font-semibold text-black dark:text-white">
+          Previous HR Management Updates
+        </h4>
+        <div class="space-y-4">
+          ${history.map((update, index) => `
+            <div class="p-4 rounded-lg ${update.is_active
+              ? 'border-primary bg-primary bg-opacity-5'
+              : 'bg-gray-50 border border-stroke dark:border-strokedark dark:bg-meta-4'}">
+              <div class="flex justify-between items-start mb-4">
+                <div>
+                  <span class="font-medium text-black dark:text-white">
+                    ${update.is_active ? 'Current Version' : `Previous Version ${history.length - index}`}
+                  </span>
+                </div>
+                <span class="text-sm text-gray-500">
+                  ${new Date(update.created_at).toLocaleString()}
+                </span>
+              </div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">
+                <p>Updated by: ${update.recruiter_name || 'Unknown'}</p>
+                <p>Contract Location: ${update.data.contractLocation || '-'}</p>
+                <p>Contract Type: ${update.data.contractType || '-'}</p>
+                <p>Salary Expectation: ${update.data.salaryExpectation || '-'}</p>
+                <p>Previous Salary: ${update.data.previousSalary || '-'}</p>
+                <p>Integration Date: ${update.data.integrationDate || '-'}</p>
+                <p>Administrative Regularity: ${update.data.administrativeRegularity || '-'}</p>
+                <p>Période De Préavis: ${update.data.PériodeDePréavis || '-'}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+}
 function initializeDatePickers() {
   const dateInputs = document.querySelectorAll(".form-datepicker"); // Select date input elements
 
@@ -1358,7 +1693,38 @@ function createTempNote(message) {
 
   return container;
 }
+function deleteCandidate(candidateId) {
+  if (confirm("Are you sure you want to delete this candidate?")) {
+      apiClient.delete(`/api/delete-candidate/${candidateId}/`, {
+          withCredentials: true,
+          headers: {
+              'X-CSRFToken': Cookies.get('csrftoken'),
+          },
+      })
+      .then(response => {
+          if (response.status === 204) {
+              // Successfully deleted
+              showNotification("Candidate deleted successfully!", 'success');
+              // Redirect or refresh the page
+              window.location.href = "candidates-list.html"; // Redirect to the candidates list page
+          } else {
+              throw new Error('Failed to delete candidate');
+          }
+      })
+      .catch(error => {
+          console.error("Error deleting candidate:", error);
+          showNotification("Failed to delete candidate. Please try again.", 'error');
+      });
+  }
+}
 
+// Example of attaching the delete function to a trash icon
+document.querySelectorAll('.delete-candidate-icon').forEach(icon => {
+  icon.addEventListener('click', function() {
+      const candidateId = this.getAttribute('data-candidate-id');
+      deleteCandidate(candidateId);
+  });
+});
 function updateNoteElement(element, noteData) {
   if (!element) return;
   
@@ -1914,10 +2280,9 @@ function toggleDisplayHRManagement() {
 }
 
 function saveValService() {
-  const combinedFormData = new FormData();
-  var dt = {};
   const form = document.getElementById("form1");
   const formData = new FormData(form);
+  const dt = {};
   
   // Get current form data
   for (let [key, value] of formData.entries()) {
@@ -1925,77 +2290,304 @@ function saveValService() {
   }
 
   apiClient
-    .patch(`/api/val-service/${candidateData.id_candidate}/`, dt,
-      {
+    .patch(`/api/val-service/${candidateData.id_candidate}/`, dt, {
         withCredentials: true,
         headers: {
           'X-CSRFToken': Cookies.get('csrftoken'),
         },
-      }
-    )
+    })
     .then((response) => {
-      console.log("Data updated successfully:", response.data);
-      if (response.status == 200) {
+      if (response.status === 200) {
         // Store current form values
         const currentData = {
           date1: document.getElementById('date1').value,
           validatedBy1: document.getElementById('validatedBy1').value,
           evaluation1: document.getElementById('evaluation1').value,
-          user1: localStorage.getItem("username")
+          user1: localStorage.getItem("username"),
+          timestamp: new Date().toISOString(),
+          is_active: true
         };
 
-        // Add to candidateData if it doesn't exist
-        if (!candidateData.validationHistory) {
-          candidateData.validationHistory = [];
-        }
-        candidateData.validationHistory.push({
-          ...currentData,
-          timestamp: new Date().toISOString()
-        });
-
-        // Create new validation card for history
-        const historyContainer = document.getElementById('validation-history-service');
-        const historyCard = document.createElement('div');
-        historyCard.className = 'mb-6 p-4 bg-gray-50 rounded-sm border border-stroke dark:border-strokedark dark:bg-meta-4';
-        historyCard.innerHTML = `
-          <div class="mb-3">
-            <label class="mb-2 block text-sm font-medium text-black dark:text-white">Date</label>
-            <p class="text-sm text-gray-600 dark:text-gray-400">${currentData.date1}</p>
-          </div>
-          <div class="mb-3">
-            <label class="mb-2 block text-sm font-medium text-black dark:text-white">Validé par</label>
-            <p class="text-sm text-gray-600 dark:text-gray-400">${currentData.validatedBy1}</p>
-          </div>
-          <div class="mb-3">
-            <label class="mb-2 block text-sm font-medium text-black dark:text-white">Evaluation</label>
-            <p class="text-sm text-gray-600 dark:text-gray-400">${currentData.evaluation1}</p>
-          </div>
-          <div class="text-right text-sm text-gray-500">
-            Validated by ${currentData.user1} on ${new Date().toLocaleString()}
-          </div>
-        `;
-
-        // Add the new history card after the "Previous Validations" heading
-        const heading = historyContainer.querySelector('h4');
-        if (heading) {
-          heading.insertAdjacentElement('afterend', historyCard);
-        } else {
-          historyContainer.appendChild(historyCard);
+        // Get existing history from localStorage
+        let serviceHistory = [];
+        try {
+          const storedHistory = localStorage.getItem(`serviceValidationHistory_${candidateData.id_candidate}`);
+          if (storedHistory) {
+            serviceHistory = JSON.parse(storedHistory);
+            // Mark previous active entry as inactive
+            serviceHistory = serviceHistory.map(entry => ({
+              ...entry,
+              is_active: false
+            }));
+          }
+        } catch (e) {
+          console.warn("Error parsing service validation history:", e);
         }
 
-        // Update the current user display
+        // Add new entry to history
+        serviceHistory.push(currentData);
+
+        // Save updated history to localStorage
+        localStorage.setItem(
+          `serviceValidationHistory_${candidateData.id_candidate}`, 
+          JSON.stringify(serviceHistory)
+        );
+
+        // Update the UI
+        displayServiceValidationHistory(serviceHistory);
+
+        // Update current user display and form
         document.getElementById("user1").textContent = currentData.user1;
         toggleDisplayValService();
+
+        // Show success notification
+        showNotification("Service validation saved successfully", "success");
       }
     })
     .catch((error) => {
-      console.error("Error updating data:", error);
+      console.error("Error updating service validation:", error);
+      showNotification("Failed to save service validation", "error");
     });
+}
+function displayServiceValidationHistory(history) {
+  const container = document.getElementById('validation-history-service');
+  if (!container) return;
+
+  // Clear container but keep heading
+  container.innerHTML = `
+    <h4 class="mb-6 text-xl font-semibold text-black dark:text-white">
+      Previous Service Validations
+    </h4>
+  `;
+
+  if (history.length > 0) {
+    const sortedHistory = [...history].sort((a, b) => 
+      new Date(b.timestamp) - new Date(a.timestamp)
+    );
+
+    sortedHistory.forEach(validation => {
+        const historyCard = document.createElement('div');
+      historyCard.className = `mb-6 p-4 rounded-sm border ${
+        validation.is_active 
+          ? 'border-primary bg-primary bg-opacity-5' 
+          : 'border-stroke bg-gray-50 dark:border-strokedark dark:bg-meta-4'
+      }`;
+      
+        historyCard.innerHTML = `
+          <div class="mb-3">
+            <label class="mb-2 block text-sm font-medium text-black dark:text-white">Date</label>
+          <p class="text-sm text-gray-600 dark:text-gray-400">${validation.date1 || ''}</p>
+          </div>
+          <div class="mb-3">
+            <label class="mb-2 block text-sm font-medium text-black dark:text-white">Validé par</label>
+          <p class="text-sm text-gray-600 dark:text-gray-400">${validation.validatedBy1 || ''}</p>
+          </div>
+          <div class="mb-3">
+            <label class="mb-2 block text-sm font-medium text-black dark:text-white">Evaluation</label>
+          <p class="text-sm text-gray-600 dark:text-gray-400">${validation.evaluation1 || ''}</p>
+          </div>
+          <div class="text-right text-sm text-gray-500">
+          ${validation.is_active ? 'Current Version' : 'Previous Version'} - 
+          Validated by ${validation.user1 || ''} 
+          ${validation.timestamp ? `on ${new Date(validation.timestamp).toLocaleString()}` : ''}
+          </div>
+        `;
+
+      container.appendChild(historyCard);
+    });
+        } else {
+    const emptyMessage = document.createElement('div');
+    emptyMessage.className = 'text-center text-gray-500 py-4';
+    emptyMessage.textContent = 'No validation history available';
+    container.appendChild(emptyMessage);
+  }
+}
+function loadServiceValidationHistory() {
+  const container = document.getElementById('validation-history-service');
+  if (!container) {
+    console.error('Validation history container not found');
+    return;
+        }
+
+  // Clear container but keep heading
+  container.innerHTML = `
+    <h4 class="mb-6 text-xl font-semibold text-black dark:text-white">
+      Previous Service Validations
+    </h4>
+  `;
+
+  // First, try to load from API
+  apiClient.get(`/api/val-service/${candidateData.id_candidate}/`)
+    .then(response => {
+      let allHistory = [];
+      
+      // Add API updates to history
+      if (response.data && response.data.updates) {
+        allHistory = response.data.updates.map(update => ({
+          date1: update.data.date1,
+          validatedBy1: update.data.validatedBy1,
+          evaluation1: update.data.evaluation1,
+          user1: update.user_name,
+          timestamp: update.created_at || new Date().toISOString(),
+          is_active: update.is_active,
+          source: 'api'
+        }));
+      }
+
+      // Load from localStorage
+      try {
+        const storedHistory = localStorage.getItem(`serviceValidationHistory_${candidateData.id_candidate}`);
+        if (storedHistory) {
+          const parsedHistory = JSON.parse(storedHistory).map(item => ({
+            ...item,
+            source: 'local'
+          }));
+          
+          // Merge with API data, avoiding duplicates
+          parsedHistory.forEach(localItem => {
+            const exists = allHistory.some(apiItem => 
+              apiItem.date1 === localItem.date1 &&
+              apiItem.validatedBy1 === localItem.validatedBy1 &&
+              apiItem.evaluation1 === localItem.evaluation1
+            );
+            
+            if (!exists) {
+              allHistory.push(localItem);
+            }
+          });
+        }
+      } catch (e) {
+        console.warn("Error loading from localStorage:", e);
+      }
+
+      // Add initial validation if it exists and isn't already included
+      if (candidateData.hrManagement?.valService) {
+        const initialValidation = candidateData.hrManagement.valService;
+        if (initialValidation.date1 || initialValidation.validatedBy1 || initialValidation.evaluation1) {
+          const exists = allHistory.some(item => 
+            item.date1 === initialValidation.date1 &&
+            item.validatedBy1 === initialValidation.validatedBy1 &&
+            item.evaluation1 === initialValidation.evaluation1
+          );
+
+          if (!exists) {
+            allHistory.push({
+              date1: initialValidation.date1,
+              validatedBy1: initialValidation.validatedBy1,
+              evaluation1: initialValidation.evaluation1,
+              user1: initialValidation.user1 || 'Initial Validation',
+              timestamp: new Date().toISOString(),
+              is_active: allHistory.length === 0,
+              source: 'initial'
+            });
+          }
+        }
+      }
+
+      // Sort by timestamp, most recent first
+      allHistory.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+      // Save complete history to localStorage
+      localStorage.setItem(
+        `serviceValidationHistory_${candidateData.id_candidate}`,
+        JSON.stringify(allHistory)
+      );
+
+      // Display all history items
+      if (allHistory.length > 0) {
+        allHistory.forEach(validation => {
+          const historyCard = document.createElement('div');
+          historyCard.className = `mb-6 p-4 rounded-sm border ${
+            validation.is_active 
+              ? 'border-primary bg-primary bg-opacity-5' 
+              : 'border-stroke bg-gray-50 dark:border-strokedark dark:bg-meta-4'
+          }`;
+          
+          historyCard.innerHTML = `
+            <div class="mb-3">
+              <label class="mb-2 block text-sm font-medium text-black dark:text-white">Date</label>
+              <p class="text-sm text-gray-600 dark:text-gray-400">${validation.date1 || ''}</p>
+            </div>
+            <div class="mb-3">
+              <label class="mb-2 block text-sm font-medium text-black dark:text-white">Validé par</label>
+              <p class="text-sm text-gray-600 dark:text-gray-400">${validation.validatedBy1 || ''}</p>
+            </div>
+            <div class="mb-3">
+              <label class="mb-2 block text-sm font-medium text-black dark:text-white">Evaluation</label>
+              <p class="text-sm text-gray-600 dark:text-gray-400">${validation.evaluation1 || ''}</p>
+            </div>
+            <div class="text-right text-sm text-gray-500">
+              ${validation.is_active ? 'Current Version' : 'Previous Version'} - 
+              Validated by ${validation.user1 || ''} 
+              ${validation.timestamp ? `on ${new Date(validation.timestamp).toLocaleString()}` : ''}
+            </div>
+          `;
+
+          container.appendChild(historyCard);
+        });
+      } else {
+        const emptyMessage = document.createElement('div');
+        emptyMessage.className = 'text-center text-gray-500 py-4';
+        emptyMessage.textContent = 'No validation history available';
+        container.appendChild(emptyMessage);
+      }
+    })
+    .catch(error => {
+      console.error('Error loading from API:', error);
+      // If API fails, try to load from localStorage as fallback
+      loadFromLocalStorageFallback(container);
+    });
+}
+function loadFromLocalStorageFallback(container) {
+  try {
+    const storedHistory = localStorage.getItem(`serviceValidationHistory_${candidateData.id_candidate}`);
+    if (storedHistory) {
+      const history = JSON.parse(storedHistory);
+      displayServiceValidationHistory(history);
+    } else {
+      const emptyMessage = document.createElement('div');
+      emptyMessage.className = 'text-center text-gray-500 py-4';
+      emptyMessage.textContent = 'No validation history available';
+      container.appendChild(emptyMessage);
+    }
+  } catch (e) {
+    console.error('Error loading from localStorage:', e);
+    const errorMessage = document.createElement('div');
+    errorMessage.className = 'text-center text-red-500 py-4';
+    errorMessage.textContent = 'Error loading validation history';
+    container.appendChild(errorMessage);
+  }
+}
+function initializeServiceValidation() {
+  loadServiceValidationHistory();
+  
+  // Set up event listeners if needed
+  const editButton = document.querySelector('[onclick="toggleEditValService()"]');
+  if (editButton) {
+    editButton.addEventListener('click', () => {
+      const today = new Date();
+      const formattedDate = today.toISOString().split('T')[0];
+      document.getElementById('date1').value = formattedDate;
+    });
+  }
+}
+function initializeAllValidations() {
+  initializeServiceValidation();
+  initializeTechnicValidation();
+  initializeDirectionValidation();
 }
 function loadValidationHistory() {
   const container = document.getElementById('validation-history-service');
   if (!container) return;
   
+  // Load from localStorage *BEFORE* API call
+  let storedHistory;
+  try {
+    storedHistory = JSON.parse(localStorage.getItem(`validationHistory_service_${candidateData?.id_candidate}`));
+  } catch (e) {
+    console.warn("Error parsing validation history from localStorage", e);
+    storedHistory = null;
+  }
 
   // Clear container but keep the heading
   container.innerHTML = `
@@ -2005,8 +2597,8 @@ function loadValidationHistory() {
 `;
 
   // Load all previous validations if they exist
-  if (candidateData.validationHistory) {
-    candidateData.validationHistory.forEach(validation => {
+  if (storedHistory && storedHistory.length > 0) {
+    storedHistory.forEach(validation => {
       const historyCard = document.createElement('div');
       historyCard.className = 'mb-6 p-4 bg-gray-50 rounded-sm border border-stroke dark:border-strokedark dark:bg-meta-4';
       historyCard.innerHTML = `
@@ -2027,9 +2619,8 @@ function loadValidationHistory() {
           ${validation.timestamp ? `on ${new Date(validation.timestamp).toLocaleString()}` : ''}
         </div>
       `;
-      historyContainer.appendChild(historyCard);
+      container.appendChild(historyCard);
     });
-  }
 
   // Also add the initial validation if it exists
   if (candidateData.hrManagement?.valService) {
@@ -2054,8 +2645,14 @@ function loadValidationHistory() {
           Initial validation by ${initialValidation.user1 || ''}
         </div>
       `;
-      historyContainer.appendChild(historyCard);
+        container.appendChild(historyCard);
     }
+    }
+  } else {
+    const emptyMessage = document.createElement('div');
+    emptyMessage.className = 'text-center text-gray-500 py-4';
+    emptyMessage.textContent = 'No History Found';
+    container.appendChild(emptyMessage);
   }
 }
 function saveValTechnic() {
@@ -2075,64 +2672,114 @@ function saveValTechnic() {
       },
     })
     .then((response) => {
-      console.log("Data updated successfully:", response.data);
       if (response.status === 200) {
         // Store current form values
         const currentData = {
           date2: document.getElementById('date2').value,
           validatedBy2: document.getElementById('validatedBy2').value,
           evaluation2: document.getElementById('evaluation2').value,
-          user2: localStorage.getItem("username")
+          user2: localStorage.getItem("username"),
+          timestamp: new Date().toISOString(),
+          is_active: true
         };
 
-        // Add to history if it doesn't exist
-        if (!candidateData.technicValidationHistory) {
-          candidateData.technicValidationHistory = [];
-        }
-        candidateData.technicValidationHistory.push({
-          ...currentData,
-          timestamp: new Date().toISOString()
-        });
-
-        // Create new history card
-        const historyContainer = document.getElementById('validation-history-technic');
-        const historyCard = document.createElement('div');
-        historyCard.className = 'mb-6 p-4 bg-gray-50 rounded-sm border border-stroke dark:border-strokedark dark:bg-meta-4';
-        historyCard.innerHTML = `
-          <div class="mb-3">
-            <label class="mb-2 block text-sm font-medium text-black dark:text-white">Date</label>
-            <p class="text-sm text-gray-600 dark:text-gray-400">${currentData.date2}</p>
-          </div>
-          <div class="mb-3">
-            <label class="mb-2 block text-sm font-medium text-black dark:text-white">Validé par</label>
-            <p class="text-sm text-gray-600 dark:text-gray-400">${currentData.validatedBy2}</p>
-          </div>
-          <div class="mb-3">
-            <label class="mb-2 block text-sm font-medium text-black dark:text-white">Evaluation</label>
-            <p class="text-sm text-gray-600 dark:text-gray-400">${currentData.evaluation2}</p>
-          </div>
-          <div class="text-right text-sm text-gray-500">
-            Validated by ${currentData.user2} on ${new Date().toLocaleString()}
-          </div>
-        `;
-
-        // Add new history card after heading
-        const heading = historyContainer.querySelector('h4');
-        if (heading) {
-          heading.insertAdjacentElement('afterend', historyCard);
-        } else {
-          historyContainer.appendChild(historyCard);
+        // Get existing history from localStorage
+        let technicHistory = [];
+        try {
+          const storedHistory = localStorage.getItem(`technicValidationHistory_${candidateData.id_candidate}`);
+          if (storedHistory) {
+            technicHistory = JSON.parse(storedHistory);
+            // Mark previous active entry as inactive
+            technicHistory = technicHistory.map(entry => ({
+              ...entry,
+              is_active: false
+            }));
+          }
+        } catch (e) {
+          console.warn("Error parsing technical validation history:", e);
         }
 
-        // Update current user display
+        // Add new entry to history
+        technicHistory.push(currentData);
+
+        // Save updated history to localStorage
+        localStorage.setItem(
+          `technicValidationHistory_${candidateData.id_candidate}`, 
+          JSON.stringify(technicHistory)
+        );
+
+        // Update the UI
+        displayTechnicValidationHistory(technicHistory);
+
+        // Update current user display and form
         document.getElementById("user2").textContent = currentData.user2;
         toggleDisplayValTechnic();
+        
+        // Show success notification
+        showNotification("Technical validation saved successfully", "success");
       }
     })
     .catch((error) => {
-      console.error("Error updating data:", error);
+      console.error("Error updating technical validation:", error);
+      showNotification("Failed to save technical validation", "error");
     });
 }
+// Function to display validation history
+function displayTechnicValidationHistory(history) {
+  const container = document.getElementById('validation-history-technic');
+  if (!container) return;
+
+  // Clear existing content but keep the heading
+  container.innerHTML = `
+    <h4 class="mb-6 text-xl font-semibold text-black dark:text-white">
+      Previous Technical Validations
+    </h4>
+  `;
+
+  // Sort history by timestamp, most recent first
+  const sortedHistory = [...history].sort((a, b) => 
+    new Date(b.timestamp) - new Date(a.timestamp)
+  );
+
+  if (sortedHistory.length > 0) {
+    sortedHistory.forEach(validation => {
+        const historyCard = document.createElement('div');
+      historyCard.className = `mb-6 p-4 rounded-sm border ${
+        validation.is_active 
+          ? 'border-primary bg-primary bg-opacity-5' 
+          : 'border-stroke bg-gray-50 dark:border-strokedark dark:bg-meta-4'
+      }`;
+      
+        historyCard.innerHTML = `
+          <div class="mb-3">
+            <label class="mb-2 block text-sm font-medium text-black dark:text-white">Date</label>
+          <p class="text-sm text-gray-600 dark:text-gray-400">${validation.date2 || ''}</p>
+          </div>
+          <div class="mb-3">
+            <label class="mb-2 block text-sm font-medium text-black dark:text-white">Validé par</label>
+          <p class="text-sm text-gray-600 dark:text-gray-400">${validation.validatedBy2 || ''}</p>
+          </div>
+          <div class="mb-3">
+            <label class="mb-2 block text-sm font-medium text-black dark:text-white">Evaluation</label>
+          <p class="text-sm text-gray-600 dark:text-gray-400">${validation.evaluation2 || ''}</p>
+          </div>
+          <div class="text-right text-sm text-gray-500">
+          ${validation.is_active ? 'Current Version' : 'Previous Version'} - 
+          Validated by ${validation.user2 || ''} 
+          ${validation.timestamp ? `on ${new Date(validation.timestamp).toLocaleString()}` : ''}
+          </div>
+        `;
+
+      container.appendChild(historyCard);
+    });
+        } else {
+    const emptyMessage = document.createElement('div');
+    emptyMessage.className = 'text-center text-gray-500 py-4';
+    emptyMessage.textContent = 'No validation history available';
+    container.appendChild(emptyMessage);
+      }
+}
+
 function saveValDirection() {
   const form = document.getElementById("form3");
   const formData = new FormData(form);
@@ -2150,145 +2797,83 @@ function saveValDirection() {
       },
     })
     .then((response) => {
-      console.log("Data updated successfully:", response.data);
       if (response.status === 200) {
         // Store current form values
         const currentData = {
           date3: document.getElementById('date3').value,
           validatedBy3: document.getElementById('validatedBy3').value,
           evaluation3: document.getElementById('evaluation3').value,
-          user3: localStorage.getItem("username")
+          user3: localStorage.getItem("username"),
+          timestamp: new Date().toISOString(),
+          is_active: true
         };
 
-        // Add to history if it doesn't exist
-        if (!candidateData.directionValidationHistory) {
-          candidateData.directionValidationHistory = [];
-        }
-        candidateData.directionValidationHistory.push({
-          ...currentData,
-          timestamp: new Date().toISOString()
-        });
-
-        // Create new history card
-        const historyContainer = document.getElementById('validation-history-direction');
-        const historyCard = document.createElement('div');
-        historyCard.className = 'mb-6 p-4 bg-gray-50 rounded-sm border border-stroke dark:border-strokedark dark:bg-meta-4';
-        historyCard.innerHTML = `
-          <div class="mb-3">
-            <label class="mb-2 block text-sm font-medium text-black dark:text-white">Date</label>
-            <p class="text-sm text-gray-600 dark:text-gray-400">${currentData.date3}</p>
-          </div>
-          <div class="mb-3">
-            <label class="mb-2 block text-sm font-medium text-black dark:text-white">Validé par</label>
-            <p class="text-sm text-gray-600 dark:text-gray-400">${currentData.validatedBy3}</p>
-          </div>
-          <div class="mb-3">
-            <label class="mb-2 block text-sm font-medium text-black dark:text-white">Evaluation</label>
-            <p class="text-sm text-gray-600 dark:text-gray-400">${currentData.evaluation3}</p>
-          </div>
-          <div class="text-right text-sm text-gray-500">
-            Validated by ${currentData.user3} on ${new Date().toLocaleString()}
-          </div>
-        `;
-
-        // Add new history card after heading
-        const heading = historyContainer.querySelector('h4');
-        if (heading) {
-          heading.insertAdjacentElement('afterend', historyCard);
-        } else {
-          historyContainer.appendChild(historyCard);
+        // Get existing history from localStorage
+        let directionHistory = [];
+        try {
+          const storedHistory = localStorage.getItem(`directionValidationHistory_${candidateData.id_candidate}`);
+          if (storedHistory) {
+            directionHistory = JSON.parse(storedHistory);
+            // Mark previous active entry as inactive
+            directionHistory = directionHistory.map(entry => ({
+              ...entry,
+              is_active: false
+            }));
+          }
+        } catch (e) {
+          console.warn("Error parsing direction validation history:", e);
         }
 
-        // Update current user display
+        // Add new entry to history
+        directionHistory.push(currentData);
+
+        // Save updated history to localStorage
+        localStorage.setItem(
+          `directionValidationHistory_${candidateData.id_candidate}`, 
+          JSON.stringify(directionHistory)
+        );
+
+        // Update the UI
+        displayDirectionValidationHistory(directionHistory);
+
+        // Update current user display and form
         document.getElementById("user3").textContent = currentData.user3;
         toggleDisplayValDirection();
+        
+        // Show success notification
+        showNotification("Direction validation saved successfully", "success");
       }
     })
     .catch((error) => {
-      console.error("Error updating data:", error);
+      console.error("Error updating direction validation:", error);
+      showNotification("Failed to save direction validation", "error");
     });
 }
-function loadTechnicValidationHistory() {
-  const container = document.getElementById('validation-history-technic');
-  if (!container) return;
-
-  container.innerHTML = `
-    <h4 class="mb-6 text-xl font-semibold text-black dark:text-white">
-      Previous Validations
-    </h4>
-  `;
-
-  // Load all previous validations if they exist
-  if (candidateData.technicValidationHistory) {
-    candidateData.technicValidationHistory.forEach(validation => {
-      const historyCard = document.createElement('div');
-      historyCard.className = 'mb-6 p-4 bg-gray-50 rounded-sm border border-stroke dark:border-strokedark dark:bg-meta-4';
-      historyCard.innerHTML = `
-        <div class="mb-3">
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Date</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${validation.date2 || ''}</p>
-        </div>
-        <div class="mb-3">
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Validé par</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${validation.validatedBy2 || ''}</p>
-        </div>
-        <div class="mb-3">
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Evaluation</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${validation.evaluation2 || ''}</p>
-        </div>
-        <div class="text-right text-sm text-gray-500">
-          Validated by ${validation.user2 || ''} 
-          ${validation.timestamp ? `on ${new Date(validation.timestamp).toLocaleString()}` : ''}
-        </div>
-      `;
-      historyContainer.appendChild(historyCard);
-    });
-  }
-
-  // Add initial validation if it exists
-  if (candidateData.hrManagement?.valTechnic) {
-    const initialValidation = candidateData.hrManagement.valTechnic;
-    if (initialValidation.date2 || initialValidation.validatedBy2 || initialValidation.evaluation2) {
-      const historyCard = document.createElement('div');
-      historyCard.className = 'mb-6 p-4 bg-gray-50 rounded-sm border border-stroke dark:border-strokedark dark:bg-meta-4';
-      historyCard.innerHTML = `
-        <div class="mb-3">
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Date</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${initialValidation.date2 || ''}</p>
-        </div>
-        <div class="mb-3">
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Validé par</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${initialValidation.validatedBy2 || ''}</p>
-        </div>
-        <div class="mb-3">
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Evaluation</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${initialValidation.evaluation2 || ''}</p>
-        </div>
-        <div class="text-right text-sm text-gray-500">
-          Initial validation by ${initialValidation.user2 || ''}
-        </div>
-      `;
-      historyContainer.appendChild(historyCard);
-    }
-  }
-}
-
-function loadDirectionValidationHistory() {
+function displayDirectionValidationHistory(history) {
   const container = document.getElementById('validation-history-direction');
   if (!container) return;
 
-  // Clear container but keep heading
+  // Clear existing content but keep the heading
   container.innerHTML = `
     <h4 class="mb-6 text-xl font-semibold text-black dark:text-white">
-      Previous Validations
+      Previous Direction Validations
     </h4>
   `;
 
-  // Load all previous validations if they exist
-  if (candidateData.directionValidationHistory) {
-    candidateData.directionValidationHistory.forEach(validation => {
+  // Sort history by timestamp, most recent first
+  const sortedHistory = [...history].sort((a, b) => 
+    new Date(b.timestamp) - new Date(a.timestamp)
+  );
+
+  if (sortedHistory.length > 0) {
+    sortedHistory.forEach(validation => {
       const historyCard = document.createElement('div');
-      historyCard.className = 'mb-6 p-4 bg-gray-50 rounded-sm border border-stroke dark:border-strokedark dark:bg-meta-4';
+      historyCard.className = `mb-6 p-4 rounded-sm border ${
+        validation.is_active 
+          ? 'border-primary bg-primary bg-opacity-5' 
+          : 'border-stroke bg-gray-50 dark:border-strokedark dark:bg-meta-4'
+      }`;
+      
       historyCard.innerHTML = `
         <div class="mb-3">
           <label class="mb-2 block text-sm font-medium text-black dark:text-white">Date</label>
@@ -2303,41 +2888,146 @@ function loadDirectionValidationHistory() {
           <p class="text-sm text-gray-600 dark:text-gray-400">${validation.evaluation3 || ''}</p>
         </div>
         <div class="text-right text-sm text-gray-500">
+          ${validation.is_active ? 'Current Version' : 'Previous Version'} - 
           Validated by ${validation.user3 || ''} 
           ${validation.timestamp ? `on ${new Date(validation.timestamp).toLocaleString()}` : ''}
         </div>
       `;
-      historyContainer.appendChild(historyCard);
+
+      container.appendChild(historyCard);
     });
+  } else {
+    const emptyMessage = document.createElement('div');
+    emptyMessage.className = 'text-center text-gray-500 py-4';
+    emptyMessage.textContent = 'No validation history available';
+    container.appendChild(emptyMessage);
+  }
+}
+function loadTechnicValidationHistory() {
+  // Load from localStorage
+  let storedHistory = [];
+  try {
+    const historyData = localStorage.getItem(`technicValidationHistory_${candidateData.id_candidate}`);
+    if (historyData) {
+      storedHistory = JSON.parse(historyData);
+    }
+  } catch (e) {
+    console.warn("Error loading technical validation history:", e);
   }
 
-  // Add initial validation if it exists
-  if (candidateData.hrManagement?.valDirection) {
-    const initialValidation = candidateData.hrManagement.valDirection;
-    if (initialValidation.date3 || initialValidation.validatedBy3 || initialValidation.evaluation3) {
-      const historyCard = document.createElement('div');
-      historyCard.className = 'mb-6 p-4 bg-gray-50 rounded-sm border border-stroke dark:border-strokedark dark:bg-meta-4';
-      historyCard.innerHTML = `
+  // If we have initial data from candidateData, add it to history
+  if (candidateData.hrManagement?.valTechnic) {
+    const initialValidation = candidateData.hrManagement.valTechnic;
+    if (initialValidation.date2 || initialValidation.validatedBy2 || initialValidation.evaluation2) {
+      const initialData = {
+        date2: initialValidation.date2,
+        validatedBy2: initialValidation.validatedBy2,
+        evaluation2: initialValidation.evaluation2,
+        user2: initialValidation.user2 || 'Initial Validation',
+        timestamp: new Date().toISOString(),
+        is_active: storedHistory.length === 0 // Only active if no other history exists
+      };
+
+      // Add to history if not already present
+      if (!storedHistory.some(v => 
+        v.date2 === initialData.date2 && 
+        v.validatedBy2 === initialData.validatedBy2 && 
+        v.evaluation2 === initialData.evaluation2
+      )) {
+        storedHistory.push(initialData);
+        localStorage.setItem(
+          `technicValidationHistory_${candidateData.id_candidate}`,
+          JSON.stringify(storedHistory)
+        );
+      }
+    }
+  }
+
+  // Display the history
+  displayTechnicValidationHistory(storedHistory);
+}
+function createHistoryCard(validation) {
+  const card = document.createElement('div');
+  card.className = 'mb-6 p-4 bg-gray-50 rounded-sm border border-stroke dark:border-strokedark dark:bg-meta-4';
+  
+  card.innerHTML = `
         <div class="mb-3">
           <label class="mb-2 block text-sm font-medium text-black dark:text-white">Date</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${initialValidation.date3 || ''}</p>
+      <p class="text-sm text-gray-600 dark:text-gray-400">${validation.date2 || ''}</p>
         </div>
         <div class="mb-3">
           <label class="mb-2 block text-sm font-medium text-black dark:text-white">Validé par</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${initialValidation.validatedBy3 || ''}</p>
+      <p class="text-sm text-gray-600 dark:text-gray-400">${validation.validatedBy2 || ''}</p>
         </div>
         <div class="mb-3">
           <label class="mb-2 block text-sm font-medium text-black dark:text-white">Evaluation</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${initialValidation.evaluation3 || ''}</p>
+      <p class="text-sm text-gray-600 dark:text-gray-400">${validation.evaluation2 || ''}</p>
         </div>
         <div class="text-right text-sm text-gray-500">
-          Initial validation by ${initialValidation.user3 || ''}
+      Validated by ${validation.user2 || ''} 
+          ${validation.timestamp ? `on ${new Date(validation.timestamp).toLocaleString()}` : ''}
         </div>
       `;
-      historyContainer.appendChild(historyCard);
-    }
+
+  return card;
+}
+function initializeDirectionValidation() {
+  loadDirectionValidationHistory();
+  
+  // Set up event listeners if needed
+  const editButton = document.querySelector('[onclick="toggleEditValDirection()"]');
+  if (editButton) {
+    editButton.addEventListener('click', () => {
+      const today = new Date();
+      const formattedDate = today.toISOString().split('T')[0];
+      document.getElementById('date3').value = formattedDate;
+    });
   }
 }
+function loadDirectionValidationHistory() {
+  // Load from localStorage
+  let storedHistory = [];
+  try {
+    const historyData = localStorage.getItem(`directionValidationHistory_${candidateData.id_candidate}`);
+    if (historyData) {
+      storedHistory = JSON.parse(historyData);
+    }
+  } catch (e) {
+    console.warn("Error loading direction validation history:", e);
+  }
+
+  // If we have initial data from candidateData, add it to history
+  if (candidateData.hrManagement?.valDirection) {
+    const initialValidation = candidateData.hrManagement.valDirection;
+    if (initialValidation.date3 || initialValidation.validatedBy3 || initialValidation.evaluation3) {
+      const initialData = {
+        date3: initialValidation.date3,
+        validatedBy3: initialValidation.validatedBy3,
+        evaluation3: initialValidation.evaluation3,
+        user3: initialValidation.user3 || 'Initial Validation',
+        timestamp: new Date().toISOString(),
+        is_active: storedHistory.length === 0 // Only active if no other history exists
+      };
+
+      // Add to history if not already present
+      if (!storedHistory.some(v => 
+        v.date3 === initialData.date3 && 
+        v.validatedBy3 === initialData.validatedBy3 && 
+        v.evaluation3 === initialData.evaluation3
+      )) {
+        storedHistory.push(initialData);
+        localStorage.setItem(
+          `directionValidationHistory_${candidateData.id_candidate}`,
+          JSON.stringify(storedHistory)
+        );
+      }
+    }
+  }
+
+  // Display the history
+  displayDirectionValidationHistory(storedHistory);
+}
+
 
 function loadHRUpdates() {
   const container = document.getElementById('hr-management');
@@ -2346,20 +3036,11 @@ function loadHRUpdates() {
     return;
   }
 
-  // Show loading state
-  const loadingDiv = document.createElement('div');
-  loadingDiv.className = 'text-center py-4';
-  loadingDiv.innerHTML = 'Loading HR updates...';
-  container.appendChild(loadingDiv);
-
   apiClient.get(`/api/hrmanagement/${candidateData.id_candidate}/hr/`)
     .then(response => {
-      // Remove loading state
-      loadingDiv.remove();
-      
       const updates = response.data.updates;
       
-      // Find active update
+      // Find active update for form values
       const activeUpdate = updates.find(update => update.is_active);
       if (activeUpdate) {
         // Helper function to safely set form values
@@ -2372,56 +3053,44 @@ function loadHRUpdates() {
 
         // Update form with active data
         setFormValue('contractLocation', activeUpdate.data.contractLocation);
+        if (activeUpdate.data.contractLocation) {
+          setContractType(activeUpdate.data.contractLocation);
+        }
         setFormValue('contractType', activeUpdate.data.contractType);
         setFormValue('salaryExpectation', activeUpdate.data.salaryExpectation);
         setFormValue('previousSalary', activeUpdate.data.previousSalary);
         setFormValue('integrationDate', activeUpdate.data.integrationDate);
         setFormValue('administrativeRegularity', activeUpdate.data.administrativeRegularity);
         setFormValue('PériodeDePréavis', activeUpdate.data.PériodeDePréavis);
-
-        // If there's a contract location, update the contract type dropdown
-        if (activeUpdate.data.contractLocation) {
-          setContractType(activeUpdate.data.contractLocation);
-        }
       }
 
-      // Create or get history section
-      let historySection = container.querySelector('#updates-history');
-      if (!historySection) {
-        historySection = document.createElement('div');
-        historySection.id = 'updates-history';
-        historySection.className = 'mt-8 border-t border-stroke pt-8 dark:border-strokedark';
-        container.appendChild(historySection);
-      }
-
-      // Clear existing history
+      // **OVERWRITE local storage with Server data here**
+      candidateData.hrManagementHistory = updates; //Assuming that `updates` contains complete history
+      localStorage.setItem(`hrManagementHistory_${candidateData.id_candidate}`, JSON.stringify(candidateData.hrManagementHistory));
+      // Update only the history content
+      const historySection = document.getElementById('hr-management-history');
+      if (historySection) {
       historySection.innerHTML = `
-        <h3 class="text-lg font-medium text-black dark:text-white mb-4">Update History</h3>
-      `;
-
-      // Add each update to history
-      if (updates.length === 0) {
-        historySection.innerHTML += `
-          <p class="text-gray-500 dark:text-gray-400 text-sm">No previous updates</p>
-        `;
-      } else {
-        updates.forEach((update, index) => {
-          const updateDiv = document.createElement('div');
-          updateDiv.className = `mb-4 p-4 rounded-sm border ${update.is_active ? 
-            'border-primary bg-primary bg-opacity-5' : 
-            'border-stroke bg-gray-50 dark:border-strokedark dark:bg-meta-4'}`;
-          
-          updateDiv.innerHTML = `
-            <div class="flex justify-between items-center mb-2">
+          <h4 class="mb-6 text-xl font-semibold text-black dark:text-white">
+            Previous HR Management Updates
+          </h4>
+          <div class="space-y-4">
+            ${updates.map((update, index) => `
+              <div class="p-4 rounded-lg ${update.is_active
+                ? 'border-primary bg-primary bg-opacity-5'
+                : 'bg-gray-50 border border-stroke dark:border-strokedark dark:bg-meta-4'}">
+                <div class="flex justify-between items-start mb-4">
+                  <div>
               <span class="font-medium text-black dark:text-white">
                 ${update.is_active ? 'Current Version' : `Previous Version ${updates.length - index}`}
               </span>
+                  </div>
               <span class="text-sm text-gray-500">
                 ${new Date(update.created_at).toLocaleString()}
               </span>
             </div>
             <div class="text-sm text-gray-600 dark:text-gray-400">
-              <p>Updated by: ${update.recruiter_name}</p>
+                  <p>Updated by: ${update.recruiter_name || 'Unknown'}</p>
               <p>Contract Location: ${update.data.contractLocation || '-'}</p>
               <p>Contract Type: ${update.data.contractType || '-'}</p>
               <p>Salary Expectation: ${update.data.salaryExpectation || '-'}</p>
@@ -2429,91 +3098,150 @@ function loadHRUpdates() {
               <p>Integration Date: ${update.data.integrationDate || '-'}</p>
               <p>Administrative Regularity: ${update.data.administrativeRegularity || '-'}</p>
               <p>Période De Préavis: ${update.data.PériodeDePréavis || '-'}</p>
+                </div>
+              </div>
+            `).join('')}
             </div>
           `;
-          
-          historySection.appendChild(updateDiv);
-        });
       }
     })
     .catch(error => {
-      // Remove loading state
-      loadingDiv.remove();
-      
       console.error('Error loading HR updates:', error);
-      
-      // Show error message in container
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'text-red-500 dark:text-red-400 p-4 text-center';
-      errorDiv.textContent = '';
-      container.appendChild(errorDiv);
+      //showNotification('Failed to load HR updates', 'error');
     });
+
+  // Ensure validation cards are visible
+  const validationCards = document.querySelectorAll('#valService, #valTechnic, #valDirection');
+  validationCards.forEach(card => {
+    if (card) {
+      card.style.display = 'block';
+    }
+  });
 }
 
-function loadHRManagementHistory() {
-  const historyContainer = document.getElementById('hr-management-history');
-  if (!historyContainer) {
-    console.error('HR management history container not found');
-    return;
+function toggleHistory() {
+  const historyContent = document.getElementById('history-content');
+  const historyText = document.getElementById('history-text');
+  const historyIcon = document.getElementById('history-icon');
+  
+  // Get current state (using localStorage to persist the state)
+  const isVisible = localStorage.getItem('hrHistoryVisible') === 'true';
+  
+  // Toggle the state
+  localStorage.setItem('hrHistoryVisible', !isVisible);
+  
+  if (!isVisible) {
+    historyContent.style.display = 'block';
+    historyText.textContent = 'Hide History';
+    historyIcon.style.transform = 'rotate(180deg)';
+    loadHRManagementHistory(); // Load history when showing
+  } else {
+    historyContent.style.display = 'none';
+    historyText.textContent = 'Show History';
+    historyIcon.style.transform = 'rotate(0deg)';
   }
+}
 
-  // Clear container but keep heading
-  historyContainer.innerHTML = `
-    <h4 class="mb-6 text-xl font-semibold text-black dark:text-white">
-      Previous HR Management Updates
-    </h4>
-  `;
+// Modify loadHRManagementHistory to check the saved state
+function loadHRManagementHistory() {
+  const historyContent = document.getElementById('history-content');
+  const historyText = document.getElementById('history-text');
+  const historyIcon = document.getElementById('history-icon');
+  
+  // Check saved visibility state
+  const isVisible = localStorage.getItem('hrHistoryVisible') === 'true';
+  
+  // Set initial visibility based on saved state
+  historyContent.style.display = isVisible ? 'block' : 'none';
+  historyText.textContent = isVisible ? 'Hide History' : 'Show History';
+  historyIcon.style.transform = isVisible ? 'rotate(180deg)' : 'rotate(0deg)';
+  
+  // Only proceed with loading content if visible
+  if (!isVisible) return;
+  
+  // Clear existing content
+  historyContent.innerHTML = '';
 
   // Load all previous updates if they exist
   if (candidateData.hrManagementHistory && candidateData.hrManagementHistory.length > 0) {
     candidateData.hrManagementHistory.forEach((update, index) => {
       const historyCard = document.createElement('div');
-      historyCard.className = 'mb-6 p-4 bg-gray-50 rounded-sm border border-stroke dark:border-strokedark dark:bg-meta-4';
+      historyCard.className = 'p-4 rounded-lg bg-gray-50 border border-stroke dark:border-strokedark dark:bg-meta-4';
       
       historyCard.innerHTML = `
-        <div class="mb-3">
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Contract Location</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${update.contractLocation || '-'}</p>
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <span class="font-medium text-black dark:text-white">
+              Update ${candidateData.hrManagementHistory.length - index}
+            </span>
         </div>
-        <div class="mb-3">
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Contract Type</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${update.contractType || '-'}</p>
+          <span class="text-sm text-gray-500">
+            ${new Date(update.timestamp).toLocaleString()}
+          </span>
         </div>
-        <div class="mb-3">
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Salary Expectation</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${update.salaryExpectation || '-'}</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <div>
+              <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Contract Location</label>
+              <p class="text-sm text-black dark:text-white">${update.contractLocation || '-'}</p>
         </div>
-        <div class="mb-3">
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Previous Salary</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${update.previousSalary || '-'}</p>
+            <div>
+              <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Contract Type</label>
+              <p class="text-sm text-black dark:text-white">${update.contractType || '-'}</p>
         </div>
-        <div class="mb-3">
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Integration Date</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${update.integrationDate || '-'}</p>
+            <div>
+              <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Salary Expectation</label>
+              <p class="text-sm text-black dark:text-white">${update.salaryExpectation || '-'}</p>
         </div>
-        <div class="mb-3">
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Administrative Regularity</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${update.administrativeRegularity || '-'}</p>
         </div>
-        <div class="mb-3">
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Période De Préavis</label>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${update.PériodeDePréavis || '-'}</p>
+          <div class="space-y-2">
+            <div>
+              <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Previous Salary</label>
+              <p class="text-sm text-black dark:text-white">${update.previousSalary || '-'}</p>
         </div>
-        <div class="text-right text-sm text-gray-500">
+            <div>
+              <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Integration Date</label>
+              <p class="text-sm text-black dark:text-white">${update.integrationDate || '-'}</p>
+            </div>
+            <div>
+              <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Administrative Regularity</label>
+              <p class="text-sm text-black dark:text-white">${update.administrativeRegularity || '-'}</p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 text-right text-sm text-gray-500">
           Updated by ${update.updatedBy || 'Unknown'} 
-          ${update.timestamp ? `on ${new Date(update.timestamp).toLocaleString()}` : ''}
         </div>
       `;
       
-      historyContainer.appendChild(historyCard);
+      historyContent.appendChild(historyCard);
     });
   } else {
-    // If no history exists, show a message
     const noHistoryMessage = document.createElement('p');
-    noHistoryMessage.className = 'text-gray-500 dark:text-gray-400 text-sm';
-    noHistoryMessage.textContent = 'No HR management history available';
-    historyContainer.appendChild(noHistoryMessage);
+    noHistoryMessage.className = 'text-center text-gray-500 dark:text-gray-400 py-4';
+    noHistoryMessage.textContent = 'No history available';
+    historyContent.appendChild(noHistoryMessage);
   }
+}
+function showNotification(message, type = 'success') {
+  const notificationContainer = document.getElementById('notification-container');
+  const notificationText = document.getElementById('notification-text');
+  
+  // Set the message
+  notificationText.textContent = message;
+  
+  // Show notification
+  notificationContainer.classList.remove('translate-y-full');
+  notificationContainer.classList.add('translate-y-0');
+  
+  // Auto hide after 5 seconds
+  setTimeout(hideNotification, 5000);
+}
+
+function hideNotification() {
+  const notificationContainer = document.getElementById('notification-container');
+  notificationContainer.classList.remove('translate-y-0');
+  notificationContainer.classList.add('translate-y-full');
 }
 
 function saveHRManagement() {
@@ -2535,8 +3263,6 @@ function saveHRManagement() {
       PériodeDePréavis: formData.get('PériodeDePréavis')
     };
 
-    console.log("Sending data:", data);  // Debug log
-
     apiClient.patch(
       `/api/hrmanagement/${candidateData.id_candidate}/`, 
       data,
@@ -2549,40 +3275,86 @@ function saveHRManagement() {
       }
     )
     .then((response) => {
-      console.log("Response:", response);
       if (response.status === 200) {
-        // Show success message
-        alert("HR Management data updated successfully!");
+              // Show success notification
+              showNotification("HR Management data updated successfully!");
 
-        // Update the form display state
-        toggleDisplayHRManagement();
+              // Hide other validation cards
+              const valService = document.getElementById("valService");
+              const valTechnic = document.getElementById("valTechnic");
+              const valDirection = document.getElementById("valDirection");
 
-        // Add the new update to the history
+              if (valService) valService.classList.add('hidden');
+              if (valTechnic) valTechnic.classList.add('hidden');
+              if (valDirection) valDirection.classList.add('hidden');
+
+              // Add the new update to history
         const newUpdate = {
           ...data,
           updatedBy: localStorage.getItem('username') || 'Unknown',
           timestamp: new Date().toISOString()
         };
 
-        // Add the new update to the candidateData.hrManagementHistory array
+              // Add to candidateData history
         if (!candidateData.hrManagementHistory) {
           candidateData.hrManagementHistory = [];
         }
         candidateData.hrManagementHistory.push(newUpdate);
 
-        // Reload the HR Management history
-        loadHRManagementHistory();
+              // **SAVE to Local Storage HERE**
+              localStorage.setItem(`hrManagementHistory_${candidateData.id_candidate}`, JSON.stringify(candidateData.hrManagementHistory));
+
+              // Create new history card
+              const historyContainer = document.getElementById('hr-management-history');
+              if (historyContainer) {
+                  const historyCard = document.createElement('div');
+                  historyCard.className = 'p-6 rounded-lg bg-gray-50 border border-stroke hover:bg-gray-100 transition-all duration-200 dark:bg-meta-4 dark:border-strokedark';
+
+                  historyCard.innerHTML = `
+                      <div class="flex justify-between items-start mb-4">
+                          <div class="space-y-1">
+                              <span class="text-xs font-medium text-primary">Updated on ${new Date().toLocaleString()}</span>
+                              <p class="text-sm font-medium text-black dark:text-white">
+                                  Contract Location: ${data.contractLocation}
+                              </p>
+                          </div>
+                          <span class="text-xs text-gray-500">By ${newUpdate.updatedBy}</span>
+                      </div>
+                      <div class="grid grid-cols-2 gap-4 mt-4">
+                          <div class="space-y-1">
+                              <p class="text-sm text-gray-500">Contract Type</p>
+                              <p class="text-sm font-medium text-black dark:text-white">${data.contractType}</p>
+                          </div>
+                          <div class="space-y-1">
+                              <p class="text-sm text-gray-500">Salary Expectation</p>
+                              <p class="text-sm font-medium text-black dark:text-white">${data.salaryExpectation}</p>
+                          </div>
+                          <div class="space-y-1">
+                              <p class="text-sm text-gray-500">Previous Salary</p>
+                              <p class="text-sm font-medium text-black dark:text-white">${data.previousSalary}</p>
+                          </div>
+                          <div class="space-y-1">
+                              <p class="text-sm text-gray-500">Integration Date</p>
+                              <p class="text-sm font-medium text-black dark:text-white">${data.integrationDate}</p>
+                          </div>
+                      </div>
+                  `;
+
+                  historyContainer.querySelector('.space-y-4').prepend(historyCard);
+              }
+
+              // Update display state
+              toggleDisplayHRManagement();
       }
     })
     .catch((error) => {
-      console.error("Error details:", error.response?.data);
-      console.error("Full error:", error);
-      alert(error.response?.data?.error || "Failed to update HR Management data. Please try again.");
+          console.error("Error:", error);
+          showNotification(error.response?.data?.error || "Failed to update HR Management data", 'error');
     });
 
   } catch (error) {
     console.error("Error in saveHRManagement:", error);
-    alert("An error occurred while saving. Please try again.");
+      showNotification("An error occurred while saving", 'error');
   }
 }
 //     function getDifferences(formData, jsonData) {

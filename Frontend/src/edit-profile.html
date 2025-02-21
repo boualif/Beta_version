@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings </title>
+
+  <style>
+    .file-input {
+      display: none;
+      /* Hide the default file input */
+    }
+
+    .file-name {
+      margin-left: 10px;
+      display: flex;
+      justify-items: center;
+      /* Space between button and file name */
+      font-size: 14px;
+      /* Font size for file name */
+      color: #333;
+      /* Text color for file name */
+    }
+  </style>
+</head>
+
+<body
+  x-data="{ page: 'settings', loaded: true, darkMode: true, stickyMenu: false, sidebarToggle: false, scrollTop: false }"
+  x-init="
+    darkMode = JSON.parse(localStorage.getItem('darkMode'));
+    $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+  :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}">
+  <!-- Preloader Start -->
+  <include src="./partials/preloader.html"></include>
+  <!-- Preloader End -->
+
+  <!-- Page Wrapper Start -->
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar Start -->
+    <include src="./partials/sidebar.html"></include>
+    <!-- Sidebar End -->
+
+    <!-- Content Area Start -->
+    <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+      <!-- Header Start -->
+      <include src="./partials/header.html" />
+      <!-- Header End -->
+
+      <!-- Main Content Start -->
+      <main>
+        <div class="mx-auto max-w-screen-2xl px-0 md:p-6 2xl:px-0">
+          <div class="mx-auto max-w-screen-2xl px-4">
+            <!-- Breadcrumb Start -->
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                Edit Profile
+              </h2>
+              <nav>
+                <ol class="flex items-center gap-2">
+                  <li>
+                    <a class="font-medium" href="index.html">Dashboard /</a>
+                  </li>
+                  <li class="font-medium text-primary">Settings</li>
+                </ol>
+              </nav>
+            </div>
+
+            <!-- Breadcrumb End -->
+            
+
+            <!-- Settings Section Start -->
+            <form id="profileForm" @submit.prevent="saveChanges">
+              <div class="grid grid-cols-2 gap-0">
+                <!-- Left Side (Personal Information, Languages, Experience) -->
+                <div class="pr-4">
+                  <div style="display: flex; justify-content: end">
+                    <label for="file-upload"
+                      class="mb-4 inline-flex cursor-pointer items-center justify-center rounded-md border px-4 py-2 text-center font-medium text-primary hover:bg-opacity-90">
+                      Choose a file
+                    </label>
+                    <input id="file-upload" type="file" class="file-input" />
+                    <span id="file-name" class="file-name">No file chosen</span>
+                    <div class="filenames"></div>
+                  </div>
+                  <!-- Personal Information -->
+                  <div
+                    class="mb-8 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                    <div class="border-b border-stroke px-7 py-4 dark:border-strokedark">
+                      <h3 class="font-medium text-black dark:text-white">
+                        Personal Information
+                      </h3>
+                    </div>
+                    <div class="p-7">
+                      <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white" for="fullName">Full
+                          Name</label>
+                        <div class="relative">
+                          <span class="absolute left-4.5 top-4">
+                            <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                              xmlns="http://www.w3.org/2000/svg">
+                              <g opacity="0.8">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M3.72039 12.887C4.50179 12.1056 5.5616 11.6666 6.66667 11.6666H13.3333C14.4384 11.6666 15.4982 12.1056 16.2796 12.887C17.061 13.6684 17.5 14.7282 17.5 15.8333V17.5C17.5 17.9602 17.1269 18.3333 16.6667 18.3333C16.2064 18.3333 15.8333 17.9602 15.8333 17.5V15.8333C15.8333 15.1703 15.5699 14.5344 15.1011 14.0655C14.6323 13.5967 13.9964 13.3333 13.3333 13.3333H6.66667C6.00363 13.3333 5.36774 13.5967 4.8989 14.0655C4.43006 14.5344 4.16667 15.1703 4.16667 15.8333V17.5C4.16667 17.9602 3.79357 18.3333 3.33333 18.3333C2.8731 18.3333 2.5 17.9602 2.5 17.5V15.8333C2.5 14.7282 2.93899 13.6684 3.72039 12.887Z"
+                                  fill="" />
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M9.99967 3.33329C8.61896 3.33329 7.49967 4.45258 7.49967 5.83329C7.49967 7.214 8.61896 8.33329 9.99967 8.33329C11.3804 8.33329 12.4997 7.214 12.4997 5.83329C12.4997 4.45258 11.3804 3.33329 9.99967 3.33329ZM5.83301 5.83329C5.83301 3.53211 7.69849 1.66663 9.99967 1.66663C12.3009 1.66663 14.1663 3.53211 14.1663 5.83329C14.1663 8.13448 12.3009 9.99996 9.99967 9.99996C7.69849 9.99996 5.83301 8.13448 5.83301 5.83329Z"
+                                  fill="" />
+                              </g>
+                            </svg>
+                          </span>
+                          <input
+                            class="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            type="text" name="fullName" id="fullName" placeholder="Devid Jhon" value="Devid Jhon" />
+                        </div>
+                      </div>
+                      <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white" for="jobTitle">Job
+                          Title</label>
+                        <input
+                          class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                          type="text" name="jobTitle" id="jobTitle" />
+                      </div>
+
+                      <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                          for="recruiter">Recruiter</label>
+                        <div class="relative">
+                          <span class="absolute left-4.5 top-4">
+                            <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                              xmlns="http://www.w3.org/2000/svg">
+                              <g opacity="0.8">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M3.72039 12.887C4.50179 12.1056 5.5616 11.6666 6.66667 11.6666H13.3333C14.4384 11.6666 15.4982 12.1056 16.2796 12.887C17.061 13.6684 17.5 14.7282 17.5 15.8333V17.5C17.5 17.9602 17.1269 18.3333 16.6667 18.3333C16.2064 18.3333 15.8333 17.9602 15.8333 17.5V15.8333C15.8333 15.1703 15.5699 14.5344 15.1011 14.0655C14.6323 13.5967 13.9964 13.3333 13.3333 13.3333H6.66667C6.00363 13.3333 5.36774 13.5967 4.8989 14.0655C4.43006 14.5344 4.16667 15.1703 4.16667 15.8333V17.5C4.16667 17.9602 3.79357 18.3333 3.33333 18.3333C2.8731 18.3333 2.5 17.9602 2.5 17.5V15.8333C2.5 14.7282 2.93899 13.6684 3.72039 12.887Z"
+                                  fill="" />
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M9.99967 3.33329C8.61896 3.33329 7.49967 4.45258 7.49967 5.83329C7.49967 7.214 8.61896 8.33329 9.99967 8.33329C11.3804 8.33329 12.4997 7.214 12.4997 5.83329C12.4997 4.45258 11.3804 3.33329 9.99967 3.33329ZM5.83301 5.83329C5.83301 3.53211 7.69849 1.66663 9.99967 1.66663C12.3009 1.66663 14.1663 3.53211 14.1663 5.83329C14.1663 8.13448 12.3009 9.99996 9.99967 9.99996C7.69849 9.99996 5.83301 8.13448 5.83301 5.83329Z"
+                                  fill="" />
+                              </g>
+                            </svg>
+                          </span>
+                          <select id="recruiter" name="recruiter"
+                            class="w-full rounded border border-stroke bg-gray px-4.5 pl-11.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary">
+                            <!-- <option value="" disabled selected>Select a recruiter</option> -->
+
+                          </select>
+                        </div>
+                      </div>
+
+                      <!-- <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                          for="recruiter">Recruiter</label>
+                        <div class="relative">
+                          <span class="absolute left-4.5 top-4">
+                            <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                              xmlns="http://www.w3.org/2000/svg">
+                              <g opacity="0.8">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M3.72039 12.887C4.50179 12.1056 5.5616 11.6666 6.66667 11.6666H13.3333C14.4384 11.6666 15.4982 12.1056 16.2796 12.887C17.061 13.6684 17.5 14.7282 17.5 15.8333V17.5C17.5 17.9602 17.1269 18.3333 16.6667 18.3333C16.2064 18.3333 15.8333 17.9602 15.8333 17.5V15.8333C15.8333 15.1703 15.5699 14.5344 15.1011 14.0655C14.6323 13.5967 13.9964 13.3333 13.3333 13.3333H6.66667C6.00363 13.3333 5.36774 13.5967 4.8989 14.0655C4.43006 14.5344 4.16667 15.1703 4.16667 15.8333V17.5C4.16667 17.9602 3.79357 18.3333 3.33333 18.3333C2.8731 18.3333 2.5 17.9602 2.5 17.5V15.8333C2.5 14.7282 2.93899 13.6684 3.72039 12.887Z"
+                                  fill="" />
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M9.99967 3.33329C8.61896 3.33329 7.49967 4.45258 7.49967 5.83329C7.49967 7.214 8.61896 8.33329 9.99967 8.33329C11.3804 8.33329 12.4997 7.214 12.4997 5.83329C12.4997 4.45258 11.3804 3.33329 9.99967 3.33329ZM5.83301 5.83329C5.83301 3.53211 7.69849 1.66663 9.99967 1.66663C12.3009 1.66663 14.1663 3.53211 14.1663 5.83329C14.1663 8.13448 12.3009 9.99996 9.99967 9.99996C7.69849 9.99996 5.83301 8.13448 5.83301 5.83329Z"
+                                  fill="" />
+                              </g>
+                            </svg>
+                          </span>
+                          <input
+                            class="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            type="text" name="recruiter" id="recruiter" />
+                        </div>
+                      </div> -->
+                      <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white" for="availability">Availability</label>
+                        <input
+                          class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                          type="date" name="availability" id="availability" />
+                      </div>
+                      <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                          for="mobility">Mobility</label>
+                        <div class="relative">
+                          <input
+                            class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            type="text" name="mobility" id="mobility" />
+                        </div>
+                      </div>
+                      <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                          for="status">Status</label>
+                        <select id="status" name="status"
+                          class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary">
+                          <option value="" disabled selected>Select a status</option>
+                          <option value="available">available</option>
+                          <option value="not available">not available</option>
+                          <option value="restricted">restricted</option>
+                        </select>
+                      </div>
+                      <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                          for="emailAddress">Email Address</label>
+                        <div class="relative">
+                          <span class="absolute left-4.5 top-4">
+                            <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                              xmlns="http://www.w3.org/2000/svg">
+                              <g opacity="0.8">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M3.33301 4.16667C2.87658 4.16667 2.49967 4.54357 2.49967 5V15C2.49967 15.4564 2.87658 15.8333 3.33301 15.8333H16.6663C17.1228 15.8333 17.4997 15.4564 17.4997 15V5C17.4997 4.54357 17.1228 4.16667 16.6663 4.16667H3.33301ZM0.833008 5C0.833008 3.6231 1.9561 2.5 3.33301 2.5H16.6663C18.0432 2.5 19.1663 3.6231 19.1663 5V15C19.1663 16.3769 18.0432 17.5 16.6663 17.5H3.33301C1.9561 17.5 0.833008 16.3769 0.833008 15V5Z"
+                                  fill="" />
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M0.983719 4.52215C1.24765 4.1451 1.76726 4.05341 2.1443 4.31734L9.99975 9.81615L17.8552 4.31734C18.2322 4.05341 18.7518 4.1451 19.0158 4.52215C19.2797 4.89919 19.188 5.4188 18.811 5.68272L10.4776 11.5161C10.1907 11.7169 9.80879 11.7169 9.52186 11.5161L1.18853 5.68272C0.811486 5.4188 0.719791 4.89919 0.983719 4.52215Z"
+                                  fill="" />
+                              </g>
+                            </svg>
+                          </span>
+                          <input
+                            class="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            type="text" name="emailAddress" id="emailAddress" />
+                        </div>
+                      </div>
+                      <div class="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                        <div class="w-full sm:w-1/2">
+                          <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                            for="phoneNumber">Phone Number</label>
+                          <input
+                            class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            type="text" name="phoneNumber" id="phoneNumber" />
+                        </div>
+                        <div class="w-full sm:w-1/2">
+                          <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                            for="location">Location</label>
+                          <div class="relative">
+
+                            <input
+                              class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                              type="text" name="location" id="location" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                          for="linkedIn">LinkedIn</label>
+                        <div class="relative">
+                          <input
+                            class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            type="text" name="linkedIn" id="linkedIn" />
+                        </div>
+                      </div>
+                      <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                          for="gitHub">GitHub</label>
+                        <input
+                          class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                          type="text" name="gitHub" id="gitHub" />
+                      </div>
+                      <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                          for="links">links</label>
+                        <input
+                          class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                          type="text" name="links" id="links" />
+                      </div>
+                      <div class="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                        <div class="w-full sm:w-1/2">
+                          <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                            for="country">Country</label>
+                          <input
+                            class="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            type="text" name="country" id="country" />
+                        </div>
+
+                        <div class="w-full sm:w-1/2">
+                          <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                            for="nationality">Nationality</label>
+                          <input
+                            class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                            type="text" name="nationality" id="nationality" />
+                        </div>
+                      </div>
+                      <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white" for="dateOfBirth">Date
+                          of Birth</label>
+                        <input
+                          class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                          type="date" name="dateOfBirth" id="dateOfBirth" />
+                      </div>
+                      <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white" for="gender">Gender</label>
+                        <select
+                          class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                          name="gender" id="gender">
+                          <option value="" disabled selected>Select Gender</option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                        </select>
+                      </div>
+                      <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white" for="maritalStatus">Marital Status</label>
+                        <select
+                          class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                          name="maritalStatus" id="maritalStatus">
+                          <option value="" disabled selected>Select Marital Status</option>
+                          <option value="Single">Single</option>
+                          <option value="Married with Kids">Married with Kids</option>
+                          <option value="Married without Kids">Married without Kids</option>
+                          <option value="Single with Kids">Single with Kids</option>
+                        </select>
+                      </div>
+                      
+                    </div>
+                  </div>
+
+                  <!-- Languages -->
+                  <div
+                    class="mb-8 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                    <div class="border-b border-stroke px-7 py-4 dark:border-strokedark">
+                      <h3 class="font-medium text-black dark:text-white">
+                        Languages
+                      </h3>
+                    </div>
+                    <div class="p-7">
+                      <div id="languagesDisplay" class="mb-5.5"></div>
+                      <input type="text" id="newLanguage" placeholder="Add new language"
+                        class="mr-2 rounded border px-2 py-1" />
+                      <button type="button" class="rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
+                        onclick="addLanguage()">
+                        Add Language
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Experience -->
+                  <div
+                    class="mb-8 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                    <div class="border-b border-stroke px-7 py-4 dark:border-strokedark">
+                      <h3 class="font-medium text-black dark:text-white">
+                        Experience
+                      </h3>
+                    </div>
+                    <div class="p-7">
+                      <div id="containerExperience"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right Side (Skills, Education, Certifications) -->
+                <div class="mt-4 pl-4">
+                  <!-- Skills -->
+                  <div
+                    class="mb-8 mt-10 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                    <div class="border-b border-stroke px-7 py-4 dark:border-strokedark">
+                      <h3 class="font-medium text-black dark:text-white">
+                        Skills
+                      </h3>
+                    </div>
+                    <div class="p-7">
+                      <!-- Hard Skills Section -->
+                      <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white" for="hardSkills">Hard
+                          Skills</label>
+                        <div id="hardSkillsDisplay" class="mb-4 grid gap-2"></div>
+                        <input type="text" id="newHardSkill" placeholder="Add new hard skill"
+                          class="mr-2 rounded border px-2 py-1" />
+                        <button type="button" class="rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
+                          onclick="addSkill('Hard')">
+                          Add Hard Skill
+                        </button>
+                      </div>
+
+                      <!-- Soft Skills Section -->
+                      <div class="mb-5.5">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white" for="softSkills">Soft
+                          Skills</label>
+                        <div id="softSkillsDisplay" class="mb-4 grid gap-2"></div>
+                        <input type="text" id="newSoftSkill" placeholder="Add new soft skill"
+                          class="mr-2 rounded border px-2 py-1" />
+                        <button type="button" class="rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
+                          onclick="addSkill('Soft')">
+                          Add Soft Skill
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Education -->
+                  <div
+                    class="mb-8 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                    <div class="border-b border-stroke px-7 py-4 dark:border-strokedark">
+                      <h3 class="font-medium text-black dark:text-white">
+                        Education
+                      </h3>
+                    </div>
+                    <div class="p-7">
+                      <div id="containerEducation"></div>
+                    </div>
+                  </div>
+
+                  <!-- Certifications -->
+                  <div
+                    class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                    <div class="border-b border-stroke px-7 py-4 dark:border-strokedark">
+                      <h3 class="font-medium text-black dark:text-white">
+                        Certifications
+                      </h3>
+                    </div>
+                    <div class="p-7">
+                      <div id="containerCertifications"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Action Buttons -->
+              <div class="mt-8 flex justify-end gap-4 mb-8">
+                <button type="button" id="cancelButton"
+                  class="text-gray-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 rounded-md border bg-white px-6 py-2 text-sm font-medium shadow-sm">
+                  Cancel
+                </button>
+                <button type="submit"
+                  class="hover:bg-primary-dark dark:bg-primary-light dark:hover:bg-primary-dark rounded-md bg-primary px-6 py-2 text-sm font-medium text-white shadow-sm">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+            <!-- Settings Section End -->
+          </div>
+        </div>
+      </main>
+      <!-- Main Content End -->
+    </div>
+    <!-- Content Area End -->
+  </div>
+
+  <!-- Loading Spinner -->
+  <div id="loadingSpinner" class="bg-gray-500 fixed inset-0 z-50 flex hidden items-center justify-center bg-opacity-50">
+    <div class="loader"></div>
+    <div>Processing...</div>
+  </div>
+
+  <!-- Success Popup Modal -->
+  <div id="successPopup" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-8 shadow-lg text-center">
+      <h2 class="text-2xl font-bold mb-4">Success!</h2>
+      <p class="mb-6">The process was completed successfully.</p>
+      <button id="closePopup" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">OK</button>
+    </div>
+  </div>
+
+
+  <style>
+    /* Custom style to hide the scroll bar and disable resize handle */
+    textarea {
+      resize: none;
+      /* Minimum height to start with */
+
+      /* Maximum height, adjust as needed */
+      /* Disable resize handle */
+      overflow: hidden;
+      /* Hide scrollbar */
+    }
+
+    .scrollable {
+      overflow-y: auto;
+      /* Show vertical scrollbar when overflowing */
+      /* Adjust max height to show 10 lines; adjust line height if needed */
+    }
+
+    /* Individual skill container */
+    .skill-container {
+      display: flex;
+      align-items: center;
+      background-color: #f9f9f9;
+      /* Light background for visibility */
+      border-radius: 8px;
+      padding: 5px 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      max-width: auto;
+      /* Allow container to fit its content */
+      white-space: normal;
+      /* Allow text to wrap */
+      word-wrap: break-word;
+      /* Break long words */
+      overflow: hidden;
+      /* Prevent overflow */
+      flex-shrink: 0;
+      /* Prevent shrinking */
+      max-width: fit-content;
+      /* Fit to content width */
+      min-width: 100px;
+      /* Minimum width for each skill */
+    }
+
+    /* Skill text styling */
+    .skill-text {
+      flex: 1;
+      /* Allow text to take available space */
+      margin-right: 10px;
+    }
+
+    /* Edit and Remove buttons styling */
+    .edit-button,
+    .remove-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      /* Adjust the size of the icon */
+      margin-left: 5px;
+      color: #666;
+      /* Gray color for buttons */
+    }
+
+    /* Input field for editing skill */
+    .skill-edit-input {
+      border: 1px solid #ddd;
+      padding: 5px;
+      border-radius: 4px;
+      font-size: 14px;
+      width: 100%;
+      /* Make input field fit the container */
+    }
+
+    /* Add this CSS to your stylesheet */
+    .loader {
+      border: 8px solid #f3f3f3;
+      /* Light grey */
+      border-top: 8px solid #3498db;
+      /* Blue */
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+  <!-- ===== Page Wrapper End ===== -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script src="js/edit-profile.js"></script>
+</body>
+
+</html>

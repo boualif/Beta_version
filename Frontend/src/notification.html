@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Notification
+    </title>
+    
+  </head>
+
+  <body
+    x-data="{ page: 'ecommerce', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+    x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+    :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}"
+  >
+    <!-- ===== Preloader Start ===== -->
+    <include src="./partials/preloader.html"></include>
+    <!-- ===== Preloader End ===== -->
+
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+      <!-- ===== Sidebar Start ===== -->
+      <include src="./partials/sidebar.html"></include>
+      <!-- ===== Sidebar End ===== -->
+
+      <!-- ===== Content Area Start ===== -->
+      <div
+        class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden"
+      >
+        <!-- ===== Header Start ===== -->
+        <include src="./partials/header.html" />
+        <!-- ===== Header End ===== -->
+
+        <!-- ===== Main Content Start ===== -->
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1.0"
+            />
+            <title>Compare Resumes</title>
+            <link
+              href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+              rel="stylesheet"
+            />
+            <style>
+              /* Additional custom CSS if needed */
+              iframe {
+                /* Ensures iframes fit the width and height specified */
+                max-width: 100%;
+                max-height: 100vh;
+              }
+            </style>
+          </head>
+          <body>
+            <main class="p-4">
+              <a
+                onclick="profile()"
+                class="inline-flex cursor-pointer items-center justify-end rounded-md border border-primary px-10 py-4 text-center font-medium text-primary hover:bg-opacity-90 lg:px-8 xl:px-10"
+                >Candidate Profile</a
+              >
+              <div class="mt-4">
+                <!-- PDF Container for the Original Resume -->
+                <div class="p-4">
+                  <h2 class="mb-2 text-xl font-bold">Original Resume</h2>
+                  <!-- PDF Viewer -->
+                  <iframe
+                    id="originalResume"
+                    class="border-gray-300 w-full border"
+                    style="height: 80vh"
+                  ></iframe>
+                </div>
+
+                <!-- PDF Container for the Updated Resume -->
+                <div class="p-4">
+                  <h2 class="mb-2 text-xl font-bold">Updated Resume</h2>
+                  <!-- PDF Viewer -->
+                  <iframe
+                    id="updatedResume"
+                    class="border-gray-300 w-full border"
+                    style="height: 80vh"
+                  ></iframe>
+                </div>
+              </div>
+
+              <!-- Buttons for Admin Actions -->
+              <div class="mt-6 flex justify-center space-x-4 py-8">
+                <button
+                  onclick="discardChanges()"
+                  class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                >
+                  Discard Changes
+                </button>
+                <button
+                  onclick="approveChanges()"
+                  class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                >
+                  Confirm Changes
+                </button>
+              </div>
+            </main>
+                <!-- Success Popup Modal -->
+          </body>
+        </html>
+
+        <!-- ===== Main Content End ===== -->
+      </div>
+      <!-- ===== Content Area End ===== -->
+    </div>
+    <!-- ===== Page Wrapper End ===== -->
+    <script src="js/notification.js"></script>
+  </body>
+</html>

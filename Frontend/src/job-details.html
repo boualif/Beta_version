@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    Job Details
+  </title>
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f4f8;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .navbar button {
+      margin-right: 10px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #ffffff;
+      color: #4a5568;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .navbar button:hover {
+      background-color: #edf2f7;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar .active {
+      background-color: #4a90e2;
+      color: #ffffff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      flex: 1;
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card-header h5 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .card-header .navigation-bar {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .card-header .navigation-bar button {
+      padding: 10px 20px;
+      background-color: #e2e8f0;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .card-header .navigation-bar button:hover {
+      background-color: #cbd5e0;
+    }
+
+    .card-content table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .card-content table th,
+    .card-content table td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .card-content table th {
+      font-weight: 600;
+    }
+
+    .card-content table td {
+      font-size: 0.875rem;
+    }
+
+    .match-button {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #4a90e2;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      margin-top: 20px;
+      float: right;
+    }
+
+    .match-button:hover {
+      background-color: #357abd;
+      transform: scale(1.05);
+    }
+
+    .match-button svg {
+      margin-right: 8px;
+    }
+
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .loading-overlay.active {
+      display: flex;
+    }
+
+    .loading-overlay .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #4a90e2;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-overlay .message {
+      margin-left: 10px;
+      color: #ffffff;
+      font-size: 18px;
+    }
+
+    .candidates-nav-bar {
+      display: flex;
+      justify-content: flex-start;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .candidates-nav-bar button {
+      padding: 10px 20px;
+      background-color: #e2e8f0;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .candidates-nav-bar button:hover {
+      background-color: #cbd5e0;
+    }
+
+    .editable {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px;
+      background-color: #f9f9f9;
+      transition: background-color 0.3s ease;
+    }
+
+    .editable:hover {
+      background-color: #e2e8f0;
+    }
+
+    .nav-button {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #4a5568;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background-color: #ffffff;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-button:hover {
+      background-color: #f7fafc;
+      color: #2d3748;
+      border-color: #e2e8f0;
+    }
+
+    .nav-button.active {
+      background-color: #4a90e2;
+      color: #ffffff;
+      border-color: #4a90e2;
+    }
+
+    .nav-button.active:hover {
+      background-color: #357abd;
+      border-color: #357abd;
+    }
+
+    .nav-button {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #4a5568;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background-color: #ffffff;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-button:hover {
+      background-color: #f7fafc;
+      color: #2d3748;
+      border-color: #e2e8f0;
+    }
+
+    .nav-button.active {
+      background-color: #4a90e2;
+      color: #ffffff;
+      border-color: #4a90e2;
+    }
+
+    .nav-button.active:hover {
+      background-color: #357abd;
+      border-color: #357abd;
+    }
+
+    .save-button {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      margin-top: 20px;
+      margin-left: 10px;
+      float: right;
+    }
+
+    .save-button:hover {
+      background-color: #218838;
+      transform: scale(1.05);
+    }
+
+    .save-button svg {
+      margin-right: 8px;
+    }
+
+    .card {
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .dragging {
+      opacity: 0.5;
+      border: 2px dashed #4a90e2;
+    }
+  </style>
+</head>
+
+<body
+  x-data="{ page: 'ecommerce', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+  x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+  :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}">
+  <!-- ===== Preloader Start ===== -->
+  <include src="./partials/preloader.html"></include>
+  <!-- ===== Preloader End ===== -->
+
+
+  <!-- ===== Page Wrapper Start ===== -->
+  <div class="flex h-screen overflow-hidden">
+    <!-- ===== Sidebar Start ===== -->
+    <include src="./partials/sidebar.html"></include>
+    <!-- ===== Sidebar End ===== -->
+
+    <!-- ===== Content Area Start ===== -->
+    <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+      <!-- ===== Header Start ===== -->
+      <include src="./partials/header.html" />
+      <!-- ===== Header End ===== -->
+
+      <!-- ===== Main Content Start ===== -->
+      <main id="main-job-content">
+        <div class="container dark:bg-boxdark">
+          <div class="flex justify-between dark:bg-boxdark" >
+            <div class="inline-flex items-center rounded-md bg-whiter p-1.5 dark:bg-meta-4">
+              <button id="dt-btn"
+                class="rounded bg-white px-3 py-1 text-xs font-medium text-black shadow-card hover:bg-white hover:shadow-card dark:bg-boxdark dark:text-white dark:hover:bg-boxdark"
+                onclick="loadJobDetails()">
+                <a href="#">Details</a>
+              </button>
+              <button id="process-btn"
+                class="rounded px-3 py-1 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark"
+                onclick="loadProcess()">
+                <a href="#">Process</a>
+              </button>
+            </div>
+            <a id="btn-save"
+              class="inline-flex items-center justify-center rounded-full bg-primary cursor-pointer px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+              Save
+            </a>
+          </div>
+
+          <div id="job-info" class="mt-6 bg-white border border-gray-200 rounded shadow-lg p-6">
+          </div>
+        </div>
+      </main>
+      <!-- ===== Main Content End ===== -->
+    </div>
+
+    <!-- ===== Content Area End ===== -->
+  </div>
+
+  <div id="interviewModal" class="hidden fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+    <div class="bg-white dark:bg-gray-900 rounded-lg p-8 w-full shadow-default p-8 w-full max-w-md">
+      <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="text-title-md2 font-bold text-black dark:text-white">
+          Interview
+        </h2>
+      </div>
+      <form id="interviewForm" action="">
+        <div>
+          <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+            Date
+          </label>
+          <div class="relative">
+            <input name="date"
+              class="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              placeholder="mm/dd/yyyy" data-class="flatpickr-right" />
+
+            <div class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z"
+                  fill="#64748B" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+            Recruiter
+          </label>
+          <input type="text" placeholder="Recruiter name" name="recruiter"
+            class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white" />
+        </div>
+        <div>
+          <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+            comments
+          </label>
+          <textarea rows="6" placeholder="Type your comments here" name="notes"
+            class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"></textarea>
+        </div>
+        <div class="flex justify-end gap-4.5">
+          <button
+            class="flex justify-center rounded border border-stroke px-6 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+            onclick="closeModal(event)">
+            Cancel
+          </button>
+          <button class="flex justify-center rounded bg-primary px-6 py-2 font-medium text-gray hover:bg-opacity-90"
+            onclick="saveInterview(event)">
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Partner Interview Modal -->
+<div id="partnerInterviewModal" class="hidden fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+  <div class="bg-white dark:bg-gray-900 rounded-lg p-8 w-full shadow-default p-8 w-full max-w-md">
+      <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 class="text-title-md2 font-bold text-black dark:text-white">
+              Partner Interview
+          </h2>
+      </div>
+      <form id="partnerInterviewForm" action="">
+          <div>
+              <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Date
+              </label>
+              <div class="relative">
+                  <input name="date"
+                      class="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                      placeholder="mm/dd/yyyy" data-class="flatpickr-right" />
+                  <div class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z" fill="#64748B" />
+                      </svg>
+                  </div>
+              </div>
+          </div>
+          <div>
+              <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Partner Name
+              </label>
+              <input type="text" placeholder="Partner name" name="partner_name"
+                  class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white" />
+          </div>
+          <div>
+              <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                comments
+              </label>
+              <textarea rows="6" placeholder="Type your comments here" name="notes"
+                  class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"></textarea>
+          </div>
+          <div class="flex justify-end gap-4.5">
+              <button
+                  class="flex justify-center rounded border border-stroke px-6 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                  onclick="closeModal(event)">
+                  Cancel
+              </button>
+              <button 
+                  class="flex justify-center rounded bg-primary px-6 py-2 font-medium text-gray hover:bg-opacity-90"
+                  onclick="savePartnerInterview(event)">
+                  Save
+              </button>
+          </div>
+      </form>
+  </div>
+</div>
+
+<!-- Client Interview Modal -->
+<div id="clientInterviewModal" class="hidden fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+  <div class="bg-white dark:bg-gray-900 rounded-lg p-8 w-full shadow-default p-8 w-full max-w-md">
+      <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 class="text-title-md2 font-bold text-black dark:text-white">
+              Client Interview
+          </h2>
+      </div>
+      <form id="clientInterviewForm" action="">
+          <div>
+              <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Date
+              </label>
+              <div class="relative">
+                  <input name="date"
+                      class="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                      placeholder="mm/dd/yyyy" data-class="flatpickr-right" />
+                  <div class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z" fill="#64748B" />
+                      </svg>
+                  </div>
+              </div>
+          </div>
+          <div>
+              <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Client Name
+              </label>
+              <input type="text" placeholder="Client name" name="client_name"
+                  class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white" />
+          </div>
+          <div>
+              <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                comments
+              </label>
+              <textarea rows="6" placeholder="Type your comments here" name="notes"
+                  class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"></textarea>
+          </div>
+          <div class="flex justify-end gap-4.5">
+              <button
+                  class="flex justify-center rounded border border-stroke px-6 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                  onclick="closeModal(event)">
+                  Cancel
+              </button>
+              <button 
+                  class="flex justify-center rounded bg-primary px-6 py-2 font-medium text-gray hover:bg-opacity-90"
+                  onclick="saveClientInterview(event)">
+                  Save
+              </button>
+          </div>
+      </form>
+  </div>
+</div>
+  <!-- ===== Page Wrapper End ===== -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+  <script src="js/job-details.js"></script>
+  <script src="js/search.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', function() {
+    // Récupérer les données du job stockées lors de la recherche
+    const jobData = JSON.parse(localStorage.getItem('selectedItem'));
+    
+    if (jobData) {
+        // Afficher les données dans votre page
+        document.getElementById('job-info').innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-black dark:text-white">${jobData.title || 'No Title'}</h2>
+                        <p class="text-sm text-gray-500">${jobData.company || 'Company not specified'}</p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-black dark:text-white">Description</h3>
+                        <p class="text-gray-600 dark:text-gray-300">${jobData.description || 'No description available'}</p>
+                    </div>
+                    <!-- Ajoutez d'autres champs selon vos besoins -->
+                </div>
+            </div>
+        `;
+    }
+});</script>
+</body>
+
+</html>

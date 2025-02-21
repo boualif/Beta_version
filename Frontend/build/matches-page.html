@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matching Results</title>
+    <!-- Include your CSS files -->
+<link rel="icon" href="favicon.ico"><link href="style.css" rel="stylesheet"></head>
+<body>
+    <div class="container mx-auto px-4 py-8">
+        <div id="match-results" class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Matching Candidates</h2>
+                <span class="text-sm text-gray-500">Total matches: <span id="total-matches">0</span></span>
+            </div>
+            
+            <div id="matches-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Matches will be inserted here -->
+            </div>
+            
+            <div id="no-matches" class="hidden text-center py-8 text-gray-500">
+                No matches found for this job.
+            </div>
+        </div>
+
+        <!-- Add a back button -->
+        <button onclick="window.history.back()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Back to Job Details
+        </button>
+    </div>
+
+    <!-- Include your JavaScript files -->
+    <script src="src/js/matches-page.js"></script>
+<script defer src="bundle.js"></script></body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Creation Form
+    </title>
+    
+  </head>
+
+  <body
+    x-data="{ page: 'formLayout', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+    x-init="
+          darkMode = JSON.parse(localStorage.getItem('darkMode'));
+          $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+    :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}"
+  >
+    <!-- ===== Preloader Start ===== -->
+    <include src="./partials/preloader.html"></include>
+    <!-- ===== Preloader End ===== -->
+
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+      <!-- ===== Sidebar Start ===== -->
+      <include src="./partials/sidebar.html"></include>
+      <!-- ===== Sidebar End ===== -->
+
+      <!-- ===== Content Area Start ===== -->
+      <div
+        class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden"
+      >
+        <!-- ===== Header Start ===== -->
+        <include src="./partials/header.html" />
+        <!-- ===== Header End ===== -->
+
+        <!-- ===== Main Content Start ===== -->
+        <main>
+          <div class="mx-auto max-w-4xl p-8 md:p-12 2xl:p-16">
+            <!-- Breadcrumb Start -->
+            <div class="mb-10">
+              <h2 class="text-3xl font-bold text-black dark:text-white">
+                Add a Recruiter:
+              </h2>
+
+              <nav class="mt-4">
+                <ol class="flex items-center gap-2 text-lg">
+                  <li>
+                    <a class="font-medium" href="index.html">Dashboard /</a>
+                  </li>
+                  <li class="font-medium text-primary">Form Layout</li>
+                </ol>
+              </nav>
+            </div>
+            <!-- Breadcrumb End -->
+
+            <!-- ====== Form Layout Section Start -->
+            <div class="mx-auto w-full">
+              <!-- Contact Form -->
+              <div
+                class="rounded-lg border border-stroke bg-white shadow-lg dark:border-strokedark dark:bg-boxdark"
+              >
+                <div
+                  class="border-b border-stroke px-8 py-6 dark:border-strokedark"
+                >
+                  <h3 class="text-xl font-medium text-black dark:text-white">
+                    Creation Form
+                  </h3>
+                </div>
+                <form action="#" id="contactForm">
+                  <div class="p-6.5">
+                    <div class="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                      <div class="w-full xl:w-1/2">
+                        <label
+                          class="mb-3 block text-sm font-medium text-black dark:text-white"
+                        >
+                          Firstname
+                        </label>
+                        <input required
+                          id="firstname"
+                          type="text"
+                          placeholder="Enter your first name"
+                          class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                      </div>
+
+                      <div class="w-full xl:w-1/2">
+                        <label
+                          class="mb-3 block text-sm font-medium text-black dark:text-white"
+                        >
+                          Lastname
+                        </label>
+                        <input required
+                          id="lastname"
+                          type="text"
+                          placeholder="Enter your last name"
+                          class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                      </div>
+                    </div>
+                    <div class="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                      <div class="w-full xl:w-1/2">
+                        <label
+                          class="mb-3 block text-sm font-medium text-black dark:text-white"
+                        >
+                        Position                       </label>
+                        <input
+                          id="position"
+                          type="text"
+                          placeholder="Enter the position"
+                          class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                      </div>
+
+                      <div class="w-full xl:w-1/2">
+                        <label
+                          class="mb-3 block text-sm font-medium text-black dark:text-white"
+                        >
+                          Responsible
+                        </label>
+                        <input
+                          id="responsible"
+                          type="text"
+                          placeholder="Enter the responsible"
+                          class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                      </div>
+                    </div>
+                    <div class="mb-4.5">
+                      <label
+                        class="mb-3 block text-sm font-medium text-black dark:text-white"
+                      >
+                        Address <span class="text-meta-1">*</span>
+                      </label>
+                      <input
+                        id="address"
+                        placeholder="Enter the address"
+                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      />
+                    </div>
+
+                    <div class="mb-4.5">
+                      <label
+                        class="mb-3 block text-sm font-medium text-black dark:text-white"
+                      >
+                        Phone number <span class="text-meta-1">*</span>
+                      </label>
+                      <input
+                        id="phone"
+                        placeholder="Enter your phone number"
+                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      />
+                    </div>
+
+                    <div class="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                      <div class="w-full xl:w-1/2">
+                        <label
+                          class="mb-3 block text-sm font-medium text-black dark:text-white"
+                        >
+                          Email
+                        </label>
+                        <input required
+                          id="email"
+                          type="text"
+                          placeholder="Enter your email address"
+                          class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                      </div>
+                      <div class="w-full xl:w-1/2">
+                        <label
+                          class="mb-3 block text-sm font-medium text-black dark:text-white"
+                        >
+                          Password
+                        </label>
+                        <input required
+                          id="password"
+                          type="text"
+                          placeholder="Enter password"
+                          class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <!-- ====== Form Layout Section End -->
+          </div>
+        </main>
+
+        <!-- ===== Main Content End ===== -->
+      </div>
+      <!-- ===== Content Area End ===== -->
+    </div>
+    <!-- ===== Page Wrapper End ===== -->
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="js/form-layout-recruiter.js"></script>
+</html>

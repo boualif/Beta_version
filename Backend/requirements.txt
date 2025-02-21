@@ -1,0 +1,16 @@
+pymongo
+django
+django-environ
+djangorestframework
+google-generativeai
+pdfplumber
+mongoengine
+djangorestframework-simplejwt
+dj-rest-auth
+django-allauth
+django-cors-headers
+psycopg
+openai
+python-dotenv
+django-elasticsearch-dsl
+

@@ -1,0 +1,132 @@
+create trigger after insert on candidate
+BEGIN
+update recruiter set nb_candidates = nb_candidates+1 where id = (select id from recruiter where id=candidate.recruiter_id)
+END
+
+
+
+CREATE OR REPLACE FUNCTION increment_nb_candidates()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE recruiter 
+    SET nb_candidates = nb_candidates + 1 
+    WHERE id = NEW.recruiter_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER after_candidate_insert
+AFTER INSERT ON candidate
+FOR EACH ROW
+EXECUTE FUNCTION increment_nb_candidates();
+
+
+
+CREATE OR REPLACE FUNCTION create_client()
+RETURNS TRIGGER AS $$
+BEGIN
+    insert into activity(date,description,client_id, recruiter_id) 
+    values (NOW(),'added a client', new.id,new.key_account_manager_id);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE TRIGGER after_client_create
+AFTER INSERT ON client
+FOR EACH ROW
+EXECUTE FUNCTION create_client();
+
+
+
+CREATE OR REPLACE FUNCTION create_lead()
+RETURNS TRIGGER AS $$
+BEGIN
+    insert into activity(date,description,lead_id, recruiter_id) 
+    values (NOW(),'added a lead', new.client_id, new.recruiter_id);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE TRIGGER after_lead_create
+AFTER INSERT ON lead
+FOR EACH ROW
+EXECUTE FUNCTION create_lead();
+
+
+CREATE OR REPLACE FUNCTION create_job()
+RETURNS TRIGGER AS $$
+BEGIN
+    insert into activity(date,description,job_id, recruiter_id) 
+    values (NOW(),'added a job', new.id, new.recruiter_id);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE TRIGGER after_job_create
+AFTER INSERT ON job
+FOR EACH ROW
+EXECUTE FUNCTION create_job();
+
+
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION update_client()
+RETURNS TRIGGER AS $$
+BEGIN
+    insert into activity(date,description,client_id, recruiter_id) 
+    values (NOW(),'updated a client', new.id,new.last_modified_by_id);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE TRIGGER after_client_update
+AFTER UPDATE ON client
+FOR EACH ROW
+EXECUTE FUNCTION update_client();
+
+
+
+CREATE OR REPLACE FUNCTION update_job()
+RETURNS TRIGGER AS $$
+BEGIN
+    insert into activity(date,description,job_id, recruiter_id) 
+    values (NOW(),'updated a job', new.id,new.last_modified_by_id);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE TRIGGER after_job_update
+AFTER UPDATE ON job
+FOR EACH ROW
+EXECUTE FUNCTION update_job();
+
+
+
+CREATE OR REPLACE FUNCTION update_lead()
+RETURNS TRIGGER AS $$
+BEGIN
+    insert into activity(date,description,lead_id, recruiter_id) 
+    values (NOW(),'updated a lead', new.client_id,new.last_modified_by_id);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE TRIGGER after_lead_update
+AFTER UPDATE ON lead
+FOR EACH ROW
+EXECUTE FUNCTION update_lead();
+
+
+
+

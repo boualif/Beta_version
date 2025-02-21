@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add a Client</title>
+</head>
+
+<body
+  x-data="{ page: 'formLayout', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+  x-init="
+          darkMode = JSON.parse(localStorage.getItem('darkMode'));
+          $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+  :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}">
+
+
+  <include src="./partials/preloader.html"></include>
+  <!-- ===== Page Wrapper Start ===== -->
+  <div class="flex h-screen overflow-hidden">
+
+    <!-- ===== Sidebar Start ===== -->
+    <include src="./partials/sidebar.html"></include>
+    <!-- ===== Sidebar End ===== -->
+
+    <!-- ===== Content Area Start ===== -->
+    <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+
+      <!-- ===== Header Start ===== -->
+      <include src="./partials/header.html" />
+      <!-- ===== Header End ===== -->
+
+      <!-- ===== Main Content Start ===== -->
+      <main>
+        <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+
+          <!-- Breadcrumb Start -->
+          <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 class="text-title-md2 font-bold text-black dark:text-white">
+              Add a Client
+            </h2>
+            <nav>
+              <ol class="flex items-center gap-2">
+                <li>
+                  <a class="font-medium" href="{% url 'index' %}">Dashboard /</a>
+                </li>
+                <li class="font-medium text-primary">Form Layout</li>
+              </ol>
+            </nav>
+          </div>
+          <!-- Breadcrumb End -->
+
+          <!-- ====== Form Layout Section Start ===== -->
+          <div class="grid grid-cols-1 gap-9 sm:grid-cols-2">
+            <div class="flex flex-col gap-9">
+              <!-- Contact Form -->
+              <div
+                class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                <div class="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
+                  <h3 class="font-medium text-black dark:text-white">
+                    Client Form
+                  </h3>
+                </div>
+
+                <form id="clientForm" method="post" enctype="multipart/form-data">
+                  <div class="p-6.5">
+                    <div class="mb-4.5">
+                      <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                        Company Name
+                      </label>
+                      <input type="text" id="company_name" name="company_name" placeholder="Enter company name"
+                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                    </div>
+
+                    <div class="mb-4.5">
+                      <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                        Company Logo
+                      </label>
+                      <input type="file" id="company_logo" name="company_logo"
+                        class="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-3 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary" />
+                    </div>
+
+                    <div class="mb-4.5">
+                      <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                        Website
+                      </label>
+                      <input type="text" id="website" name="website" placeholder="Enter website URL"
+                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                    </div>
+                    <div class="mb-4.5">
+                      <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                        URLs
+                      </label>
+                      <input type="text" id="companyURLs" name="urls" placeholder="Enter URL"
+                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                    </div>
+
+
+                    <div class="mb-4.5">
+                      <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                        HQ Phone Number
+                      </label>
+                      <input type="text" id="headquarters_phone_number" name="headquarters_phone_number"
+                        placeholder="Enter headquarters phone number"
+                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                    </div>
+
+                    <div class="mb-4.5">
+                      <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                        Status
+                      </label>
+                      <select id="status" name="status"
+                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
+                        <option value="prospect">Prospect</option>
+                        <option value="client">Client</option>
+                        <option value="partner">Partner</option>
+                      </select>
+                    </div>
+
+                    <div class="mb-4.5">
+                      <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                        Engagement Type
+                      </label>
+                      <select id="engagement_type" name="engagement_type"
+                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
+                        <option value="talent_outsourcing">Talent Outsourcing</option>
+                        <option value="direct_employment">Direct Employment</option>
+                      </select>
+                    </div>
+
+                    <div class="mb-4.5">
+                      <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                        Sector of Activity 
+                      </label>
+                      <input type="text" id="Sector_of_Activity" name="industry" placeholder="Enter Sector of Activity "
+                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                    </div>
+
+                    <div class="mb-4.5">
+                      <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                        Location
+                      </label>
+                      <input type="text" id="location" name="location" placeholder="Enter location"
+                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                    </div>
+                    <div class="mb-4.5">
+                      <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                        Description
+                      </label>
+                      <input type="text" id="description" name="description" placeholder="Enter description"
+                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                    </div>
+
+                    <!-- <div class="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                      <div class="w-full xl:w-1/2">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                          Lead First Name
+                        </label>
+                        <input type="text" id="lead_first_name" name="lead_first_name" placeholder="Enter lead's first name"
+                          class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                      </div>
+
+                      <div class="w-full xl:w-1/2">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                          Lead Last Name
+                        </label>
+                        <input type="text" id="lead_last_name" name="lead_last_name" placeholder="Enter lead's last name"
+                          class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                      </div>
+                    </div>
+
+                    <div class="mb-4.5">
+                      <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                        Lead Email
+                      </label>
+                      <input type="email" id="lead_email" name="lead_email" placeholder="Enter lead's email"
+                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                    </div>
+
+                    <div class="mb-4.5">
+                      <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                        Lead Phone Number
+                      </label>
+                      <input type="text" id="lead_phone" name="lead_phone" placeholder="Enter lead's phone number"
+                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                    </div>
+                    
+                    <div class="mb-4.5">
+                      <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                         Account Manager
+                      </label>
+                      <input type="text" id="key_account_manager" name="key_account_manager" placeholder="Enter  account manager"
+                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                    </div> -->
+
+                    <div class="flex justify-end gap-4.5 mt-6">
+                      <button
+                        class="flex justify-center rounded border border-stroke px-6 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                        type="reset">
+                        Cancel
+                      </button>
+                      <button
+                        class="flex justify-center rounded bg-primary px-6 py-2 font-medium text-white hover:bg-primary-dark"
+                        type="submit">
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <!-- ====== Form Layout Section End ===== -->
+        </div>
+      </main>
+      <!-- ===== Main Content End ===== -->
+    </div>
+    <!-- ===== Content Area End ===== -->
+  </div>
+  <!-- ===== Page Wrapper End ===== -->
+</body>
+
+</html>
+
+
+<!-- Pop-up Alert -->
+<div id="popup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+  <div class="bg-white dark:bg-boxdark p-6 rounded-lg shadow-lg text-center">
+    <div class="flex items-center justify-center mb-4">
+      <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#34D399]">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M15.2984 0.826822L15.2868 0.811827L15.2741 0.797751C14.9173 0.401867 14.3238 0.400754 13.9657 0.794406L5.91888 9.45376L2.05667 5.2868C1.69856 4.89287 1.10487 4.89389 0.747996 5.28987C0.417335 5.65675 0.417335 6.22337 0.747996 6.59026L0.747959 6.59029L0.752701 6.59541L4.86742 11.0348C5.14445 11.3405 5.52858 11.5 5.89581 11.5C6.29242 11.5 6.65178 11.3355 6.92401 11.035L15.2162 2.11161C15.5833 1.74452 15.576 1.18615 15.2984 0.826822Z"
+            fill="white" stroke="white"></path>
+        </svg>
+      </div>
+      <h2 class="ml-4 text-lg font-bold text-black dark:text-[#34D399]">Client Saved Successfully!</h2>
+    </div>
+    <p class="text-base leading-relaxed text-body dark:text-white mb-4">Your client has been saved. What would you like
+      to do next?</p>
+    <div class="flex justify-center space-x-4">
+      <button id="viewEditButton" onclick="redirectToProfile()"
+        class="rounded bg-primary px-5 py-3 text-white transition hover:bg-primary-dark">View and Edit Details</button>
+      <button id="closePopup"
+        class="rounded px-5 py-3 transition hover:bg-gray-500 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-700 text-black bg-gray-300">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Include Axios for form submission -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="js/form-layout-client.js"></script>
+
+</body>
+
+</html>

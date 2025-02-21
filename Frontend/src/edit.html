@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings </title>
+    <style>
+        .file-input {
+            display: none;
+            /* Hide the default file input */
+        }
+
+        .file-name {
+            margin-left: 10px;
+            display: flex;
+            justify-items: center;
+            /* Space between button and file name */
+            font-size: 14px;
+            /* Font size for file name */
+            color: #333;
+            /* Text color for file name */
+        }
+    </style>
+</head>
+
+<body
+    x-data="{ page: 'settings', loaded: true, darkMode: true, stickyMenu: false, sidebarToggle: false, scrollTop: false }"
+    x-init="
+    darkMode = JSON.parse(localStorage.getItem('darkMode'));
+    $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+    :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}">
+    <!-- Preloader Start -->
+    <include src="./partials/preloader.html"></include>
+    <!-- Preloader End -->
+
+    <!-- Page Wrapper Start -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Start -->
+        <include src="./partials/sidebar.html"></include>
+        <!-- Sidebar End -->
+
+        <!-- Content Area Start -->
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <!-- Header Start -->
+            <include src="./partials/header.html" />
+            <!-- Header End -->
+
+            <!-- Main Content Start -->
+            <main>
+                <div class="mx-auto max-w-screen-2xl px-0 md:p-6 2xl:px-0">
+                    <div class="mx-auto max-w-screen-2xl px-4">
+                        <!-- Breadcrumb Start -->
+                        <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                                HR Management
+                            </h2>
+                            <nav>
+                                <ol class="flex items-center gap-2">
+                                    <li>
+                                        <a class="font-medium" href="index.html">Dashboard /</a>
+                                    </li>
+                                    <li class="font-medium text-primary">Settings</li>
+                                </ol>
+                            </nav>
+                        </div>
+
+                        <!-- Settings Section Start -->
+                        <form id="profileForm" @submit.prevent="saveChanges">
+                            <div class="grid grid-cols-2 gap-0">
+                                <!-- Left Side (Personal Information, Languages, Experience) -->
+                                <div class="pr-4">
+                                    <!-- Personal Information -->
+                                    <div
+                                        class="mb-8 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                                        <div class="border-b border-stroke px-7 py-4 dark:border-strokedark">
+                                            <h3 class="font-medium text-black dark:text-white">
+                                                Personal Information
+                                            </h3>
+                                        </div>
+                                        <div class="p-7">
+                                            <div class="mb-5.5">
+                                                <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                                                    for="fullName">
+                                                    Salary expectation
+                                                </label>
+                                                <input
+                                                    class="w-full rounded border border-stroke bg-gray py-3 px-4.5 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                    type="text" name="fullName" id="fullName" placeholder="Devid Jhon"
+                                                    value="Devid Jhon" />
+                                            </div>
+                                            <div class="mb-5.5">
+                                                <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                                                    for="jobTitle">
+                                                    Actual salary
+                                                </label>
+                                                <input
+                                                    class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                    type="text" name="jobTitle" id="jobTitle" />
+                                            </div>
+
+                                            <div class="mb-5.5">
+                                                <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                                                    for="recruiter">Type of ID papers</label>
+                                                <input
+                                                    class="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                    type="text" name="recruiter" id="recruiter" />
+                                            </div>
+                                            <div class="mb-5.5">
+                                                <label
+                                                    class="mb-3 block text-sm font-medium text-black dark:text-white">
+                                                    Date of integration
+                                                </label>
+                                                <div class="relative">
+                                                    <input
+                                                        class="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                        placeholder="mm/dd/yyyy" data-class="flatpickr-right" />
+
+                                                    <div
+                                                        class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
+                                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path
+                                                                d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z"
+                                                                fill="#64748B" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mb-5.5">
+                                                <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                                                    for="leaveBalance">Leave balance</label>
+                                                <input
+                                                    class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                    type="text" name="links" id="links" />
+                                            </div>
+                                            <div class="mb-5.5">
+                                                <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                                                    for="maritalStatus">Marital status</label>
+                                                <select id="status" name="status"
+                                                    class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary">
+                                                    <option value="" disabled selected>Select a status</option>
+                                                    <option value="married">Married</option>
+                                                    <option value="single">Single</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-5.5">
+                                                <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                                                    for="leaveBalance">Number of family members</label>
+                                                <input
+                                                    class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                    type="text" name="links" id="links" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Languages -->
+                                    <div
+                                        class="mb-8 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                                        <div class="border-b border-stroke px-7 py-4 dark:border-strokedark">
+                                            <h3 class="font-medium text-black dark:text-white">
+                                                Contract
+                                            </h3>
+                                        </div>
+                                        <div class="p-7">
+                                            <div class="mb-5.5">
+                                                <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                                                    for="contractLocalisation">Localisation</label>
+                                                <select id="status" name="status"
+                                                    class="w-full rounded border border-stroke bg-gray px-4.5 py-3 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary">
+                                                    <option value="france">France</option>
+                                                    <option value="tunisia">Tunisia</option>
+                                                </select>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Experience -->
+                                    <div
+                                        class="mb-8 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                                        <div class="border-b border-stroke px-7 py-4 dark:border-strokedark">
+                                            <h3 class="font-medium text-black dark:text-white">
+                                                Experience
+                                            </h3>
+                                        </div>
+                                        <div class="p-7">
+                                            <div id="containerExperience"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Side (Skills, Education, Certifications) -->
+                                <div class="pl-4">
+                                    <!-- Skills -->
+                                    <div
+                                        class="mb-8 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                                        <div class="border-b border-stroke px-7 py-4 dark:border-strokedark">
+                                            <h3 class="font-medium text-black dark:text-white">
+                                                Technical validation
+                                            </h3>
+                                        </div>
+                                        <div class="p-7">
+                                            <div class="mb-5.5">
+                                                <label
+                                                    class="mb-3 block text-sm font-medium text-black dark:text-white">
+                                                    Date
+                                                </label>
+                                                <div class="relative">
+                                                    <input
+                                                        class="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                        placeholder="mm/dd/yyyy" data-class="flatpickr-right" />
+
+                                                    <div
+                                                        class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
+                                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path
+                                                                d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z"
+                                                                fill="#64748B" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-5.5">
+                                                <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                                                    for="Username">comments</label>
+                                                <div class="relative">
+                                                    <span class="absolute left-4.5 top-4">
+                                                        <svg class="fill-current" width="20" height="20"
+                                                            viewBox="0 0 20 20" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <g opacity="0.8" clip-path="url(#clip0_88_10224)">
+                                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                    d="M1.56524 3.23223C2.03408 2.76339 2.66997 2.5 3.33301 2.5H9.16634C9.62658 2.5 9.99967 2.8731 9.99967 3.33333C9.99967 3.79357 9.62658 4.16667 9.16634 4.16667H3.33301C3.11199 4.16667 2.90003 4.25446 2.74375 4.41074C2.58747 4.56702 2.49967 4.77899 2.49967 5V16.6667C2.49967 16.8877 2.58747 17.0996 2.74375 17.2559C2.90003 17.4122 3.11199 17.5 3.33301 17.5H14.9997C15.2207 17.5 15.4326 17.4122 15.5889 17.2559C15.7452 17.0996 15.833 16.8877 15.833 16.6667V10.8333C15.833 10.3731 16.2061 10 16.6663 10C17.1266 10 17.4997 10.3731 17.4997 10.8333V16.6667C17.4997 17.3297 17.2363 17.9656 16.7674 18.4344C16.2986 18.9033 15.6627 19.1667 14.9997 19.1667H3.33301C2.66997 19.1667 2.03408 18.9033 1.56524 18.4344C1.0964 17.9656 0.833008 17.3297 0.833008 16.6667V5C0.833008 4.33696 1.0964 3.70107 1.56524 3.23223Z"
+                                                                    fill="" />
+                                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                    d="M16.6664 2.39884C16.4185 2.39884 16.1809 2.49729 16.0056 2.67253L8.25216 10.426L7.81167 12.188L9.57365 11.7475L17.3271 3.99402C17.5023 3.81878 17.6008 3.5811 17.6008 3.33328C17.6008 3.08545 17.5023 2.84777 17.3271 2.67253C17.1519 2.49729 16.9142 2.39884 16.6664 2.39884ZM14.8271 1.49402C15.3149 1.00622 15.9765 0.732178 16.6664 0.732178C17.3562 0.732178 18.0178 1.00622 18.5056 1.49402C18.9934 1.98182 19.2675 2.64342 19.2675 3.33328C19.2675 4.02313 18.9934 4.68473 18.5056 5.17253L10.5889 13.0892C10.4821 13.196 10.3483 13.2718 10.2018 13.3084L6.86847 14.1417C6.58449 14.2127 6.28409 14.1295 6.0771 13.9225C5.87012 13.7156 5.78691 13.4151 5.85791 13.1312L6.69124 9.79783C6.72787 9.65131 6.80364 9.51749 6.91044 9.41069L14.8271 1.49402Z"
+                                                                    fill="" />
+                                                            </g>
+                                                            <defs>
+                                                                <clipPath id="clip0_88_10224">
+                                                                    <rect width="20" height="20" fill="white" />
+                                                                </clipPath>
+                                                            </defs>
+                                                        </svg>
+                                                    </span>
+
+                                                    <textarea
+                                                        class="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 font-medium text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                        name="bio" id="bio" rows="6" placeholder="Write your bio here">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque posuere fermentum urna, eu condimentum mauris tempus ut. Donec fermentum blandit aliquet.
+                                </textarea>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Education -->
+                                    <div
+                                        class="mb-8 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                                        <div class="border-b border-stroke px-7 py-4 dark:border-strokedark">
+                                            <h3 class="font-medium text-black dark:text-white">
+                                                Administrative validation
+                                            </h3>
+                                        </div>
+                                        <div class="p-7">
+                                            <div id="containerEducation"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Certifications -->
+                                    <div
+                                        class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                                        <div class="border-b border-stroke px-7 py-4 dark:border-strokedark">
+                                            <h3 class="font-medium text-black dark:text-white">
+                                                Recrutement service
+                                            </h3>
+                                        </div>
+                                        <div class="p-7">
+                                            <div id="containerCertifications"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Action Buttons -->
+                            <div class="flex justify-end gap-4 mb-8">
+                                <button type="button" id="cancelButton"
+                                    class="text-gray-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 rounded-md border bg-white px-6 py-2 text-sm font-medium shadow-sm">
+                                    Cancel
+                                </button>
+                                <button type="submit"
+                                    class="hover:bg-primary-dark dark:bg-primary-light dark:hover:bg-primary-dark rounded-md bg-primary px-6 py-2 text-sm font-medium text-white shadow-sm">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                        <!-- Settings Section End -->
+                    </div>
+                </div>
+            </main>
+            <!-- Main Content End -->
+        </div>
+        <!-- Content Area End -->
+    </div>
+
+
+
+</body>
+
+</html>

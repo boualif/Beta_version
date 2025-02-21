@@ -1,0 +1,67 @@
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+<div id="job-info" class="grid grid-cols-10 gap-4 p-4 overflow-x-auto">
+  <!-- Loop through columns for better scalability -->
+  <div class="col-span-1">
+    <h2 class="text-center text-sm font-semibold mb-2 bg-blue-500 text-white p-2 rounded-md">New</h2>
+    <div id="new" class="flex flex-col space-y-2 p-2 bg-white rounded-md shadow-md min-h-[200px] overflow-y-auto">
+      <!-- Cards will be dynamically added -->
+    </div>
+  </div>
+  <div class="col-span-1">
+    <h2 class="text-center text-sm font-semibold mb-2 bg-indigo-500 text-white p-2 rounded-md">Preselected</h2>
+    <div id="preselected" class="flex flex-col space-y-2 p-2 bg-white rounded-md shadow-md min-h-[200px] overflow-y-auto">
+      <!-- Cards will be dynamically added -->
+    </div>
+  </div>
+  <div class="col-span-1">
+    <h2 class="text-center text-sm font-semibold mb-2 bg-yellow-500 text-white p-2 rounded-md">Interviewed</h2>
+    <div id="interviewed" class="flex flex-col space-y-2 p-2 bg-white rounded-md shadow-md min-h-[200px] overflow-y-auto">
+      <!-- Cards will be dynamically added -->
+    </div>
+  </div>
+
+  <div class="col-span-1">
+    <h2 class="text-center text-sm font-semibold mb-2 bg-orange-500 text-white p-2 rounded-md">Tested</h2>
+    <div id="tested" class="flex flex-col space-y-2 p-2 bg-white rounded-md shadow-md min-h-[200px] overflow-y-auto">
+      <!-- Cards go here -->
+    </div>
+  </div>
+  <div class="col-span-1">
+    <h2 class="text-center text-sm font-semibold mb-2 bg-purple-500 text-white p-2 rounded-md">Proposed</h2>
+    <div id="proposed" class="flex flex-col space-y-2 p-2 bg-white rounded-md shadow-md min-h-[200px] overflow-y-auto">
+      <!-- Cards go here -->
+    </div>
+  </div>
+  <div class="col-span-1">
+    <h2 class="text-center text-sm font-semibold mb-2 bg-pink-500 text-white p-2 rounded-md">Partner's Interview </h2>
+    <div id="interview_partner" class="flex flex-col space-y-2 p-2 bg-white rounded-md shadow-md min-h-[200px] overflow-y-auto">
+      <!-- Cards will be dynamically added -->
+    </div>
+  </div>
+  <div class="col-span-1">
+    <h2 class="text-center text-sm font-semibold mb-2 bg-cyan-500 text-white p-2 rounded-md">Final Client Interviews  </h2>
+    <div id="interview_client_final" class="flex flex-col space-y-2 p-2 bg-white rounded-md shadow-md min-h-[200px] overflow-y-auto">
+      <!-- Cards will be dynamically added -->
+    </div>
+  </div>  
+  <div class="col-span-1">
+    <h2 class="text-center text-sm font-semibold mb-2 bg-green-500 text-white p-2 rounded-md">Hired</h2>
+    <div id="hired" class="flex flex-col space-y-2 p-2 bg-white rounded-md shadow-md min-h-[200px] overflow-y-auto">
+      <!-- Cards go here -->
+    </div>
+  </div>
+  <div class="col-span-1">
+    <h2 class="text-center text-sm font-semibold mb-2 bg-teal-500 text-white p-2 rounded-md">Start</h2>
+    <div id="start" class="flex flex-col space-y-2 p-2 bg-white rounded-md shadow-md min-h-[200px] overflow-y-auto">
+      <!-- Cards go here -->
+    </div>
+  </div>
+  <div class="col-span-1">
+    <h2 class="text-center text-sm font-semibold mb-2 bg-red-500 text-white p-2 rounded-md">End</h2>
+    <div id="end" class="flex flex-col space-y-2 p-2 bg-white rounded-md shadow-md min-h-[200px] overflow-y-auto">
+      <!-- Cards go here -->
+    </div>
+  </div>
+</div>
+<button onclick="quickReset()" class="hidden mt-6 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-md">Quick Reset</button>

@@ -1,0 +1,177 @@
+<head><link rel="icon" href="favicon.ico"><link href="style.css" rel="stylesheet"></head><!-- Navigation Bar -->
+<div class="container">
+
+  <!-- Candidate Navbar Section -->
+  <div class="candidate-navbar-container py-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
+
+    <!-- Candidate Navbar -->
+    <div class="candidate-navbar">
+      <button id="pipeline-btn" class="nav-button" aria-current="page">
+        <span class="text-sm font-medium">In Pipeline</span>
+        <span class="ml-2 bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-semibold">20</span>
+      </button>
+      <button id="hired-btn" class="nav-button">
+        <span class="text-sm font-medium">Hired</span>
+        <span class="ml-2 bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-semibold">5</span>
+      </button>
+      <button id="not-available-btn" class="nav-button">
+        <span class="text-sm font-medium">Not Available</span>
+        <span class="ml-2 bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-xs font-semibold">8</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Job Details Section -->
+  <div id="job-details" class="container">
+    <div class="card-container">
+      <!-- Job -->
+      <div class="card">
+        <!-- Update Icon -->
+        <div id="jobIcons" class="flex justify-end space-x-4">
+          <a  id="updateJobIcon"
+            class="text-blue-500 hover:text-blue-700 cursor-pointer transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13.828 4.172a4 4 0 015.656 5.656L8 19H4v-4L13.828 4.172z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 14l2 2 2-2-2-2-2 2z">
+              </path>
+            </svg>
+          </a>
+        </div>
+
+        <div class="card-header">
+          <h5 ><input id="jobTitle" disabled></h5>
+          <div class="navigation-bar">
+            <button id="client-name"></button>
+            <button id="key-account-name"></button>
+            <div>
+            <div >Opening Date</div>
+            <input id="openingDate">
+          </div>
+          </div>
+        </div>
+        <!-- Card Content -->
+        <div class="card-content">
+          <table>
+            <tr>
+              <th>Status</th>
+              <td ><select id="status" name="status" disabled
+                class="rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
+                <option value="Open">Open</option>
+                <option value="Closed">Closed</option>
+              </select></td>
+            </tr>
+            <tr>
+              <th>Location</th>
+              <td ><input id="location" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Budget</th>
+              <td ><input id="budget" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Contact Person</th>
+              <td><input id="contact-person" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Contact Person Phone</th>
+              <td><input id="contact-person-phone" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Contact Person Email</th>
+              <td><input id="contact-person-email" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Number of Open Positions</th>
+              <td ><input id="number-openings" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Number of Proposed Candidates</th>
+              <td ><input id="candidates-proposed" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Selected Candidates</th>
+              <td ><input id="selected-candidates" class="editable" disabled> </td>
+            </tr>
+            <tr>
+              <th>Contract Start Date</th>
+              <td ><input id="contract-start-date" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Contract End Date</th>
+              <td ><input id="contract-end-date" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Compétence Phare</th>
+              <td ><input id="competence_phare" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Job Description</th>
+              <td><input id="job-description" class="editable" disabled></td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Button Container -->
+        
+          <!-- Make sure this button is directly in your HTML, not in a template or dynamic content -->
+<button 
+id="start-matching-btn" 
+class="flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+style="z-index: 10; position: relative;"
+>
+Start Matching
+</button>
+<input type="hidden" id="jobId" value="1" />
+
+
+
+      <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-4 rounded-lg">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            <div class="mt-2 text-center">Loading matches...</div>
+        </div>
+    </div>
+    
+    <div id="match-results" class="mt-6" style="display: none;">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-gray-800">Matching Candidates</h2>
+            <span class="text-sm text-gray-500">Total matches: <span id="total-matches">0</span></span>
+        </div>
+        
+        <div id="matches-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Matches will be inserted here -->
+        </div>
+        
+        <div id="no-matches" class="hidden text-center py-8 text-gray-500">
+            No matches found for this job.
+        </div>
+    </div>
+
+          <!-- Save Button -->
+          <button
+            class="save-button bg-green-500 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-save"
+              viewBox="0 0 16 16">
+              <path
+                d="M6.5 0a.5.5 0 0 1 .5.5V1h3V.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V1h1a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-.5.5H1a.5.5 0 0 1-.5-.5V1a.5.5 0 0 1 .5-.5h1V.5a.5.5 0 0 1 .5-.5h3zM4.5 1h7V.5a.5.5 0 0 0-.5-.5H5a.5.5 0 0 0-.5.5V1zm-2 .5h12v12H2V1.5zm2 4.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-1z" />
+            </svg>
+            Save Changes
+          </button>
+        </div>
+
+
+
+        
+        <!-- JavaScript 
+        <script src="js/matching-script.js"></script>
+        <script src="js/index.js"></script>-->
+        <!-- Ajoutez ceci à la fin de job-content.html -->
+         <script src="src/js/index.js"></script>
+
+
+
+
+      </div>
+    </div><script defer src="bundle.js"></script>

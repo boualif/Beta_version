@@ -1,0 +1,514 @@
+<head><link rel="icon" href="favicon.ico"><link href="style.css" rel="stylesheet"></head><div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+    <div class="mx-auto max-w-270">
+        <!-- Breadcrumb Start -->
+        <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                HR Management
+            </h2>
+
+            <nav>
+                <ol class="flex items-center gap-2">
+                    <li>
+                        <a class="font-medium" href="index.html">Dashboard /</a>
+                    </li>
+                    <li class="font-medium text-primary">Settings</li>
+                </ol>
+            </nav>
+        </div>
+        <!-- Breadcrumb End -->
+
+        <!-- ====== Settings Section Start -->
+        <div>
+            <div class="grid grid-cols-5 gap-8">
+                <div class="col-span-5 xl:col-span-3">
+                    <div
+                        class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+
+                        <!-- <div class="border-b border-stroke px-7 py-4 dark:border-strokedark">
+                            <h3 class="font-medium text-black dark:text-white">
+                                HR Management
+                            </h3>
+                        </div> -->
+
+                        <div id="hr-management" class="p-7">
+                            <form id="hrManagementForm" action="#">
+                                <div>
+                                    <div class="flex justify-end right-1 z-10 xsm:bottom-4 xsm:right-4">
+                                        <a onclick="toggleEditHRManagement()"
+                                            class="flex cursor-pointer items-center justify-center gap-2 rounded bg-primary px-2 py-1 text-sm font-medium text-white hover:bg-opacity-80 xsm:px-4">
+
+                                            <span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke-width="1.5" stroke="currentColor" class="size-4">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                                </svg>
+
+
+                                            </span>
+                                            <span>Edit</span>
+                                        </a>
+                                    </div>
+                                    <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                                        Localisation de Contrat
+                                    </label>
+                                    <div x-data="{ isOptionSelected: false}"
+                                        class="relative z-100 bg-white dark:bg-form-input">
+                                        <select name="contractLocation" id="contractLocation"
+                                            class="pointer-events-none relative z-100 w-full appearance-none rounded border border-stroke bg-transparent py-3 pl-5 pr-12 outline-none transition focus:border-gray active:border-primary dark:border-form-strokedark dark:bg-form-input"
+                                            :class="isOptionSelected && 'text-black dark:text-white'"
+                                            @change="onChange">
+                                            <option value="Fr" class="text-body">Fr</option>
+                                            <option value="Tn" class="text-body">Tn</option>
+                                        </select>
+                                        <span class="absolute right-4 top-1/2 z-10 -translate-y-1/2">
+                                            <svg class="hidden" width="24" height="24" viewBox="0 0 24 24"
+                                                fill="#64748B" xmlns="http://www.w3.org/2000/svg">
+                                                <g opacity="0.8">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
+                                                        fill="#637381"></path>
+                                                </g>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div id="contract-type-div">
+
+                                </div>
+
+                                <div class="mb-5.5">
+                                    <label class="mb-3 block text-sm font-medium text-black dark:text-white">Prétention
+                                        salariale</label>
+                                    <input readonly
+                                        class="w-full rounded border border-stroke px-4.5 py-3 font-medium text-black focus:border-gray focus-visible:outline-none hover:cursor-default focus:cursor-default dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                        type="text" name="salaryExpectation" id="salaryExpectation" />
+                                </div>
+                                <div class="mb-5.5">
+                                    <label class="mb-3 block text-sm font-medium text-black dark:text-white">Ancien
+                                        salaire</label>
+                                    <input readonly
+                                        class="w-full rounded border border-stroke px-4.5 py-3 font-medium text-black focus:border-gray focus-visible:outline-none hover:cursor-default focus:cursor-default dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                        type="text" name="previousSalary" id="previousSalary" />
+                                </div>
+                                <div class="flex flex-col gap-5.5">
+                                    <div>
+                                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                                            Date d'intégration dans la société
+                                        </label>
+                                        <div class="relative">
+                                            <input
+                                                class="form-datepicker pointer-events-none w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none hover:cursor-pointer focus:cursor-pointer transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                placeholder="mm/dd/yyyy" data-class="flatpickr-right"
+                                                name="integrationDate" id="integrationDate" />
+
+                                            <div id="svg"
+                                                class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
+                                                <svg class="hidden" width="18" height="18" viewBox="0 0 18 18"
+                                                    fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z"
+                                                        fill="#64748B" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-5.5">
+                                    <label class="mb-3 block text-sm font-medium text-black dark:text-white">Solde de
+                                        congé</label>
+                                    <input readonly
+                                        class="w-full rounded border border-stroke px-4.5 py-3 font-medium text-black focus:border-gray focus-visible:outline-none hover:cursor-default focus:cursor-default dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                        type="number" name="leaveBalance" id="leaveBalance" />
+                                </div>
+                            </form>
+                            <div id="hrFormBtn" class="hidden flex justify-end gap-4.5">
+                                <button onclick="toggleDisplayHRManagement()"
+                                    class="flex justify-center rounded border border-stroke px-6 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                                    type="submit">
+                                    Cancel
+                                </button>
+                                <button onclick="saveHRManagement()"
+                                    class="flex justify-center rounded bg-primary px-6 py-2 font-medium text-gray hover:bg-opacity-90">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                <div id="valService"
+                    class="mb-8 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                    <div class="flex justify-between border-b border-stroke px-7 py-4 dark:border-strokedark">
+                        <h3 class="font-medium text-black dark:text-white">
+                            Validation Service Recrutement
+                        </h3>
+                        <div class="bottom-1 right-1 z-10 xsm:bottom-4 xsm:right-4">
+                            <a onclick="toggleEditValService()"
+                                class="flex cursor-pointer items-center justify-center gap-2 rounded bg-primary px-2 py-1 text-sm font-medium text-white hover:bg-opacity-80 xsm:px-4">
+
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                    </svg>
+
+
+                                </span>
+                                <span>Edit</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-7">
+                        <form id="form1" action="#">
+                            <div class="mb-5.5">
+                                <div>
+                                    <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                                        Date
+                                    </label>
+                                    <div class="relative">
+                                        <input
+                                            class="form-datepicker pointer-events-none w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-gray hover:cursor-pointer focus:cursor-pointer active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                            placeholder="mm/dd/yyyy" data-class="flatpickr-right" name="date1"
+                                            id="date1" />
+
+                                        <div id="svg1"
+                                            class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
+                                            <svg class="hidden" width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z"
+                                                    fill="#64748B" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-5.5">
+                                <div class="">
+                                    <label class="mb-3 block text-sm font-medium text-black dark:text-white">Validé
+                                        par</label>
+                                    <div class="relative">
+                                        <span class="absolute left-4.5 top-4">
+                                            <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20"
+                                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <g opacity="0.8">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M3.72039 12.887C4.50179 12.1056 5.5616 11.6666 6.66667 11.6666H13.3333C14.4384 11.6666 15.4982 12.1056 16.2796 12.887C17.061 13.6684 17.5 14.7282 17.5 15.8333V17.5C17.5 17.9602 17.1269 18.3333 16.6667 18.3333C16.2064 18.3333 15.8333 17.9602 15.8333 17.5V15.8333C15.8333 15.1703 15.5699 14.5344 15.1011 14.0655C14.6323 13.5967 13.9964 13.3333 13.3333 13.3333H6.66667C6.00363 13.3333 5.36774 13.5967 4.8989 14.0655C4.43006 14.5344 4.16667 15.1703 4.16667 15.8333V17.5C4.16667 17.9602 3.79357 18.3333 3.33333 18.3333C2.8731 18.3333 2.5 17.9602 2.5 17.5V15.8333C2.5 14.7282 2.93899 13.6684 3.72039 12.887Z"
+                                                        fill="" />
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M9.99967 3.33329C8.61896 3.33329 7.49967 4.45258 7.49967 5.83329C7.49967 7.214 8.61896 8.33329 9.99967 8.33329C11.3804 8.33329 12.4997 7.214 12.4997 5.83329C12.4997 4.45258 11.3804 3.33329 9.99967 3.33329ZM5.83301 5.83329C5.83301 3.53211 7.69849 1.66663 9.99967 1.66663C12.3009 1.66663 14.1663 3.53211 14.1663 5.83329C14.1663 8.13448 12.3009 9.99996 9.99967 9.99996C7.69849 9.99996 5.83301 8.13448 5.83301 5.83329Z"
+                                                        fill="" />
+                                                </g>
+                                            </svg>
+                                        </span>
+                                        <input readonly
+                                            class="w-full rounded border border-stroke py-3 pl-11.5 pr-4.5 font-medium text-black focus:border-gray focus-visible:outline-none hover:cursor-default focus:cursor-default dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                            type="text" name="validatedBy1" id="validatedBy1" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-5.5">
+                                <label
+                                    class="mb-3 block text-sm font-medium text-black dark:text-white">Evaluation</label>
+                                <div class="relative">
+                                    <span class="absolute left-4.5 top-4">
+                                        <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <g opacity="0.8" clip-path="url(#clip0_88_10224)">
+                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                    d="M1.56524 3.23223C2.03408 2.76339 2.66997 2.5 3.33301 2.5H9.16634C9.62658 2.5 9.99967 2.8731 9.99967 3.33333C9.99967 3.79357 9.62658 4.16667 9.16634 4.16667H3.33301C3.11199 4.16667 2.90003 4.25446 2.74375 4.41074C2.58747 4.56702 2.49967 4.77899 2.49967 5V16.6667C2.49967 16.8877 2.58747 17.0996 2.74375 17.2559C2.90003 17.4122 3.11199 17.5 3.33301 17.5H14.9997C15.2207 17.5 15.4326 17.4122 15.5889 17.2559C15.7452 17.0996 15.833 16.8877 15.833 16.6667V10.8333C15.833 10.3731 16.2061 10 16.6663 10C17.1266 10 17.4997 10.3731 17.4997 10.8333V16.6667C17.4997 17.3297 17.2363 17.9656 16.7674 18.4344C16.2986 18.9033 15.6627 19.1667 14.9997 19.1667H3.33301C2.66997 19.1667 2.03408 18.9033 1.56524 18.4344C1.0964 17.9656 0.833008 17.3297 0.833008 16.6667V5C0.833008 4.33696 1.0964 3.70107 1.56524 3.23223Z"
+                                                    fill="" />
+                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                    d="M16.6664 2.39884C16.4185 2.39884 16.1809 2.49729 16.0056 2.67253L8.25216 10.426L7.81167 12.188L9.57365 11.7475L17.3271 3.99402C17.5023 3.81878 17.6008 3.5811 17.6008 3.33328C17.6008 3.08545 17.5023 2.84777 17.3271 2.67253C17.1519 2.49729 16.9142 2.39884 16.6664 2.39884ZM14.8271 1.49402C15.3149 1.00622 15.9765 0.732178 16.6664 0.732178C17.3562 0.732178 18.0178 1.00622 18.5056 1.49402C18.9934 1.98182 19.2675 2.64342 19.2675 3.33328C19.2675 4.02313 18.9934 4.68473 18.5056 5.17253L10.5889 13.0892C10.4821 13.196 10.3483 13.2718 10.2018 13.3084L6.86847 14.1417C6.58449 14.2127 6.28409 14.1295 6.0771 13.9225C5.87012 13.7156 5.78691 13.4151 5.85791 13.1312L6.69124 9.79783C6.72787 9.65131 6.80364 9.51749 6.91044 9.41069L14.8271 1.49402Z"
+                                                    fill="" />
+                                            </g>
+                                            <defs>
+                                                <clipPath id="clip0_88_10224">
+                                                    <rect width="20" height="20" fill="white" />
+                                                </clipPath>
+                                            </defs>
+                                        </svg>
+                                    </span>
+
+                                    <textarea readonly
+                                        class="w-full rounded border border-stroke  py-3 pl-11.5 pr-4.5 font-medium text-black focus:border-gray focus-visible:outline-none hover:cursor-default focus:cursor-default dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                        name="evaluation1" id="evaluation1" rows="6"
+                                        placeholder="Write your evaluation here">
+          </textarea>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end gap-4.5">
+                                <p id="user1" name="user1"
+                                    class="justify-center rounded font-medium text-black hover:shadow-1 focus:border-gray hover:cursor-default  dark:border-strokedark dark:text-white">
+                                </p>
+                            </div>
+                        </form>
+                        <div id="form1Btn" class="hidden flex justify-end gap-4.5">
+                            <button onclick="toggleDisplayValService()"
+                                class="flex justify-center rounded border border-stroke px-6 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                                type="submit">
+                                Cancel
+                            </button>
+                            <button onclick="saveValService()"
+                                class="flex justify-center rounded bg-primary px-6 py-2 font-medium text-gray hover:bg-opacity-90">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="valTechnic"
+                    class="mb-8 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                    <div class="flex justify-between border-b border-stroke px-7 py-4 dark:border-strokedark">
+                        <h3 class="font-medium text-black dark:text-white">
+                            Validation Technique
+                        </h3>
+                        <div class="bottom-1 right-1 z-10 xsm:bottom-4 xsm:right-4">
+                            <a onclick="toggleEditValTechnic()"
+                                class="flex cursor-pointer items-center justify-center gap-2 rounded bg-primary px-2 py-1 text-sm font-medium text-white hover:bg-opacity-80 xsm:px-4">
+
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                    </svg>
+
+
+                                </span>
+                                <span>Edit</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-7">
+                        <form id="form2" action="#">
+                            <div class="mb-5.5">
+                                <div>
+                                    <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                                        Date
+                                    </label>
+                                    <div class="relative">
+                                        <input
+                                            class="form-datepicker pointer-events-none w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary hover:cursor-pointer focus:cursor-pointer dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                            placeholder="mm/dd/yyyy" data-class="flatpickr-right" name="date2"
+                                            id="date2" />
+
+                                        <div id="svg2"
+                                            class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
+                                            <svg class="hidden" width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z"
+                                                    fill="#64748B" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-5.5">
+                                <div class="">
+                                    <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                                        for="fullName">Validé par</label>
+                                    <div class="relative">
+                                        <span class="absolute left-4.5 top-4">
+                                            <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20"
+                                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <g opacity="0.8">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M3.72039 12.887C4.50179 12.1056 5.5616 11.6666 6.66667 11.6666H13.3333C14.4384 11.6666 15.4982 12.1056 16.2796 12.887C17.061 13.6684 17.5 14.7282 17.5 15.8333V17.5C17.5 17.9602 17.1269 18.3333 16.6667 18.3333C16.2064 18.3333 15.8333 17.9602 15.8333 17.5V15.8333C15.8333 15.1703 15.5699 14.5344 15.1011 14.0655C14.6323 13.5967 13.9964 13.3333 13.3333 13.3333H6.66667C6.00363 13.3333 5.36774 13.5967 4.8989 14.0655C4.43006 14.5344 4.16667 15.1703 4.16667 15.8333V17.5C4.16667 17.9602 3.79357 18.3333 3.33333 18.3333C2.8731 18.3333 2.5 17.9602 2.5 17.5V15.8333C2.5 14.7282 2.93899 13.6684 3.72039 12.887Z"
+                                                        fill="" />
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M9.99967 3.33329C8.61896 3.33329 7.49967 4.45258 7.49967 5.83329C7.49967 7.214 8.61896 8.33329 9.99967 8.33329C11.3804 8.33329 12.4997 7.214 12.4997 5.83329C12.4997 4.45258 11.3804 3.33329 9.99967 3.33329ZM5.83301 5.83329C5.83301 3.53211 7.69849 1.66663 9.99967 1.66663C12.3009 1.66663 14.1663 3.53211 14.1663 5.83329C14.1663 8.13448 12.3009 9.99996 9.99967 9.99996C7.69849 9.99996 5.83301 8.13448 5.83301 5.83329Z"
+                                                        fill="" />
+                                                </g>
+                                            </svg>
+                                        </span>
+                                        <input readonly
+                                            class="w-full rounded border border-stroke py-3 pl-11.5 pr-4.5 font-medium text-black focus:border-gray focus-visible:outline-none hover:cursor-default focus:cursor-default dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                            type="text" name="validatedBy2" id="validatedBy2" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-5.5">
+                                <label
+                                    class="mb-3 block text-sm font-medium text-black dark:text-white">Evaluation</label>
+                                <div class="relative">
+                                    <span class="absolute left-4.5 top-4">
+                                        <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <g opacity="0.8" clip-path="url(#clip0_88_10224)">
+                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                    d="M1.56524 3.23223C2.03408 2.76339 2.66997 2.5 3.33301 2.5H9.16634C9.62658 2.5 9.99967 2.8731 9.99967 3.33333C9.99967 3.79357 9.62658 4.16667 9.16634 4.16667H3.33301C3.11199 4.16667 2.90003 4.25446 2.74375 4.41074C2.58747 4.56702 2.49967 4.77899 2.49967 5V16.6667C2.49967 16.8877 2.58747 17.0996 2.74375 17.2559C2.90003 17.4122 3.11199 17.5 3.33301 17.5H14.9997C15.2207 17.5 15.4326 17.4122 15.5889 17.2559C15.7452 17.0996 15.833 16.8877 15.833 16.6667V10.8333C15.833 10.3731 16.2061 10 16.6663 10C17.1266 10 17.4997 10.3731 17.4997 10.8333V16.6667C17.4997 17.3297 17.2363 17.9656 16.7674 18.4344C16.2986 18.9033 15.6627 19.1667 14.9997 19.1667H3.33301C2.66997 19.1667 2.03408 18.9033 1.56524 18.4344C1.0964 17.9656 0.833008 17.3297 0.833008 16.6667V5C0.833008 4.33696 1.0964 3.70107 1.56524 3.23223Z"
+                                                    fill="" />
+                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                    d="M16.6664 2.39884C16.4185 2.39884 16.1809 2.49729 16.0056 2.67253L8.25216 10.426L7.81167 12.188L9.57365 11.7475L17.3271 3.99402C17.5023 3.81878 17.6008 3.5811 17.6008 3.33328C17.6008 3.08545 17.5023 2.84777 17.3271 2.67253C17.1519 2.49729 16.9142 2.39884 16.6664 2.39884ZM14.8271 1.49402C15.3149 1.00622 15.9765 0.732178 16.6664 0.732178C17.3562 0.732178 18.0178 1.00622 18.5056 1.49402C18.9934 1.98182 19.2675 2.64342 19.2675 3.33328C19.2675 4.02313 18.9934 4.68473 18.5056 5.17253L10.5889 13.0892C10.4821 13.196 10.3483 13.2718 10.2018 13.3084L6.86847 14.1417C6.58449 14.2127 6.28409 14.1295 6.0771 13.9225C5.87012 13.7156 5.78691 13.4151 5.85791 13.1312L6.69124 9.79783C6.72787 9.65131 6.80364 9.51749 6.91044 9.41069L14.8271 1.49402Z"
+                                                    fill="" />
+                                            </g>
+                                            <defs>
+                                                <clipPath id="clip0_88_10224">
+                                                    <rect width="20" height="20" fill="white" />
+                                                </clipPath>
+                                            </defs>
+                                        </svg>
+                                    </span>
+
+                                    <textarea readonly
+                                        class="w-full rounded border border-stroke py-3 pl-11.5 pr-4.5 font-medium text-black focus:border-gray focus-visible:outline-none hover:cursor-default focus:cursor-default dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                        name="evaluation2" id="evaluation2" rows="6"
+                                        placeholder="Write your evaluation here">
+      </textarea>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end gap-4.5">
+                                <p id="user2" name="user2"
+                                    class="justify-center rounded font-medium text-black hover:shadow-1 focus:border-gray hover:cursor-default dark:border-strokedark dark:text-white">
+                                </p>
+                            </div>
+                        </form>
+                        <div id="form2Btn" class="hidden flex justify-end gap-4.5">
+                            <button onclick="toggleDisplayValTechnic()"
+                                class="flex justify-center rounded border border-stroke px-6 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                                type="submit">
+                                Cancel
+                            </button>
+                            <button onclick="saveValTechnic()"
+                                class="flex justify-center rounded bg-primary px-6 py-2 font-medium text-gray hover:bg-opacity-90">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="valDirection"
+                    class="mb-8 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                    <div class="flex justify-between border-b border-stroke px-7 py-4 dark:border-strokedark">
+                        <h3 class="font-medium text-black dark:text-white">
+                            Validation Direction
+                        </h3>
+                        <div class="bottom-1 right-1 z-10 xsm:bottom-4 xsm:right-4">
+                            <a onclick="toggleEditValDirection()"
+                                class="flex cursor-pointer items-center justify-center gap-2 rounded bg-primary px-2 py-1 text-sm font-medium text-white hover:bg-opacity-80 xsm:px-4">
+
+                                <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                    </svg>
+
+
+                                </span>
+                                <span>Edit</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-7">
+                        <form id="form3" action="#">
+                            <div class="mb-5.5">
+                                <div>
+                                    <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                                        Date
+                                    </label>
+                                    <div class="relative">
+                                        <input
+                                            class="form-datepicker pointer-events-none w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal outline-none transition focus:border-primary active:border-primary hover:cursor-pointer focus:cursor-pointer dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                            placeholder="mm/dd/yyyy" data-class="flatpickr-right" name="date3"
+                                            id="date3" />
+
+                                        <div id="svg3"
+                                            class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center">
+                                            <svg class="hidden" width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z"
+                                                    fill="#64748B" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-5.5">
+                                <div class="">
+                                    <label class="mb-3 block text-sm font-medium text-black dark:text-white"
+                                        for="fullName">Validé par</label>
+                                    <div class="relative">
+                                        <span class="absolute left-4.5 top-4">
+                                            <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20"
+                                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <g opacity="0.8">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M3.72039 12.887C4.50179 12.1056 5.5616 11.6666 6.66667 11.6666H13.3333C14.4384 11.6666 15.4982 12.1056 16.2796 12.887C17.061 13.6684 17.5 14.7282 17.5 15.8333V17.5C17.5 17.9602 17.1269 18.3333 16.6667 18.3333C16.2064 18.3333 15.8333 17.9602 15.8333 17.5V15.8333C15.8333 15.1703 15.5699 14.5344 15.1011 14.0655C14.6323 13.5967 13.9964 13.3333 13.3333 13.3333H6.66667C6.00363 13.3333 5.36774 13.5967 4.8989 14.0655C4.43006 14.5344 4.16667 15.1703 4.16667 15.8333V17.5C4.16667 17.9602 3.79357 18.3333 3.33333 18.3333C2.8731 18.3333 2.5 17.9602 2.5 17.5V15.8333C2.5 14.7282 2.93899 13.6684 3.72039 12.887Z"
+                                                        fill="" />
+                                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                                        d="M9.99967 3.33329C8.61896 3.33329 7.49967 4.45258 7.49967 5.83329C7.49967 7.214 8.61896 8.33329 9.99967 8.33329C11.3804 8.33329 12.4997 7.214 12.4997 5.83329C12.4997 4.45258 11.3804 3.33329 9.99967 3.33329ZM5.83301 5.83329C5.83301 3.53211 7.69849 1.66663 9.99967 1.66663C12.3009 1.66663 14.1663 3.53211 14.1663 5.83329C14.1663 8.13448 12.3009 9.99996 9.99967 9.99996C7.69849 9.99996 5.83301 8.13448 5.83301 5.83329Z"
+                                                        fill="" />
+                                                </g>
+                                            </svg>
+                                        </span>
+                                        <input readonly
+                                            class="w-full rounded border border-stroke py-3 pl-11.5 pr-4.5 font-medium text-black focus:border-gray focus-visible:outline-none hover:cursor-default focus:cursor-default dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                            type="text" name="validatedBy3" id="validatedBy3" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-5.5">
+                                <label
+                                    class="mb-3 block text-sm font-medium text-black dark:text-white">Evaluation</label>
+                                <div class="relative">
+                                    <span class="absolute left-4.5 top-4">
+                                        <svg class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <g opacity="0.8" clip-path="url(#clip0_88_10224)">
+                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                    d="M1.56524 3.23223C2.03408 2.76339 2.66997 2.5 3.33301 2.5H9.16634C9.62658 2.5 9.99967 2.8731 9.99967 3.33333C9.99967 3.79357 9.62658 4.16667 9.16634 4.16667H3.33301C3.11199 4.16667 2.90003 4.25446 2.74375 4.41074C2.58747 4.56702 2.49967 4.77899 2.49967 5V16.6667C2.49967 16.8877 2.58747 17.0996 2.74375 17.2559C2.90003 17.4122 3.11199 17.5 3.33301 17.5H14.9997C15.2207 17.5 15.4326 17.4122 15.5889 17.2559C15.7452 17.0996 15.833 16.8877 15.833 16.6667V10.8333C15.833 10.3731 16.2061 10 16.6663 10C17.1266 10 17.4997 10.3731 17.4997 10.8333V16.6667C17.4997 17.3297 17.2363 17.9656 16.7674 18.4344C16.2986 18.9033 15.6627 19.1667 14.9997 19.1667H3.33301C2.66997 19.1667 2.03408 18.9033 1.56524 18.4344C1.0964 17.9656 0.833008 17.3297 0.833008 16.6667V5C0.833008 4.33696 1.0964 3.70107 1.56524 3.23223Z"
+                                                    fill="" />
+                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                    d="M16.6664 2.39884C16.4185 2.39884 16.1809 2.49729 16.0056 2.67253L8.25216 10.426L7.81167 12.188L9.57365 11.7475L17.3271 3.99402C17.5023 3.81878 17.6008 3.5811 17.6008 3.33328C17.6008 3.08545 17.5023 2.84777 17.3271 2.67253C17.1519 2.49729 16.9142 2.39884 16.6664 2.39884ZM14.8271 1.49402C15.3149 1.00622 15.9765 0.732178 16.6664 0.732178C17.3562 0.732178 18.0178 1.00622 18.5056 1.49402C18.9934 1.98182 19.2675 2.64342 19.2675 3.33328C19.2675 4.02313 18.9934 4.68473 18.5056 5.17253L10.5889 13.0892C10.4821 13.196 10.3483 13.2718 10.2018 13.3084L6.86847 14.1417C6.58449 14.2127 6.28409 14.1295 6.0771 13.9225C5.87012 13.7156 5.78691 13.4151 5.85791 13.1312L6.69124 9.79783C6.72787 9.65131 6.80364 9.51749 6.91044 9.41069L14.8271 1.49402Z"
+                                                    fill="" />
+                                            </g>
+                                            <defs>
+                                                <clipPath id="clip0_88_10224">
+                                                    <rect width="20" height="20" fill="white" />
+                                                </clipPath>
+                                            </defs>
+                                        </svg>
+                                    </span>
+
+                                    <textarea readonly
+                                        class="w-full rounded border border-stroke py-3 pl-11.5 pr-4.5 font-medium text-black focus:border-gray focus-visible:outline-none hover:cursor-default focus:cursor-default dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                        name="evaluation3" id="evaluation3" rows="6"
+                                        placeholder="Write your evaluation here">
+  </textarea>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end gap-4.5">
+                                <p id="user3" name="user3"
+                                    class="justify-center rounded font-medium text-black hover:shadow-1 focus:border-gray hover:cursor-default dark:border-strokedark dark:text-white">
+                                </p>
+                            </div>
+                        </form>
+                        <div id="form3Btn" class="hidden flex justify-end gap-4.5">
+                            <button onclick="toggleDisplayValDirection()"
+                                class="flex justify-center rounded border border-stroke px-6 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+                                type="submit">
+                                Cancel
+                            </button>
+                            <button onclick="saveValDirection()"
+                                class="flex justify-center rounded bg-primary px-6 py-2 font-medium text-gray hover:bg-opacity-90">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== Settings Section End -->
+        </div>
+    </div>
+</div><script defer src="bundle.js"></script>

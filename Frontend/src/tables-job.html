@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Job Offer Tables</title>
+  
+</head>
+
+<body
+  x-data="{ page: 'tables-candidate', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+  x-init="
+          darkMode = JSON.parse(localStorage.getItem('darkMode'));
+          $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+  :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}">
+  <!-- ===== Preloader Start ===== -->
+  <include src="./partials/preloader.html"></include>
+  <!-- ===== Preloader End ===== -->
+
+  <!-- ===== Page Wrapper Start ===== -->
+  <div class="flex h-screen overflow-hidden">
+    <!-- ===== Sidebar Start ===== -->
+    <include src="./partials/sidebar.html"></include>
+    <!-- ===== Sidebar End ===== -->
+
+    <!-- ===== Content Area Start ===== -->
+    <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+      <!-- ===== Header Start ===== -->
+      <include src="./partials/header.html" />
+      <!-- ===== Header End ===== -->
+
+      <!-- ===== Main Content Start ===== -->
+      <main>
+        <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+          <!-- Breadcrumb Start -->
+          <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 class="text-title-md2 font-bold text-black dark:text-white">
+              List of Jobs Offer
+            </h2>
+
+            <nav>
+              <ol class="flex items-center gap-2">
+                <li>
+                  <a class="font-medium" href="index.html">Dashboard /</a>
+                </li>
+              </ol>
+            </nav>
+            <a href="form-layout-job.html"
+            class="inline-flex items-center justify-center bg-primary px-10 py-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+            Add New Job Offre
+          </a>
+          </div>
+          <!-- Breadcrumb End -->
+
+          <!-- ====== Table Section Start -->
+          <div class="flex flex-col gap-10">
+
+            <!-- ====== Table Three Start -->
+            <include src="./partials/table-01-jobs.html" />
+            <!-- ====== Table Three End -->
+          </div>
+          <!-- ====== Table Section End -->
+          <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+            <div class="flex flex-1 justify-between sm:hidden">
+              <a href="#" id="prevPage" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
+              <a href="#" id="nextPage" class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
+            </div>
+            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+              <div>
+                <p class="text-sm text-gray-700">
+                  Showing
+                  <span id="startItem" class="font-medium">1</span>
+                  to
+                  <span id="endItem" class="font-medium">10</span>
+                  of
+                  <span id="totalItems" class="font-medium">97</span>
+                  results
+                </p>
+              </div>
+              <div>
+                <nav id="paginationNav" class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                  <!-- Pagination buttons will be dynamically inserted here -->
+                </nav>
+              </div>
+            </div>
+          </div>
+          
+          
+        </div>
+      </main>
+      <!-- ===== Main Content End ===== -->
+    </div>
+    <!-- ===== Content Area End ===== -->
+     
+  </div>
+  <!-- ===== Page Wrapper End ===== -->
+  <script src="js/tables-job.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Analysis Results</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        .score-high { background-color: #C6F6D5; }
+        .score-medium { background-color: #FEFCBF; }
+        .score-low { background-color: #FED7D7; }
+        
+        .skill-badge {
+            background-color: #E2E8F0;
+            color: #2D3748;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            display: inline-block;
+            margin: 0.25rem;
+        }
+
+        .loading-overlay {
+            background-color: rgba(255, 255, 255, 0.9);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+    </style>
+</head>
+<body
+  x-data="{ page: 'profile', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+  x-init="
+          darkMode = JSON.parse(localStorage.getItem('darkMode'));
+          $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+  :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}">
+  <!-- ===== Preloader Start ===== -->
+  <include src="./partials/preloader.html"></include>
+  <!-- ===== Preloader End ===== -->
+
+  <!-- ===== Page Wrapper Start ===== -->
+  <div class="flex h-screen overflow-hidden">
+    <!-- ===== Sidebar Start ===== -->
+    <include src="./partials/sidebar.html"></include>
+    <!-- ===== Sidebar End ===== -->
+
+    <!-- ===== Content Area Start ===== -->
+    <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+      <!-- ===== Header Start ===== -->
+      <include src="./partials/header.html" />
+<div class="bg-gray-50">
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto"></div>
+            <p class="mt-4 text-gray-700">Analyzing candidates...</p>
+        </div>
+    </div>
+    <div id="pdfModal" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 hidden">
+        <div class="relative bg-white rounded-lg shadow-lg w-3/4 h-3/4 mx-auto mt-16">
+            <button class="absolute top-3 right-3 text-black text-lg" onclick="closePDF()">✕</button>
+            <iframe id="pdfFrame" class="w-full h-full" frameborder="0"></iframe>
+        </div>
+    </div>
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Analysis Results</h1>
+                    <p class="text-gray-600 mt-2">
+                        Selected Candidates: <span id="selected-count" class="font-semibold">0</span>
+                    </p>
+                </div>
+                <button onclick="window.history.back()" 
+                        class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition-colors">
+                    Back to Matches
+                </button>
+            </div>
+        </div>
+
+        <!-- Candidate Profiles -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-6">Candidate Profiles</h2>
+            <div id="candidate-profiles" class="space-y-6">
+                <!-- Profile cards will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Export Options -->
+        <div class="flex justify-end mt-8 space-x-4">
+            <button id="process-selected-btn" 
+                    class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded transition-colors">
+                Add To Process 
+            </button>
+        </div>
+    </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const apiClient = axios.create({
+        baseURL: 'http://localhost:8000',
+        timeout: 10000,
+        withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    </script>
+    <script src="js/candidate-analysis.js"></script>    
+    
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>

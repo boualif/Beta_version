@@ -1,0 +1,268 @@
+<!-- Navigation Bar -->
+
+</div>
+  <!-- Job Details Section -->
+  <div id="job-details" class="container">
+    <div class="card-container">
+      <!-- Job -->
+      <div class="card">
+        <!-- Update Icon -->
+        <div id="jobIcons" class="flex justify-end space-x-4">
+          <a  id="updateJobIcon"
+            class="text-blue-500 hover:text-blue-700 cursor-pointer transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13.828 4.172a4 4 0 015.656 5.656L8 19H4v-4L13.828 4.172z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 14l2 2 2-2-2-2-2 2z">
+              </path>
+            </svg>
+          </a>
+        </div>
+
+        <div class="card-header">
+          <h5 ><input id="jobTitle" disabled></h5>
+          <div class="navigation-bar">
+            <button id="client-name"></button>
+            <button id="key-account-name"></button>
+            <div>
+            <div >Start Date</div>
+            <input id="openingDate">
+          </div>
+          </div>
+        </div>
+        <!-- Card Content -->
+        <div class="card-content">
+          <table>
+            <tr>
+              <th>Job Post</th>
+              <td>
+                <div class="flex items-center gap-3">
+                  <input id="job_type_etiquette" class="editable" disabled hidden>
+                  <span id="etiquette_badge" class="px-5 py-0.5 rounded-full text-xs font-medium hidden">
+                    <!-- Badge will be shown here by JavaScript -->
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>Status</th>
+              <td ><select id="status" name="status" disabled
+                class="rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
+                <option value="Open">Actif</option>
+                <option value="Closed">Inactif</option>
+                <option value="To_Treat">To Treat</option>
+                <option value="Blocked">Blocked</option>
+              </select></td>
+            </tr>
+            <tr>
+              <th>Location</th>
+              <td ><input id="location" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Budget</th>
+              <td ><input id="budget" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Key Contact</th>
+              <td><input id="contact-person" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Key Contact Phone</th>
+              <td><input id="contact-person-phone" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Email</th>
+              <td><input id="contact-person-email" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Number of Open Positions for this Job Offre</th>
+              <td ><input id="number-openings" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Number of Proposed Candidates</th>
+              <td ><input id="candidates-proposed" class="editable" disabled ></td>
+            </tr>
+            <!--<tr>
+              <th>Selected Candidates</th>
+              <td ><input id="selected-candidates" class="editable" disabled> </td>
+            </tr>-->
+            <tr>
+              <th>Contract Start Date</th>
+              <td ><input id="contract-start-date" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Contract End Date</th>
+              <td ><input id="contract-end-date" class="editable" disabled></td>
+            </tr>
+            <tr>
+              <th>Compétence Phare</th>
+              <td>
+                <input id="competence_phare" class="editable" disabled>
+                <button onclick="openCompetenceModal()" class="ml-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                  <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <th>Job Offre Description</th>
+              <td>
+                <input id="job-description" class="editable" disabled>
+                <button onclick="openJobDescriptionModal()" class="ml-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                  <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div id="job-details" class="relative min-h-[100px]">
+          <div class="flex flex-col h-full">
+              <!-- Job details content -->
+              <input
+                  id="jobTitle"
+                  hidden
+                  data-job-id="${job.id_Job}"
+                  disabled
+              />
+      
+              <!-- Buttons container - Now using flex and proper alignment -->
+              <div class="flex justify-end items-center w-full space-x-4 h-10">
+                <!-- Analyze AI button -->
+                <button
+                    id="start-matching-btn"
+                    class="inline-flex items-center h-10 px-4 bg-primary text-white text-sm rounded-lg hover:bg-primary-dark transition-colors duration-200"
+                >
+                    <svg 
+                        class="w-4 h-4 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                    </svg>
+                    Analyse IA
+                </button>
+            
+                <!-- Save Button -->
+                <button
+    id="saveChangesBtn"
+    class="inline-flex items-center h-10 px-4 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600 transition-colors duration-200"
+    style="display: none;"
+>
+    <svg 
+        xmlns="http://www.w3.org/2000/svg"
+        class="w-4 h-4 mr-2"
+        fill="currentColor"
+        viewBox="0 0 16 16"
+    >
+        <path d="M6.5 0a.5.5 0 0 1 .5.5V1h3V.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V1h1a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-.5.5H1a.5.5 0 0 1-.5-.5V1a.5.5 0 0 1 .5-.5h1V.5a.5.5 0 0 1 .5-.5h3zM4.5 1h7V.5a.5.5 0 0 0-.5-.5H5a.5.5 0 0 0-.5.5V1zm-2 .5h12v12H2V1.5zm2 4.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-1z" />
+    </svg>
+    Save Changes
+</button>
+            </div>
+      
+              <!-- Loading overlay -->
+              <div 
+                  id="loading-overlay"
+                  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
+              >
+                  <div class="bg-white p-6 rounded-lg shadow-lg">
+                      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                      <p class="mt-4 text-gray-700">Finding matches...</p>
+                  </div>
+              </div>
+          </div>
+      </div>
+      
+
+        
+        <!-- JavaScript 
+        <script src="js/matching-script.js"></script>
+        <script src="js/index.js"></script>-->
+        <!-- Ajoutez ceci à la fin de job-content.html -->
+         <script src="js/index.js"></script>
+         <script type="module">
+          import { initializeMatching } from './matching-script.js';
+          document.addEventListener('DOMContentLoaded', () => {
+              console.log('Initializing matching...');
+              initializeMatching();
+          });
+      </script>
+
+<!-- Competence Phare Modal -->
+<div id="competencePhareModal" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+  <div class="relative w-full max-w-2xl mx-auto mt-20 bg-white dark:bg-boxdark rounded-lg shadow-xl">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between p-4 border-b dark:border-gray-700">
+      <h3 class="text-xl font-semibold text-black dark:text-white">Compétence Phare</h3>
+      <button onclick="closeCompetenceModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <!-- Modal Body -->
+    <div class="p-6">
+      <textarea id="competencePhareText" class="w-full h-96 p-4 border rounded-lg focus:ring-2 focus:ring-primary dark:bg-boxdark dark:text-white dark:border-gray-600 disabled:bg-gray-100 dark:disabled:bg-gray-700" disabled></textarea>
+    </div>
+    <!-- Modal Footer -->
+    <div class="flex items-center justify-end p-4 border-t dark:border-gray-700">
+      <button id="editCompetenceBtn" onclick="toggleCompetenceEdit()" class="px-4 py-2 text-white bg-primary rounded hover:bg-opacity-90">
+        Edit
+      </button>
+      <button id="saveCompetenceBtn" onclick="saveCompetence()" class="hidden px-4 py-2 ml-2 text-white bg-green-500 rounded hover:bg-green-600">
+        Save
+      </button>
+      <button id="cancelCompetenceBtn" onclick="cancelCompetenceEdit()" class="hidden px-4 py-2 ml-2 text-gray-700 bg-gray-200 rounded hover:bg-gray-300 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Job Description Modal -->
+<div id="jobDescriptionModal" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+  <div class="relative w-full max-w-2xl mx-auto mt-20 bg-white dark:bg-boxdark rounded-lg shadow-xl">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between p-4 border-b dark:border-gray-700">
+      <h3 class="text-xl font-semibold text-black dark:text-white">Job Description</h3>
+      <button onclick="closeJobDescriptionModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <!-- Modal Body -->
+    <div class="p-6">
+      <textarea id="jobDescriptionText" class="w-full h-96 p-4 border rounded-lg focus:ring-2 focus:ring-primary dark:bg-boxdark dark:text-white dark:border-gray-600 disabled:bg-gray-100 dark:disabled:bg-gray-700" disabled></textarea>
+    </div>
+    <!-- Modal Footer -->
+    <div class="flex items-center justify-end p-4 border-t dark:border-gray-700">
+      <button id="editDescriptionBtn" onclick="toggleDescriptionEdit()" class="px-4 py-2 text-white bg-primary rounded hover:bg-opacity-90">
+        Edit
+      </button>
+      <button id="saveDescriptionBtn" onclick="saveDescription()" class="hidden px-4 py-2 ml-2 text-white bg-green-500 rounded hover:bg-green-600">
+        Save
+      </button>
+      <button id="cancelDescriptionBtn" onclick="cancelDescriptionEdit()" class="hidden px-4 py-2 ml-2 text-gray-700 bg-gray-200 rounded hover:bg-gray-300 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+      </div>
+    </div>

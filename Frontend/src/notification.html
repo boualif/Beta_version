@@ -4,116 +4,97 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      Notification
-    </title>
+    <title>Notification</title>
     
+    <!-- Add these script dependencies first -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
   </head>
 
-  <body
-    x-data="{ page: 'ecommerce', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
-    x-init="
-         darkMode = JSON.parse(localStorage.getItem('darkMode'));
-         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
-    :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}"
-  >
-    <!-- ===== Preloader Start ===== -->
-    <include src="./partials/preloader.html"></include>
-    <!-- ===== Preloader End ===== -->
+  <style>
+    .notification-item {
+      transition: all 0.2s ease-in-out;
+    }
 
-    <!-- ===== Page Wrapper Start ===== -->
+    .notification-item:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .notification-item.read {
+      opacity: 0.7;
+    }
+
+    .cursor-pointer {
+      cursor: pointer;
+    }
+  </style>
+
+  <body>
+    <!-- Add a proper notifications container -->
     <div class="flex h-screen overflow-hidden">
-      <!-- ===== Sidebar Start ===== -->
-      <include src="./partials/sidebar.html"></include>
-      <!-- ===== Sidebar End ===== -->
-
-      <!-- ===== Content Area Start ===== -->
-      <div
-        class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden"
-      >
-        <!-- ===== Header Start ===== -->
-        <include src="./partials/header.html" />
-        <!-- ===== Header End ===== -->
-
-        <!-- ===== Main Content Start ===== -->
-        <!DOCTYPE html>
-        <html lang="en">
-          <head>
-            <meta charset="UTF-8" />
-            <meta
-              name="viewport"
-              content="width=device-width, initial-scale=1.0"
-            />
-            <title>Compare Resumes</title>
-            <link
-              href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-              rel="stylesheet"
-            />
-            <style>
-              /* Additional custom CSS if needed */
-              iframe {
-                /* Ensures iframes fit the width and height specified */
-                max-width: 100%;
-                max-height: 100vh;
-              }
-            </style>
-          </head>
-          <body>
-            <main class="p-4">
-              <a
-                onclick="profile()"
-                class="inline-flex cursor-pointer items-center justify-end rounded-md border border-primary px-10 py-4 text-center font-medium text-primary hover:bg-opacity-90 lg:px-8 xl:px-10"
-                >Candidate Profile</a
-              >
+      <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+        <main>
+          <!-- Add notifications section -->
+          <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+            <div class="mb-6">
+              <h2 class="text-2xl font-semibold text-black dark:text-white">
+                Notifications
+              </h2>
+            </div>
+            
+            <!-- This is where notifications will be loaded -->
+            <div id="notifications-container" class="space-y-4">
+              <!-- Notifications will be inserted here -->
+            </div>
+          </div>
+          
+          <!-- Rest of your content -->
               <div class="mt-4">
-                <!-- PDF Container for the Original Resume -->
                 <div class="p-4">
                   <h2 class="mb-2 text-xl font-bold">Original Resume</h2>
-                  <!-- PDF Viewer -->
-                  <iframe
-                    id="originalResume"
-                    class="border-gray-300 w-full border"
-                    style="height: 80vh"
-                  ></iframe>
+              <iframe id="originalResume" class="w-full border border-gray-300" style="height: 80vh"></iframe>
                 </div>
 
                 <!-- PDF Container for the Updated Resume -->
                 <div class="p-4">
                   <h2 class="mb-2 text-xl font-bold">Updated Resume</h2>
-                  <!-- PDF Viewer -->
-                  <iframe
-                    id="updatedResume"
-                    class="border-gray-300 w-full border"
-                    style="height: 80vh"
-                  ></iframe>
+              <iframe id="updatedResume" class="w-full border border-gray-300" style="height: 80vh"></iframe>
                 </div>
               </div>
 
-              <!-- Buttons for Admin Actions -->
+          <!-- Admin action buttons -->
               <div class="mt-6 flex justify-center space-x-4 py-8">
-                <button
-                  onclick="discardChanges()"
-                  class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                >
+            <button onclick="discardChanges()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
                   Discard Changes
                 </button>
-                <button
-                  onclick="approveChanges()"
-                  class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                >
+            <button onclick="approveChanges()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
                   Confirm Changes
                 </button>
               </div>
             </main>
-                <!-- Success Popup Modal -->
-          </body>
-        </html>
-
-        <!-- ===== Main Content End ===== -->
       </div>
-      <!-- ===== Content Area End ===== -->
     </div>
-    <!-- ===== Page Wrapper End ===== -->
-    <script src="js/notification.js"></script>
+
+    <!-- Move scripts to end of body -->
+    <script src="/src/js/notification.js"></script>
+
+    
+    <!-- Add debug helper -->
+    <script>
+      window.onerror = function(msg, url, lineNo, columnNo, error) {
+        console.error('Error:', msg, 'Line:', lineNo, 'Column:', columnNo);
+        return false;
+      };
+      
+      // Check if notification.js is loaded
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOM loaded');
+        if (typeof handleNotificationClick === 'undefined') {
+          console.error('notification.js not loaded properly');
+        } else {
+          console.log('notification.js loaded successfully');
+        }
+      });
+    </script>
   </body>
 </html>

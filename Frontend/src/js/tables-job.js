@@ -19,31 +19,58 @@ function getJob(id) {
   apiClient.get(`/job/get-job/${id}/`, { withCredentials: true })
     .then(function (response) {
       const jobData = response.data;
-      console.log(jobData);
+      
+      // Ensure both dates are set to the creation date
+      const creationDate = new Date().toISOString().split('T')[0];
+      jobData.added_at = creationDate;
+      jobData.opening_date = creationDate;
+      
+      console.log('Job data with synced dates:', jobData);
       localStorage.setItem('jobData', JSON.stringify(jobData));
       window.location.href = "job-details.html";
     })
     .catch(function (error) {
-      console.log('Error fetching clients:', error);
+      console.log('Error fetching job:', error);
     });
 }
+
 let currentPage = 1;
 let totalPages = 1;
 let perPage = 10;
+
+// Function to format date for display
+function formatDate(dateString) {
+  if (!dateString) return '-';
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return '-';
+  
+  // Format as "MMM DD, YYYY"
+  return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+  });
+}
 
 function fetchJobs(page = 1, perPage = 5) {
   apiClient.get(`/job/list/?page=${page}&per_page=${perPage}`, { withCredentials: true })
     .then(function (response) {
       const jobs = response.data.items;
-      const totalItems = parseInt(response.data.total_items) || 0; // Assurez-vous que totalItems est un nombre
-      currentPage = parseInt(response.data.page) || 1; // Assurez-vous que currentPage est un nombre
-      totalPages = parseInt(response.data.total_pages) || 1; // Assurez-vous que totalPages est un nombre
+      const totalItems = parseInt(response.data.total_items) || 0;
+      currentPage = parseInt(response.data.page) || 1;
+      totalPages = parseInt(response.data.total_pages) || 1;
 
-      // Mettre à jour l'affichage des jobs (votre code existant)
       const tbody = document.getElementById('jobTableBody');
-      tbody.innerHTML = ''; // Effacer les lignes existantes
+      tbody.innerHTML = '';
+      
       jobs.forEach(job => {
+        apiClient.get(`/job/get-job/${job.idJob}/`, { withCredentials: true })
+          .then(function(jobResponse) {
+            const fullJobData = jobResponse.data;
         var row;
+            const publicationDate = job.added_at || '-';
+
+            console.log('publicationDate',publicationDate)
         if (is_superuser === "true") {
           row = `
             <tr>
@@ -61,22 +88,22 @@ function fetchJobs(page = 1, perPage = 5) {
                 <a onclick="getClient(${job.idClient})" class="cursor-pointer hover:text-primary">${job.client}</a>
               </td>
               <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                <p class="text-black dark:text-white">Jan 13, 2023</p>
+                    <p class="text-black dark:text-white">${publicationDate}</p>
               </td>
               <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                <p class="text-black dark:text-white">Feb 13, 2023</p>
+                    <p class="text-black dark:text-white">${fullJobData.deadline_date || '-'}</p>
               </td>
               <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                <p class="text-black dark:text-white">${job.location}</p>
+                    <p class="text-black dark:text-white">${job.location || '-'}</p>
               </td>
               <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                <p class="text-black dark:text-white">${job.nb_positions}</p>
+                    <p class="text-black dark:text-white">${job.nb_positions || '-'}</p>
               </td>
               <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                 <p class="jobStatus"></p>
               </td>
               <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                <p class="text-black dark:text-white">${job.ownerRH}</p>
+                    <p class="text-black dark:text-white">${job.ownerRH || '-'}</p>
               </td>
               <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                 <a href="javascript:void(0)" onclick="deleteJob(${job.idJob})" class="top-4 right-14 text-red-500 hover:text-red-700 transition">
@@ -103,25 +130,26 @@ function fetchJobs(page = 1, perPage = 5) {
                 <a onclick="getClient(${job.idClient})" class="cursor-pointer hover:text-primary">${job.client}</a>
               </td>
               <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                <p class="text-black dark:text-white">Jan 13, 2023</p>
+                    <p class="text-black dark:text-white">${publicationDate}</p>
               </td>
               <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                <p class="text-black dark:text-white">Feb 13, 2023</p>
+                    <p class="text-black dark:text-white">${fullJobData.deadline_date || '-'}</p>
               </td>
               <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                <p class="text-black dark:text-white">${job.location}</p>
+                    <p class="text-black dark:text-white">${job.location || '-'}</p>
               </td>
               <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                <p class="text-black dark:text-white">${job.nb_positions}</p>
+                    <p class="text-black dark:text-white">${job.nb_positions || '-'}</p>
               </td>
               <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                 <p class="jobStatus"></p>
               </td>
               <td class="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
-                <p class="text-black dark:text-white">${job.ownerRH}</p>
+                    <p class="text-black dark:text-white">${job.ownerRH || '-'}</p>
               </td>
             </tr>`;
         }
+            
         tbody.insertAdjacentHTML('beforeend', row);
         const jobStatus = tbody.querySelector('tr:last-child .jobStatus');
         const status = job.status;
@@ -129,30 +157,34 @@ function fetchJobs(page = 1, perPage = 5) {
         if (status === "Open") {
             jobStatus.className = "inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success";
             jobStatus.textContent = status;
-        } else if (status === "Closed") {
+            } else if (status === "Inactif") {
             jobStatus.className = "inline-flex rounded-full bg-danger bg-opacity-10 px-3 py-1 text-sm font-medium text-success";
             jobStatus.textContent = status;
         } else if (status === "To_Treat") {
             jobStatus.className = "inline-flex rounded-full bg-warning bg-opacity-10 px-3 py-1 text-sm font-medium text-warning";
             jobStatus.textContent = status;
-        } else if (status === "Blocked") {
+            } else if (status === "Untreated") {
           jobStatus.className = "inline-flex rounded-full bg-black bg-opacity-90 px-3 py-1 text-sm font-medium text-white";
           jobStatus.textContent = status;
         } else {
-            jobStatus.className = ""; // Cas par défaut si le statut n'est pas reconnu
+              jobStatus.className = "";
         }
+          })
+          .catch(function (error) {
+            console.log('Error fetching job details:', error);
+          });
               });
 
-      // Mettre à jour les informations de pagination
+      // Update pagination information
       document.getElementById('totalItems').innerText = totalItems;
       document.getElementById('startItem').innerText = (currentPage - 1) * perPage + 1;
       document.getElementById('endItem').innerText = Math.min(currentPage * perPage, totalItems);
 
-      // Générer les contrôles de pagination
+      // Generate pagination controls
       generatePaginationControls();
     })
     .catch(function (error) {
-      console.log('Error fetching jobs:', error);
+      console.log('Error in main jobs fetch:', error);
     });
 }
 
@@ -187,26 +219,91 @@ function generatePaginationControls() {
   paginationNav.insertAdjacentHTML('beforeend', nextButton);
 }
 
+// Fonction pour créer la modale de suppression d'un job
+function createDeleteJobModal() {
+  // Vérifier si la modale existe déjà
+  if (!document.getElementById('deleteJobModal')) {
+      document.body.insertAdjacentHTML('beforeend', `
+          <div id="deleteJobModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-gray-500 bg-opacity-75 flex items-center justify-center">
+              <div class="relative bg-white dark:bg-boxdark rounded-lg max-w-md w-full mx-4 md:mx-auto shadow-lg">
+                  <div class="p-6">
+                      <div class="flex items-center justify-center gap-4">
+                          <div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                              <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                              </svg>
+                          </div>
+                          <div class="flex-1">
+                              <h3 class="text-lg font-medium text-graydark dark:text-white">
+                                  Supprimer le job
+                              </h3>
+                              <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                  Êtes-vous sûr de vouloir supprimer ce job ? Cette action est irréversible.
+                              </p>
+                          </div>
+                      </div>
+                      <div class="mt-6 flex justify-end gap-3">
+                          <button type="button" id="cancelDeleteJob" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:bg-boxdark dark:text-white dark:border-strokedark">
+                              Annuler
+                          </button>
+                          <button type="button" id="confirmDeleteJob" class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                              Supprimer
+                          </button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      `);
+  }
+}
+// Fonction pour afficher la modale de suppression d'un job
+function showDeleteJobModal() {
+  return new Promise((resolve) => {
+      createDeleteJobModal(); // S'assurer que la modale existe
 
+      const modal = document.getElementById('deleteJobModal');
+      const cancelButton = document.getElementById('cancelDeleteJob');
+      const confirmButton = document.getElementById('confirmDeleteJob');
 
+      // Afficher la modale
+      modal.classList.remove('hidden');
 
-function deleteJob(jobId) {
-  // Confirmation and deletion logic
-  if (confirm('Are you sure you want to delete this job?')) {
-    apiClient.delete(`/job/${jobId}/delete/`,
-      {
+      // Gérer le clic sur "Annuler"
+      cancelButton.addEventListener('click', () => {
+          modal.classList.add('hidden'); // Masquer la modale
+          resolve(false); // Résoudre la promesse avec `false` (l'utilisateur a annulé)
+      });
+
+      // Gérer le clic sur "Supprimer"
+      confirmButton.addEventListener('click', () => {
+          modal.classList.add('hidden'); // Masquer la modale
+          resolve(true); // Résoudre la promesse avec `true` (l'utilisateur a confirmé)
+      });
+  });
+}
+
+// Fonction pour supprimer un job
+async function deleteJob(jobId) {
+  const confirmed = await showDeleteJobModal(); // Afficher la modale et attendre la réponse
+
+  if (confirmed) {
+      // Si l'utilisateur confirme la suppression
+      apiClient
+          .delete(`/job/${jobId}/delete/`, {
         withCredentials: true,
         headers: {
-          'X-CSRFToken': Cookies.get('csrftoken'),  // Manually extract the CSRF token
+                  'X-CSRFToken': Cookies.get('csrftoken'), // Token CSRF
         },
-      }
-    )
-      .then(function (response) {
-        alert('Job deleted successfully!');
-        // Refresh the job table or redirect
+          })
+          .then((response) => {
+              if (response.status === 200) {
+                  console.log("Job deleted successfully:", response.data);
+                  // Rafraîchir la liste des jobs après la suppression
+                  fetchJobs(currentPage, perPage);
+              }
       })
-      .catch(function (error) {
-        console.error('There was an error deleting the job!', error);
+          .catch((error) => {
+              console.error("Error deleting job:", error);
       });
   }
 }

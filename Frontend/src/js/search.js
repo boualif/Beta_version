@@ -45,52 +45,51 @@ document.addEventListener('alpine:init', () => {
         },
 
         async handleResultClick(result) {
-            console.log('Handling click for result:', result);
-            
+            console.log('Clicked result:', result);
             try {
-                // Consistent API URL structure
-                const detailsUrl = `/api/${result.type}s/${result.id}/`;  // Note: pluralizes the type
-
-                const response = await fetch(detailsUrl, {
-                    method: 'GET',
+                if (result.type === 'candidate') {
+                    // Faire l'appel API en utilisant l'URL fournie par le backend
+                    const response = await apiClient.get(`/api/get-candidate/${result.id}/`, {
+                        withCredentials: true,
+                        headers: {
+                            'X-CSRFToken': Cookies.get('csrftoken')
+                        }
+                    });
+        
+                    // Stocker les données
+                    localStorage.setItem('responseData', JSON.stringify(response.data));
+                    
+                    // Rediriger vers la page profile
+                    window.location.href = `profile.html?candidateId=${result.id}`;
+                } else if (result.type === 'job') {
+                    const response = await apiClient.get(`/job/get-job/${result.id}/`, {
+                        withCredentials: true
+                    });
+                    localStorage.setItem('jobData', JSON.stringify(response.data));
+                    window.location.href = "job-details.html";
+                }
+                else if (result.type === 'client') {
+                    const response = await apiClient.get(`/${result.id}/get-client/`, {
+                        withCredentials: true,
                     headers: {
                         'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    credentials: 'include'
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch details: ${response.status}`);
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': Cookies.get('csrftoken')
+                        }
+                    });
+ 
+                    if (response.data) {
+                        localStorage.setItem('clientData', JSON.stringify(response.data));
+                        window.location.href = "profile-client.html";
+                    }
                 }
-
-                const detailData = await response.json();
                 
-                // Store the full details in localStorage
-                localStorage.setItem('selectedItem', JSON.stringify({
-                    ...detailData,
-                    type: result.type  // Make sure to preserve the type
-                }));
-
-                // Navigate to the appropriate page using proper URL construction
-                const pageUrls = {
-                    candidate: '/candidates/profile',
-                    job: '/jobs/details',
-                    client: '/clients/profile'
-                };
-
-                const targetUrl = pageUrls[result.type];
-                if (targetUrl) {
-                    window.location.href = targetUrl;
-                } else {
-                    console.error('Unknown result type:', result.type);
-                }
+                // Ajouter d'autres types si nécessaire
             } catch (error) {
                 console.error('Error handling result click:', error);
-                this.error = 'Failed to load details. Please try again.';
+                this.error = 'Failed to load details';
             }
         },
-        
         init() {
             // Debounce search input
             let debounceTimeout;

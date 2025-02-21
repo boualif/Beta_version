@@ -1,3 +1,19 @@
+function calculateTotalExperience(experiences) {
+  if (!Array.isArray(experiences) || experiences.length === 0) {
+    return "Not specified";
+  }
+
+  let totalYears = 0;
+  experiences.forEach(exp => {
+    const startDate = new Date(exp.StartDate);
+    const endDate = exp.EndDate ? new Date(exp.EndDate) : new Date();
+    const years = (endDate - startDate) / (1000 * 60 * 60 * 24 * 365.25);
+    totalYears += years;
+  });
+
+  totalYears = Math.round(totalYears);
+  return `${totalYears} years`;
+}
 window.onload = () => {
   let currentPage = 1;
   let executeOnce = false;
@@ -250,14 +266,19 @@ window.onload = () => {
           wrapper2.appendChild(text2);
           positionCell.appendChild(wrapper2);
           row.appendChild(positionCell);
-
+          console.log("Experience data:", element.experience);
+          // In tables-candidate.js, modify the experience cell creation code:
           const experienceCell = document.createElement("td");
           experienceCell.classList.add("border-b", "border-[#eee]", "px-4", "py-5", "pl-9", "dark:border-strokedark", "xl:pl-11");
           const wrapper3 = document.createElement("div");
           wrapper3.classList.add("flex", "items-center", "gap-3", "p-2.5", "xl:p-5");
           const text3 = document.createElement("p");
           text3.classList.add("hidden", "font-medium", "text-black", "dark:text-white", "sm:block");
-          text3.textContent = element.experience;  // Directly set the text content
+
+          // Calculate experience from CandidateInfo if available
+          const candidateExperiences = element.candidateData?.CandidateInfo?.Experience;
+          text3.textContent = calculateTotalExperience(candidateExperiences);
+
           wrapper3.appendChild(text3);
           experienceCell.appendChild(wrapper3);
           row.appendChild(experienceCell);
@@ -285,16 +306,7 @@ window.onload = () => {
           row.appendChild(mobilityCell);
 
 
-          const dateContactCell = document.createElement("td");
-          dateContactCell.classList.add("border-b", "border-[#eee]", "px-4", "py-5", "pl-9", "dark:border-strokedark", "xl:pl-11");
-          const wrapper6 = document.createElement("div");
-          wrapper6.classList.add("flex", "items-center", "gap-3", "p-2.5", "xl:p-5");
-          const text6 = document.createElement("p");
-          text6.classList.add("hidden", "font-medium", "text-black", "dark:text-white", "sm:block");
-          text6.textContent = element.date_last_contacted;  // Directly set the text content
-          wrapper6.appendChild(text6);
-          dateContactCell.appendChild(wrapper6);
-          row.appendChild(dateContactCell);
+          
 
           const RHCell = document.createElement("td");
           RHCell.classList.add("border-b", "border-[#eee]", "px-4", "py-5", "pl-9", "dark:border-strokedark", "xl:pl-11");

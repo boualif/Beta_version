@@ -1,3 +1,5 @@
+let selectedCandidateIds = new Set();
+
 async function initializeAnalysis() {
     try {
         showLoading();
@@ -271,45 +273,45 @@ function createProfileCard(analysis) {
                     <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
-                    <span class="text-gray-600">${analysis.cv_analysis.email || 'Email non disponible'}</span>
+                    <span class="text-gray-600">${analysis.cv_analysis.email || 'Email not available'}</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
-                    <span class="text-gray-600">${analysis.cv_analysis.location || 'Localisation non disponible'}</span>
+                    <span class="text-gray-600">${analysis.cv_analysis.location || 'Location not available'}</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
-                    <span class="text-gray-600">${analysis.cv_analysis.years_of_experience} ans d'expérience</span>
+                    <span class="text-gray-600">${analysis.cv_analysis.years_of_experience} </span>
                 </div>
                 <div class="flex items-center gap-2">
                     <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
-                    <span class="text-gray-600">Âge: ${analysis.cv_analysis.age || 'Non spécifié'}</span>
+                    <span class="text-gray-600">Age: ${analysis.cv_analysis.estimated_age}</span>
                 </div>
             </div>
 
             <div class="space-y-4">
                 <!-- Scores Section -->
-                <div class="grid grid-cols-2 gap-4">
+               <!--  <div class="grid grid-cols-2 gap-4">
                     <div class="bg-blue-50 p-4 rounded-lg">
                         <h4 class="font-semibold text-blue-600 mb-2">Scores d'évaluation</h4>
                         <ul class="space-y-2">
-                            <li class="text-gray-700">Score général: ${analysis.cv_analysis.general_score}</li>
-                            <li class="text-gray-700">Score compétences: ${analysis.cv_analysis.skills_score}</li>
-                            <li class="text-gray-700">Score expérience: ${analysis.cv_analysis.job_title_and_experience_score}</li>
+                            <li class="text-gray-700">Overall score: ${analysis.cv_analysis.general_score}</li>
+                            <li class="text-gray-700">Skills score: ${analysis.cv_analysis.skills_score}</li>
+                            <li class="text-gray-700">Experience score: ${analysis.cv_analysis.job_title_and_experience_score}</li>
                         </ul>
                     </div>
-                </div>
+                </div>--> 
 
                 <!-- Skills Match -->
                 <div>
-                    <h4 class="font-semibold text-green-600 mb-2">Compétences correspondantes</h4>
+                    <h4 class="font-semibold text-green-600 mb-2">Matching skills</h4>
                     <div class="bg-green-50 p-4 rounded-lg">
                         <ul class="space-y-2">
                             ${analysis.cv_analysis.skills_match.map(skill => 
@@ -321,7 +323,7 @@ function createProfileCard(analysis) {
 
                 <!-- Experience Match -->
                 <div>
-                    <h4 class="font-semibold text-green-600 mb-2">Expérience correspondante</h4>
+                    <h4 class="font-semibold text-green-600 mb-2">Relevant experience</h4>
                     <div class="bg-green-50 p-4 rounded-lg">
                         <ul class="space-y-2">
                             ${analysis.cv_analysis.job_title_and_experience_match.map(exp => 
@@ -334,7 +336,7 @@ function createProfileCard(analysis) {
                 <!-- Gaps Section -->
                 <!-- <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <h4 class="font-semibold text-orange-600 mb-2">Lacunes en compétences</h4>
+                        <h4 class="font-semibold text-orange-600 mb-2">Skills gaps</h4>
                         <div class="bg-orange-50 p-4 rounded-lg">
                             <ul class="space-y-2">
                                 ${analysis.cv_analysis.skills_gaps.map(gap => 
@@ -358,7 +360,7 @@ function createProfileCard(analysis) {
                 <!-- Strengths & Weaknesses -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <h4 class="font-semibold text-green-600 mb-2">Points forts</h4>
+                        <h4 class="font-semibold text-green-600 mb-2">Key strengths</h4>
                         <div class="bg-green-50 p-4 rounded-lg">
                             <ul class="space-y-2">
                                 ${analysis.cv_analysis.general_strengths.map(strength => 
@@ -368,7 +370,7 @@ function createProfileCard(analysis) {
                         </div>
                     </div>
                     <div>
-                        <h4 class="font-semibold text-red-600 mb-2">Points faibles</h4>
+                        <h4 class="font-semibold text-red-600 mb-2">Weak points</h4>
                         <div class="bg-red-50 p-4 rounded-lg">
                             <ul class="space-y-2">
                                 ${analysis.cv_analysis.general_weaknesses.map(weakness => 
@@ -384,14 +386,14 @@ function createProfileCard(analysis) {
                 <label class="inline-flex items-center">
                     <input type="checkbox" 
                            class="candidate-checkbox form-checkbox h-5 w-5 text-blue-600" 
-                           data-id="${analysis.id || ''}"
+                           data-id="${candidateId}"
                            data-name="${analysis.cv_analysis.candidate_name || ''}"
                            data-job-title="${analysis.cv_analysis.current_job_title || ''}"
-                           data-email="${analysis.cv_analysis.email || ''}">
-                    <span class="ml-2 text-gray-700">Sélectionner le candidat</span>
+                           data-email="${analysis.cv_analysis.email || ''}"
+                           ${selectedCandidateIds.has(candidateId.toString()) ? 'checked' : ''}>
+                    <span class="ml-2 text-gray-700">Select Candidate</span>
                 </label>
             </div>
-            
         </div>
     `;
 
@@ -467,10 +469,12 @@ function closePDF() {
 // In candidate-analysis.js
 // Modified processSelectedCandidates function to be job-specific
 function processSelectedCandidates() {
-    const selectedCandidates = JSON.parse(sessionStorage.getItem('selectedCandidates')) || [];
+    // Get only the checked candidates
+    const checkedBoxes = document.querySelectorAll('.candidate-checkbox:checked');
+    console.log('Number of checked boxes:', checkedBoxes.length);
     
-    if (selectedCandidates.length === 0) {
-        alert('No candidates selected to process.');
+    if (checkedBoxes.length === 0) {
+        notifications.showError('No candidates selected to process.');
         return;
     }
 
@@ -479,40 +483,33 @@ function processSelectedCandidates() {
 
     if (!jobId) {
         console.error('No job ID found');
-        alert('Error: Job ID not found');
+        notifications.showError('Error: Job ID not found');
         return;
     }
 
-    // Store candidates with job association and ensure they're specific to this job
-    const candidatesWithJob = selectedCandidates.map(candidate => ({
-        ...candidate,
-        jobId: jobId, // Explicitly associate with this job
-        stage: 'new' // Initial stage
+    // Create array of only selected candidates
+    const selectedCandidates = Array.from(checkedBoxes).map(checkbox => ({
+        id: checkbox.getAttribute('data-id'),
+        name: checkbox.getAttribute('data-name'),
+        jobTitle: checkbox.getAttribute('data-job-title'),
+        email: checkbox.getAttribute('data-email'),
+        jobId: jobId,
+        stage: 'new'
     }));
 
-    // Use job-specific key for storing candidates
-    const existingCandidates = JSON.parse(sessionStorage.getItem(`selectedCandidates_${jobId}`)) || [];
+    console.log('Selected candidates:', selectedCandidates);
     
-    // Filter out any duplicates and merge with existing candidates
-    const mergedCandidates = [...existingCandidates];
-    candidatesWithJob.forEach(newCandidate => {
-        const exists = mergedCandidates.some(existing => 
-            existing.id === newCandidate.id && existing.jobId === jobId
-        );
-        if (!exists) {
-            mergedCandidates.push(newCandidate);
-        }
-    });
+    // Store only these selected candidates
+    sessionStorage.setItem(`selectedCandidates_${jobId}`, JSON.stringify(selectedCandidates));
+    localStorage.setItem(`jobApplications_${jobId}`, JSON.stringify(selectedCandidates));
 
-    // Store updated list with job-specific key
-    sessionStorage.setItem(`selectedCandidates_${jobId}`, JSON.stringify(mergedCandidates));
-
-    // Clear the general selectedCandidates since they've been processed
+    // Clear the general selection
     sessionStorage.removeItem('selectedCandidates');
 
-    // Redirect to job-details with process parameter
+    // Redirect to process view
     window.location.href = `job-details.html?process=true&jobId=${jobId}`;
 }
+
 
 function initializeProcess() {
     const params = new URLSearchParams(window.location.search);
@@ -635,36 +632,61 @@ function safeJSONParse(str) {
 }
 
 // Modified selection handling
-function handleCandidateSelection(analysis) {
-    const jobId = sessionStorage.getItem('currentJobId');
-    const candidate = {
-        id: analysis.id || '',
-        name: analysis.cv_analysis.candidate_name || '',
-        jobTitle: analysis.cv_analysis.current_job_title || '',
-        email: analysis.cv_analysis.email || '',
-        score: analysis.final_score || 0,
-        stage: 'new' // Initial stage for all candidates
-    };
+function handleCandidateSelection(checkbox) {
+    const candidateId = checkbox.getAttribute('data-id');
+    const candidateName = checkbox.getAttribute('data-name');
+    const jobTitle = checkbox.getAttribute('data-job-title');
+    const email = checkbox.getAttribute('data-email');
 
-    // Get existing candidates for this job
-    let selectedCandidates = [];
-    const existingData = sessionStorage.getItem(`selectedCandidates_${jobId}`);
+    // Get or initialize the array of selected candidates
+    let selectedCandidates = JSON.parse(sessionStorage.getItem('selectedCandidates')) || [];
     
-    if (existingData) {
-        selectedCandidates = JSON.parse(existingData);
+    if (checkbox.checked) {
+        // Add candidate if not already selected
+        if (!selectedCandidates.some(c => c.id === candidateId)) {
+            selectedCandidates.push({
+                id: candidateId,
+                name: candidateName,
+                jobTitle: jobTitle,
+                email: email,
+                stage: 'new'
+            });
+    }
+    } else {
+        // Remove candidate if unselected
+        selectedCandidates = selectedCandidates.filter(c => c.id !== candidateId);
     }
 
-    // Check if candidate is already selected
-    const exists = selectedCandidates.some(c => c.id === candidate.id);
+    // Update storage
+    sessionStorage.setItem('selectedCandidates', JSON.stringify(selectedCandidates));
+
+    // Update UI count
+    const countElement = document.getElementById('selected-count');
+    if (countElement) {
+        countElement.textContent = selectedCandidates.length;
+    }
     
-    if (!exists) {
-        // Add new candidate while preserving existing ones
-        selectedCandidates.push(candidate);
+    console.log('Updated selected candidates:', selectedCandidates);
+}
+function updateSelectedCount() {
+    const countElement = document.getElementById('selected-count');
+    if (countElement) {
+        countElement.textContent = selectedCandidateIds.size;
+    }
+}
+
+// Add new function to initialize checkbox handlers
+function initializeCheckboxHandlers() {
+    document.querySelectorAll('.candidate-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            handleCandidateSelection(this);
+        });
         
-        // Store updated list
-        sessionStorage.setItem(`selectedCandidates_${jobId}`, JSON.stringify(selectedCandidates));
-        console.log('Updated candidates:', selectedCandidates);
+        const candidateId = checkbox.getAttribute('data-id');
+        if (selectedCandidateIds.has(candidateId)) {
+            checkbox.checked = true;
     }
+    });
 }
 //const selectedCandidates = [];
 //document.addEventListener('DOMContentLoaded', function() {
@@ -707,6 +729,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    selectedCandidateIds.clear();
+    updateSelectedCount();
+    
     // Initialize analysis
     initializeAnalysis();
     
@@ -715,4 +740,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (processButton) {
         processButton.addEventListener('click', processSelectedCandidates);
     }
+
+    // Initialize checkbox handlers after analysis is complete
+    initializeCheckboxHandlers();
 });

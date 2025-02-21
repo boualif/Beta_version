@@ -1,5 +1,7 @@
 // matches-page.js
 
+// matches-page.js
+
 function displayMatches() {
     const matchesData = sessionStorage.getItem('matchingResults');
     const jobId = sessionStorage.getItem('currentJobId');
@@ -15,11 +17,24 @@ function displayMatches() {
 
     totalMatchesElement.textContent = data.total_matches || 0;
 
+    // Add select all checkbox before the matches list
+    const selectAllContainer = document.createElement('div');
+    selectAllContainer.className = 'bg-white p-4 mb-4 rounded-lg shadow-md flex items-center gap-2';
+    selectAllContainer.innerHTML = `
+        <input type="checkbox" 
+               id="select-all-checkbox"
+               class="h-5 w-5 rounded border-gray-300 cursor-pointer">
+        <label for="select-all-checkbox" class="text-gray-700 font-medium cursor-pointer">
+            Select All Candidates
+        </label>
+    `;
+    matchesList.parentNode.insertBefore(selectAllContainer, matchesList);
+
     matchesList.innerHTML = data.matches.map(candidate => `
         <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
             <div class="flex items-start gap-4">
                 <input type="checkbox" 
-                       class="mt-1 h-5 w-5 rounded border-gray-300 cursor-pointer"
+                       class="candidate-checkbox mt-1 h-5 w-5 rounded border-gray-300 cursor-pointer"
                        data-candidate-id="${candidate.candidate_id}"
                        data-candidate-name="${candidate.name}">
                 <div class="flex-1">
@@ -29,9 +44,18 @@ function displayMatches() {
                     <p class="text-gray-600">Titled Post: ${candidate.job_title}</p>                    
                 </div>
             </div>
-            
         </div>
     `).join('');
+
+    // Add event listener for select all checkbox
+    const selectAllCheckbox = document.getElementById('select-all-checkbox');
+    selectAllCheckbox.addEventListener('change', (e) => {
+        const candidateCheckboxes = document.querySelectorAll('.candidate-checkbox');
+        candidateCheckboxes.forEach(checkbox => {
+            checkbox.checked = e.target.checked;
+        });
+        updateSelectedCount();
+    });
 
     updateSelectedCount();
 }
@@ -59,13 +83,21 @@ function viewCandidateProfile(candidateId) {
 
 function updateSelectedCount() {
     try {
-        const selectedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+        const selectedCount = document.querySelectorAll('.candidate-checkbox:checked').length;
         const analyzeButton = document.querySelector('button[onclick="processSelectedCandidates()"]');
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        const totalCheckboxes = document.querySelectorAll('.candidate-checkbox').length;
         
         console.log('Updating selected count:', selectedCount);
         
+        // Update select all checkbox state
+        if (selectAllCheckbox) {
+            selectAllCheckbox.checked = selectedCount === totalCheckboxes && totalCheckboxes > 0;
+            selectAllCheckbox.indeterminate = selectedCount > 0 && selectedCount < totalCheckboxes;
+        }
+        
         if (analyzeButton) {
-            analyzeButton.textContent = `Analyze(${selectedCount})`;
+            analyzeButton.textContent = `Analyze (${selectedCount})`;
             analyzeButton.disabled = selectedCount === 0;
         } else {
             console.error('Analyze button not found');
@@ -76,7 +108,7 @@ function updateSelectedCount() {
 }
 
 async function processSelectedCandidates() {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+    const checkboxes = document.querySelectorAll('.candidate-checkbox:checked');
     const selectedCandidates = Array.from(checkboxes).map(checkbox => ({
         id: checkbox.dataset.candidateId,
         name: checkbox.dataset.candidateName
@@ -102,20 +134,18 @@ async function processSelectedCandidates() {
     }
 }
 
-// Add this debug function to check file structure
 function debugFileStructure() {
     console.log('Current location:', window.location.href);
     console.log('Pathname:', window.location.pathname);
     console.log('Origin:', window.location.origin);
     
-    // List all script tags
     const scripts = document.getElementsByTagName('script');
     console.log('Loaded scripts:');
     Array.from(scripts).forEach(script => {
         console.log('Script src:', script.src);
     });
 }
-// Initialize filters and display matches when page loads
+
 document.addEventListener('DOMContentLoaded', () => {
     debugFileStructure();
     console.log('matches-page.js loaded');

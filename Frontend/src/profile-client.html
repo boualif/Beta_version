@@ -11,8 +11,13 @@
   width: 100%; /* Ensure cards are full width */
   max-width: none; /* Remove any width constraints */
 }
-
-
+ #jobsContainer {
+    width: 100%;
+    padding: 0;
+    margin: 0 auto; /* Center the container */
+    display: flex;
+    justify-content: center; /* Center the content horizontally */
+}
 </style>
 <head>
   <meta charset="UTF-8" />
@@ -92,24 +97,22 @@
           <div class="candidate-navbar">
             <button class="nav-button" aria-current="page">
               <span class="text-sm font-medium">Date Added</span>
-              <span id="added-date-btn"
-                class="ml-2 bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-semibold">2024-08-16</span>
+              <span id="added-date-btn" class="ml-2 bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-semibold">2024-08-16</span>
             </button>
             <button class="nav-button">
               <span class="text-sm font-medium">Status</span>
-              <span id="status-btn"
-                class="ml-2 bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-semibold">Prospect</span>
+              <span id="status-btn"  data-status="Client" class="ml-2 bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-semibold">Prospect</span>
+
+
             </button>
-            <button class="nav-button">
+            
+            <!--<button class="nav-button">
               <span class="text-sm font-medium">Engagement type</span>
-              <span id="egagement-type-btn"
-                class="ml-2 bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-semibold">Prospect</span>
-            </button>
+              <span id="egagement-type-btn" class="ml-2 bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-semibold">Prospect</span>
+            </button>-->
             <button class="nav-button">
               <span class="text-sm font-medium">Account Manager</span>
-              <span id="key-account-manager-btn"
-                class="ml-2 bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-xs font-semibold">Jane
-                Smith</span>
+              <span id="key-account-manager-btn" class="ml-2 bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-xs font-semibold">Jane Smith</span>
             </button>
           </div>
         </div>
@@ -176,49 +179,50 @@
                   <tbody>
                     <tr>
                       <td class="font-semibold text-bodydark dark:text-white/70">Location:</td>
-                      <td id="companyLocation" contenteditable="false">123 Main St, Suite 400, City, Country</td>
+                      <td class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      id="companyLocation" contenteditable="false">123 Main St, Suite 400, City, Country</td>
                     </tr>
                     <tr>
                       <td class="font-semibold text-bodydark dark:text-white/70">Sector of Activity :</td>
-                      <td id="companyIndustry" contenteditable="false">Technology</td>
+                      <td                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      id="companyIndustry" contenteditable="false">Technology</td>
                     </tr>
                     <tr>
                       <td class="font-semibold text-bodydark dark:text-white/70">Description:</td>
-                      <td id="companyDescription" contenteditable="false">Leading tech company specializing in
-                        innovative solutions.</td>
+                      <td                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      id="companyDescription" contenteditable="false">Leading tech company specializing in innovative solutions.</td>
                     </tr>
                     <tr>
                       <td class="font-semibold text-bodydark dark:text-white/70">HQ Phone Number:</td>
-                      <td id="companyPhone" contenteditable="false">(123) 456-7890</td>
+                      <td                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      id="companyPhone" contenteditable="false">(123) 456-7890</td>
                     </tr>
-                    <tr>
+                   <!-- <tr>
                       <td class="font-semibold text-bodydark dark:text-white/70">URLs:</td>
-                      <td id="companyURLs" contenteditable="tru">
-                        <ul id="listUrls" class="list-disc pl-5 space-y-1">
-                        </ul>
+                      <td                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      id="companyURLs" contenteditable="true">
+                        <ul id="listUrls" class="list-disc pl-5 space-y-1"></ul>
                       </td>
-                    </tr>
-                    <tr id="statusTab" class="hidden">
-                      <td class="font-semibold text-bodydark dark:text-white/70 ">Status:</td>
+                    </tr>-->
+                    <tr id="statusTab" >
+                      <td class="font-semibold text-bodydark dark:text-white/70">Status:</td>
                       <td>
-                        <select id="statusEdit" 
-                          class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
-                          <option value="prospect">Prospect</option>
-                          <option value="client">Client</option>
-                          <option value="partner">Partner</option>
+                        <select id="statusEdit" class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
+                          <option value="Prospect">Prospect</option>
+                          <option value="Client">Client</option>
+                          <option value="Partner">Partner</option>
                         </select>
                       </td>
                     </tr>
-                    <tr id="engagementTab" class="hidden">
+                    <!--<tr id="engagementTab" >
                       <td class="font-semibold text-bodydark dark:text-white/70">Engagement type:</td>
                       <td>
-                        <select id="engagementTypeEdit" 
-                          class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
+                        <select id="engagementTypeEdit" class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
                           <option value="talent_outsourcing">Talent Outsourcing</option>
                           <option value="direct_employment">Direct Employment</option>
                         </select>
                       </td>
-                    </tr>
+                    </tr>-->
                   </tbody>
                 </table>
               </div>
@@ -244,6 +248,7 @@
                   class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                   <div class="p-7">
                     <form id="leadForm" action="#" method="POST" onsubmit="saveLead(event)">
+                      
                       <!-- Lead First Name -->
                       <div class="mb-4">
                         <label class="mb-3 block text-sm font-medium text-black dark:text-white">Lead First Name <span
@@ -272,6 +277,16 @@
                         <input type="tel" name="phone" id="leadPhone" placeholder="Enter phone number"
                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
                       </div>
+                      <!--Client Post -->
+                      
+                      <div class="form-group">
+                        <label for="leadClientPost" class="mb-3 block text-sm font-medium text-black dark:text-white">Client Post</label>
+                        <input type="text" id="leadClientPost" placeholder="Enter client post"
+                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                        
+                    </div>
+
+                    
                       <!-- LinkedIn -->
                       <div class="mb-4">
                         <label class="mb-3 block text-sm font-medium text-black dark:text-white">LinkedIn</label>
@@ -279,11 +294,16 @@
                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
                       </div>
                       <!-- Notes -->
-                      <div class="mb-4">
-                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">Notes</label>
-                        <textarea name="notes" id="leadNotes" placeholder="Enter additional notes"
-                          class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                          rows="4"></textarea>
+                      <div class="mb-4.5">
+                        <label class="mb-2.5 block text-black dark:text-white">
+                          Notes
+                        </label>
+                        <textarea
+                          id="leadNotes"
+                          rows="3"
+                          placeholder="Add any notes about this lead..."
+                          class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black dark:text-white outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                        ></textarea>
                       </div>
                       <div class="flex justify-end gap-4.5 mt-6">
                         <button

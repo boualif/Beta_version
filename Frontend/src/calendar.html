@@ -4,8 +4,68 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>Calendar </title>
   </head>
+  <style>
+        [x-cloak] { display: none !important; }
+
+    @keyframes slide-up {
+        from {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    .animate-slide-up {
+        animation: slide-up 0.3s ease-out;
+    }
+    
+    @keyframes pulse-border {
+        0% {
+            border-color: #4f46e5;
+        }
+        50% {
+            border-color: #818cf8;
+        }
+        100% {
+            border-color: #4f46e5;
+        }
+    }
+    
+    .reminder-alert {
+        border: 2px solid #4f46e5;
+        animation: pulse-border 2s infinite;
+        background: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+    }
+    
+    .reminder-alert:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        transition: all 0.3s ease;
+    }
+    
+    .reminder-close {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+    
+    .reminder-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: rotate(90deg);
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
   <body
     x-data="{ page: 'calendar', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
@@ -33,400 +93,1010 @@
         <!-- ===== Header End ===== -->
 
         <!-- ===== Main Content Start ===== -->
-        <main>
-          <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-            <div class="mx-auto max-w-7xl">
-              <!-- Breadcrumb Start -->
-              <div
-                class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <h2 class="text-title-md2 font-bold text-black dark:text-white">
-                  Calendar
-                </h2>
-
-                <nav>
-                  <ol class="flex items-center gap-2">
-                    <li>
-                      <a class="font-medium" href="index.html">Dashboard /</a>
-                    </li>
-                    <li class="text-primary">Calendar</li>
-                  </ol>
-                </nav>
+        <div x-data="calendar()" x-init="init()"
+        :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}">
+        
+        <div class="max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+            <!-- Header with Month Navigation -->
+            <div class="flex justify-between items-center mb-4">
+                <h2 x-text="currentMonthName + ' ' + currentYear" 
+                    class="text-title-md2 font-bold text-black dark:text-white"></h2>
+                <div class="flex gap-2">
+                    <button @click="previousMonth" 
+                            class="px-4 py-2 bg-primary text-white rounded">Previous</button>
+                    <button @click="currentDate = new Date()" 
+                            class="px-4 py-2 bg-primary text-white rounded">Today</button>
+                    <button @click="nextMonth" 
+                            class="px-4 py-2 bg-primary text-white rounded">Next</button>
+                </div>
+            </div>
+            <div class="max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+                <div class="flex flex-col lg:flex-row gap-6">  
+              <!-- Reminders Section -->
+              <div x-data="reminderApp()" x-init="init()" class="lg:w-1/4 xl:w-1/5 bg-white dark:bg-boxdark rounded-sm border border-stroke dark:border-strokedark p-4">
+                              <h2 class="text-lg font-semibold mb-4">Reminders</h2>
+              
+              <!-- Smart Lists -->
+              <div class="space-y-2 mb-6">
+                  <div @click="$store.reminders = await fetchReminders('today')" 
+                       class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
+                      <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                      <span class="flex-1">Today</span>
+                      <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-sm" x-text="counts.today">0</span>
+                  </div>
+  
+                  <div @click="$store.reminders = await fetchReminders('scheduled')" 
+                       class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
+                      <svg class="w-5 h-5 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      <span class="flex-1">Scheduled</span>
+                      <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-sm" x-text="counts.scheduled">0</span>
+                  </div>
+  
+                  <div @click="$store.reminders = await fetchReminders('flagged')" 
+                       class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
+                      <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path>
+                      </svg>
+                      <span class="flex-1">Flagged</span>
+                      <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-sm" x-text="counts.flagged">0</span>
+                  </div>
+  
+                  <div @click="$store.reminders = await fetchReminders('completed')" 
+                       class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
+                      <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      <span class="flex-1">Completed</span>
+                      <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-sm" x-text="counts.completed">0</span>
+                  </div>
               </div>
-              <!-- Breadcrumb End -->
+  
+               <!-- My Lists Section -->
+    <div class="mb-4">
+        <h3 class="text-sm font-semibold text-gray-500 mb-2">My Lists</h3>
+        <div class="space-y-2">
+            <template x-for="list in userLists" :key="list.id">
+                <div class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
+                    <div @click="openListNotes(list.id)" class="flex-1">
+                        <span x-text="list.title"></span>
+                    </div>
+                    <button @click.stop="confirmDeleteList(list.id)"
+                            class="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </template>
 
-              <!-- ====== Calendar Section Start -->
-              <div
-                class="w-full max-w-full rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark"
-              >
+            <!-- Add List Button -->
+            <button @click="showNewListModal = true"
+                    class="w-full mt-2 p-2 text-blue-500 hover:bg-blue-50 rounded-lg flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add List
+            </button>
+        </div>
+    </div>
+
+    <!-- New List Modal (Existing) -->
+    <!-- ... -->
+<!-- New List Modal -->
+<div x-show="showNewListModal" 
+     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+     @click.away="closeModal()">
+    <div class="bg-white dark:bg-boxdark rounded-lg p-6 w-96">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold">New List</h3>
+            <button @click="closeModal()" 
+                    class="text-gray-500 hover:text-gray-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <form @submit.prevent="createList()">
+            <div class="mb-4">
+                <label class="block mb-2">List Title</label>
+                <input type="text" 
+                       x-model="newListTitle" 
+                       class="w-full p-2 border rounded dark:bg-boxdark dark:border-strokedark"
+                       placeholder="Enter list title"
+                       required>
+            </div>
+            
+            <div class="flex justify-end gap-2">
+                <button type="button" 
+                        @click="closeModal()"
+                        class="px-4 py-2 text-gray-600 dark:text-gray-300">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    Create
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+   <!-- Notes Modal -->
+<div x-show="showPhrasesModal"
+class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+@click.away="closePhrasesModal()">
+<div class="bg-white dark:bg-boxdark rounded-lg p-6 w-96">
+   <h3 class="text-lg font-semibold mb-4" x-text="selectedListTitle"></h3>
+
+   <div class="mb-4 max-h-96 overflow-y-auto">
+       <!-- Notes List -->
+       <template x-for="(note, index) in notes" :key="index">
+           <div class="flex items-center gap-2 mb-2 p-2 bg-gray-50 dark:bg-meta-4 rounded">
+               <input type="checkbox" 
+                      x-model="note.checked" 
+                      class="rounded border-gray-300">
+               <span x-text="note.text" class="flex-1"></span>
+               <button @click="deleteNote(index)" 
+                       class="text-red-500 hover:text-red-700 p-1">
+                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                   </svg>
+               </button>
+           </div>
+       </template>
+   </div>
+   
+   <!-- Add New Note Input -->
+   <div class="mb-4">
+       <div class="flex gap-2">
+           <input type="text" 
+                  x-model="newNoteText" 
+                  @keyup.enter="addNote()"
+                  placeholder="New Note"
+                  class="w-full p-2 border rounded dark:bg-boxdark dark:border-strokedark">
+           <button @click="addNote()"
+                   class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+               Add
+           </button>
+       </div>
+   </div>
+
+   <div class="flex justify-end gap-2">
+       <button @click="closePhrasesModal()"
+               class="px-4 py-2 text-gray-600 dark:text-gray-300">
+           Close
+       </button>
+       <button @click="saveNotes()"
+               class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+           Save
+       </button>
+   </div>
+</div>
+</div>
+</div>
+  
+              
+  
+              <!-- Calendar Grid -->
+              <!-- Calendar Grid -->
+              <div class="lg:w-3/4 xl:w-4/5">
+                <div class="bg-white dark:bg-boxdark rounded-sm border border-stroke dark:border-strokedark">
                 <table class="w-full">
                   <thead>
-                    <tr
-                      class="grid grid-cols-7 rounded-t-sm bg-primary text-white"
-                    >
-                      <th
-                        class="flex h-15 items-center justify-center rounded-tl-sm p-1 text-xs font-semibold sm:text-base xl:p-5"
-                      >
-                        <span class="hidden lg:block"> Sunday </span>
-                        <span class="block lg:hidden"> Sun </span>
+                        <tr class="grid grid-cols-7 rounded-t-sm bg-primary text-white">
+                            <template x-for="day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']">
+                                <th class="flex h-15 items-center justify-center p-1 text-xs font-semibold sm:text-base xl:p-5">
+                                    <span x-text="day"></span>
                       </th>
-                      <th
-                        class="flex h-15 items-center justify-center p-1 text-xs font-semibold sm:text-base xl:p-5"
-                      >
-                        <span class="hidden lg:block"> Monday </span>
-                        <span class="block lg:hidden"> Mon </span>
-                      </th>
-                      <th
-                        class="flex h-15 items-center justify-center p-1 text-xs font-semibold sm:text-base xl:p-5"
-                      >
-                        <span class="hidden lg:block"> Tuesday </span>
-                        <span class="block lg:hidden"> Tue </span>
-                      </th>
-                      <th
-                        class="flex h-15 items-center justify-center p-1 text-xs font-semibold sm:text-base xl:p-5"
-                      >
-                        <span class="hidden lg:block"> Wednesday </span>
-                        <span class="block lg:hidden"> Wed </span>
-                      </th>
-                      <th
-                        class="flex h-15 items-center justify-center p-1 text-xs font-semibold sm:text-base xl:p-5"
-                      >
-                        <span class="hidden lg:block"> Thursday </span>
-                        <span class="block lg:hidden"> Thur </span>
-                      </th>
-                      <th
-                        class="flex h-15 items-center justify-center p-1 text-xs font-semibold sm:text-base xl:p-5"
-                      >
-                        <span class="hidden lg:block"> Friday </span>
-                        <span class="block lg:hidden"> Fri </span>
-                      </th>
-                      <th
-                        class="flex h-15 items-center justify-center rounded-tr-sm p-1 text-xs font-semibold sm:text-base xl:p-5"
-                      >
-                        <span class="hidden lg:block"> Saturday </span>
-                        <span class="block lg:hidden"> Sat </span>
-                      </th>
+                            </template>
                     </tr>
                   </thead>
                   <tbody>
-                    <!-- Line 1 -->
+                        <template x-for="week in calendar">
                     <tr class="grid grid-cols-7">
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >1</span
-                        >
-                        <div
-                          class="group h-16 w-full flex-grow cursor-pointer py-1 md:h-30"
-                        >
-                          <span class="group-hover:text-primary md:hidden">
-                            More
-                          </span>
-                          <div
-                            class="event invisible absolute left-2 z-99 mb-1 flex w-[200%] flex-col rounded-sm border-l-[3px] border-primary bg-gray px-3 py-1 text-left opacity-0 group-hover:visible group-hover:opacity-100 dark:bg-meta-4 md:visible md:w-[190%] md:opacity-100"
-                          >
-                            <span
-                              class="event-name text-sm font-semibold text-black dark:text-white"
-                            >
-                              Redesign Website
-                            </span>
-                            <span
-                              class="time text-sm font-medium text-black dark:text-white"
-                            >
-                              1 Dec - 2 Dec
-                            </span>
+                                <template x-for="date in week">
+                                    <td @click="selectDate(date)"
+                                        :class="{
+                                            'bg-gray-100': isToday(date),
+                                            'text-gray-400': !isCurrentMonth(date)
+                                        }"
+                                        class="relative h-20 cursor-pointer border border-stroke p-2 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31">
+                                        <span x-text="date.getDate()"
+                                              class="font-medium text-black dark:text-white"></span>
+                                        
+                                        <!-- Events for this date -->
+                                        <template x-for="event in getEventsForDate(date)">
+                                            <div @click.stop="openEvent(event)"
+                                            :class="event.className"
+                                            :data-reminder-id="event.id"
+                                            class="group relative flex items-center cursor-pointer">
+                                                 <template x-if="event.type === 'reminder'">
+                                                    <input type="checkbox"
+                                                          :checked="event.is_completed"
+                                                          @click.stop="toggleComplete(event)"
+                                                          class="mr-2">
+                                                 </template>
+                                                <!-- Flag indicator -->
+                                                <template x-if="event.type === 'reminder' && event.is_flagged">
+                                                    <svg class="w-3 h-3 text-red-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M3 6a2 2 0 012-2h6.5l1 1H19l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2v4"></path>
+                                                    </svg>
+                                                </template>
+                                                
+                                                <!-- Event title -->
+                                                <span x-text="event.title" class="flex-1 truncate"></span>
+                                                
+                                                <!-- Time if available -->
+                                                <template x-if="event.startTime">
+                                                    <span x-text="formatTime(event.startTime)"
+                                                          class="text-xs opacity-75 ml-1"></span>
+                                                </template>
+                                                 <button
+                                                       @click.stop="toggleFlag(event.id)"
+                                                       type="button"
+                                                       class="flag-button p-2 rounded-md hover:bg-gray-100 focus:outline-none"
+
+                                                       
+                                                   >
+                                                   
+                                                     
+                                                  </button>
+
                           </div>
-                        </div>
+                                        </template>
+                                        
+
                       </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >2</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >3</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >4</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >5</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >6</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >7</span
-                        >
-                      </td>
+                                </template>
                     </tr>
-                    <!-- Line 1 -->
-                    <!-- Line 2 -->
-                    <tr class="grid grid-cols-7">
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >8</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >9</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >10</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >11</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >12</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >13</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >14</span
-                        >
-                      </td>
-                    </tr>
-                    <!-- Line 2 -->
-                    <!-- Line 3 -->
-                    <tr class="grid grid-cols-7">
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >15</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >16</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >17</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >18</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >19</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >20</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >21</span
-                        >
-                      </td>
-                    </tr>
-                    <!-- Line 3 -->
-                    <!-- Line 4 -->
-                    <tr class="grid grid-cols-7">
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >22</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >23</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >24</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >25</span
-                        >
-                        <div
-                          class="group h-16 w-full flex-grow cursor-pointer py-1 md:h-30"
-                        >
-                          <span class="group-hover:text-primary md:hidden">
-                            More
-                          </span>
-                          <div
-                            class="event invisible absolute left-2 z-99 mb-1 flex w-[300%] flex-col rounded-sm border-l-[3px] border-primary bg-gray px-3 py-1 text-left opacity-0 group-hover:visible group-hover:opacity-100 dark:bg-meta-4 md:visible md:w-[290%] md:opacity-100"
-                          >
-                            <span
-                              class="event-name text-sm font-semibold text-black dark:text-white"
-                            >
-                              App Design
-                            </span>
-                            <span
-                              class="time text-sm font-medium text-black dark:text-white"
-                            >
-                              25 Dec - 27 Dec
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >26</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >27</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >28</span
-                        >
-                      </td>
-                    </tr>
-                    <!-- Line 4 -->
-                    <!-- Line 5 -->
-                    <tr class="grid grid-cols-7">
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >29</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >30</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >31</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >1</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >2</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >3</span
-                        >
-                      </td>
-                      <td
-                        class="ease relative h-20 cursor-pointer border border-stroke p-2 transition duration-500 hover:bg-gray dark:border-strokedark dark:hover:bg-meta-4 md:h-25 md:p-6 xl:h-31"
-                      >
-                        <span class="font-medium text-black dark:text-white"
-                          >4</span
-                        >
-                      </td>
-                    </tr>
-                    <!-- Line 5 -->
+                        </template>
                   </tbody>
                 </table>
               </div>
-              <!-- ====== Calendar Section End -->
+  
+              <!-- Event Modal -->
+              <div x-show="showEventModal" 
+              class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+              @click.away="closeModal()">
+             <div class="bg-white dark:bg-boxdark p-6 rounded-lg w-96" @click.stop>
+                 <div class="flex justify-between items-center mb-4">
+                     <h3 class="text-lg font-bold" x-text="editMode ? 'Edit Reminder' : 'New Reminder'"></h3>
+                     <template x-if="editMode">
+                         <button @click="deleteEvent" 
+                                 class="text-red-500 hover:text-red-700">
+                             Delete
+                         </button>
+                     </template>
+                 </div>
+                 
+                 <form @submit.prevent="editMode ? updateEvent() : addEvent()">
+                     <!-- Title Input -->
+                     <div class="mb-4">
+                         <label class="block text-sm font-medium mb-2">Title</label>
+                         <input type="text" 
+                                x-model="newEvent.title" 
+                                class="w-full p-2 border rounded dark:bg-boxdark dark:border-strokedark"
+                                required>
+                     </div>
+         
+                     <!-- Notes Input -->
+                     <div class="mb-4">
+                         <label class="block text-sm font-medium mb-2">Notes</label>
+                         <textarea x-model="newEvent.description" 
+                                  class="w-full p-2 border rounded dark:bg-boxdark dark:border-strokedark"
+                                  rows="3"></textarea>
+                     </div>
+         
+                     <!-- Due Date & Time -->
+                     <div class="mb-4">
+                         <label class="block text-sm font-medium mb-2">Due Date & Time</label>
+                         <input type="datetime-local" 
+                                x-model="newEvent.startTime"
+                                class="w-full p-2 border rounded dark:bg-boxdark dark:border-strokedark">
+                     </div>
+         
+                     <!-- Priority Selection -->
+                     <div class="mb-4">
+                         <label class="block text-sm font-medium mb-2">Priority</label>
+                         <select x-model="newEvent.priority" 
+                                 class="w-full p-2 border rounded dark:bg-boxdark dark:border-strokedark">
+                             <option value="low">Low</option>
+                             <option value="medium">Medium</option>
+                             <option value="high">High</option>
+                         </select>
+                     </div>
+         
+                     <!-- Flag Checkbox -->
+                     <div class="mb-6">
+                         <label class="flex items-center gap-2">
+                             <input type="checkbox" 
+                                    x-model="newEvent.is_flagged"
+                                    class="rounded border-gray-300 dark:border-strokedark">
+                             <span class="text-sm">Flag this reminder</span>
+                         </label>
+                     </div>
+         
+                     <!-- Action Buttons -->
+                     <div class="flex justify-end gap-2">
+                         <button type="button" 
+                                 @click="closeModal()" 
+                                 class="px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-meta-4 rounded">
+                             Cancel
+                         </button>
+                         <button type="submit" 
+                                 class="px-4 py-2 bg-primary text-white rounded hover:bg-opacity-90">
+                             Save
+                         </button>
+                     </div>
+                 </form>
+             </div>
             </div>
+             
           </div>
-        </main>
-        <!-- ===== Main Content End ===== -->
       </div>
-      <!-- ===== Content Area End ===== -->
     </div>
-    <!-- ===== Page Wrapper End ===== -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+<script src="js/reminder.js"></script>
+
+    <script>
+function calendar() {
+            return {
+                currentDate: new Date(),
+                events: [],
+                reminders: [],
+                showEventModal: false,
+                editMode: false,
+                selectedEventId: null,
+                newEvent: {
+                    title: '',
+                    description: '',
+                    category: 'meeting',
+                    date: null,
+                    startTime: '',
+                    endTime: '',
+                    duration: 1,
+                    repeat: 'none',
+                    reminder: 'none',
+                    category: 'reminder'// Default to reminder
+
+                },
+
+        // Initialize calendar
+        async init() {
+    // Clear existing data
+    this.events = [];
+    this.reminders = [];
+    
+    // Load initial data
+    await this.loadEvents();
+    await this.loadReminders();
+    this.generateCalendar();
+        await updateUICounts();
+    // Set up event listeners
+    document.addEventListener('reminderCreated', async (event) => {
+                        console.log('Reminder created event received');
+                        await this.refreshCalendar();
+                    });
+
+                    document.addEventListener('reminderUpdated', async(event) => {
+                        console.log('Reminder updated event received');
+                        await this.refreshCalendar();
+                    });
+
+                    document.addEventListener('reminderDeleted', async(event) => {
+                        console.log('Reminder deleted event received');
+                        await this.refreshCalendar();
+                    });
+
+                    // Set up notification permissions and reminder checks
+                    if ("Notification" in window) {
+                        Notification.requestPermission();
+                    }
+
+                    this.checkReminders();
+                    setInterval(() => this.checkReminders(), 60000);
+                },
+
+                formatTime(timeString) {
+            // Check if timeString is valid
+            if (!timeString || typeof timeString !== 'string') {
+                return ''; // Or handle invalid input as needed
+            }
+        
+            // Check if timeString is already in the format HH:mm
+            if (/^\d{2}:\d{2}$/.test(timeString)) {
+                return timeString; // Return as is if already in correct format
+            }
+        
+            try {
+                // Try parsing as a full date
+                const date = new Date(timeString);
+                if (isNaN(date.getTime())) {
+                    // If parsing as a full date fails, it might be just a time string
+                    console.warn('Could not parse as a full date; attempting time-only parse.');
+                    
+                    // Attempt a time-only parsing by manual split
+                    const [hours, minutes] = timeString.split(':');
+                    if (hours === undefined || minutes === undefined) {
+                        console.warn('Could not parse time string using manual split.');
+                        return ''; // Handle the error: return empty string or a default value
+                    }
+        
+                    return `${String(parseInt(hours, 10)).padStart(2, '0')}:${String(parseInt(minutes, 10)).padStart(2, '0')}`;
+                }
+        
+                // If parsed as a full date, format to HH:mm
+                return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            } catch (e) {
+                console.error('Error formatting time:', e);
+                return ''; // Handle any exceptions during parsing or formatting
+            }
+        },
+// Toggle completion status
+async toggleComplete(event) {
+                    const wasCompleted = event.is_completed;
+                    event.is_completed = !event.is_completed;
+
+                    try {
+                        // Update on the server using the correct endpoint
+                        const response = await apiClient.post(`/api/reminders/${event.id}/toggle-complete/`, {
+                            is_completed: event.is_completed
+                        }, {
+                            withCredentials: true,
+                            headers: {
+                                'X-CSRFToken': Cookies.get('csrftoken'),
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                         await updateUICounts();
+                await this.refreshCalendar()
+                        // Update UI immediately
+                    
+
+                    } catch (error) {
+                        console.error('Error updating reminder status:', error);
+                        // Revert status on error
+                        event.is_completed = wasCompleted;
+                        // Revert UI count if needed
+                   
+
+                    }
+                },
+                async toggleFlag(reminderId) {
+            try {
+                console.log(`Toggling flag for reminder ID: ${reminderId}`);
+
+                // Optimistically update the UI
+
+                // Make API call
+                const response = await apiClient.post('/api/reminders/update-flag/', {
+                    reminder_id: reminderId,
+                    is_flagged: true  // Invert it
+                }, {
+                    withCredentials: true,
+                    headers: {
+                        'X-CSRFToken': Cookies.get('csrftoken'),
+                        'Content-Type': 'application/json'
+                    }
+                });
+             
+
+                if (response.status === 200) {
+                    console.log('Flag update successful:', response.data);
+               await this.generateCalendar();
+        await updateUICounts();
+
+                } else {
+                    console.error('Flag update failed:', response.status, response.data);
+
+                }
+
+            } catch (error) {
+                console.error('Error during flag toggle:', error);
+
+            }
+        },
+
+
+        async refreshCalendar() {
+            await this.loadReminders();
+            this.generateCalendar();
+            if (typeof updateUICounts === 'function') {
+                await updateUICounts();
+            }
+        },
+
+        // Load reminders from the API
+        async loadReminders() {
+    try {
+        console.log('Loading reminders...');
+        const response = await apiClient.get('/api/reminders/', {
+            withCredentials: true,
+            headers: {
+                'X-CSRFToken': Cookies.get('csrftoken')
+            }
+        });
+
+        console.log('Raw reminders data:', response.data);
+        
+        // Filter out reminders without due_date
+        this.reminders = response.data
+            .filter(reminder => reminder.due_date)
+            .map(reminder => {
+                console.log('Processing reminder:', reminder);
+                const reminderDate = new Date(reminder.due_date);
+                return {
+                    id: reminder.id,
+                    title: reminder.title,
+                    description: reminder.notes,
+                    date: reminderDate,
+                    startTime: reminderDate.toTimeString().slice(0, 5),
+                    category: 'reminder',
+                    priority: reminder.priority || 'medium',
+                    is_completed: reminder.is_completed || false,
+                    is_flagged: reminder.is_flagged || false,
+                    type: 'reminder'
+                };
+            });
+
+        console.log('Processed reminders:', this.reminders);
+        
+        // Update events array
+        this.events = [
+            ...this.events.filter(e => e.type !== 'reminder'),
+            ...this.reminders
+        ];
+        
+        console.log('Updated events array:', this.events);
+               await this.generateCalendar();
+        await updateUICounts();
+        return this.reminders;
+    } catch (error) {
+        console.error('Error loading reminders:', error);
+        return [];
+    }
+},
+
+        // Calendar navigation getters
+        get currentMonthName() {
+            return this.currentDate.toLocaleString('default', { month: 'long' });
+        },
+
+        get currentYear() {
+            return this.currentDate.getFullYear();
+        },
+
+        get calendar() {
+            return this.generateCalendar();
+        },
+
+        // Generate calendar grid
+        generateCalendar() {
+    const year = this.currentDate.getFullYear();
+    const month = this.currentDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay();
+    
+    let calendar = [];
+    let week = [];
+    
+    // Clear existing weeks to prevent duplicates
+    if (calendar.length > 0) {
+        calendar = [];
+    }
+    
+    // Add previous month's days
+    const prevMonthDays = new Date(year, month, 0).getDate();
+    for (let i = startingDay - 1; i >= 0; i--) {
+        week.push(new Date(year, month - 1, prevMonthDays - i));
+    }
+    
+    // Add current month's days
+    let currentDay = 1;
+    while (currentDay <= daysInMonth) {
+        // Fill the current week
+        while (week.length < 7 && currentDay <= daysInMonth) {
+            week.push(new Date(year, month, currentDay));
+            currentDay++;
+        }
+        
+        // Add the week to the calendar if it's full or we're at month end
+        if (week.length === 7 || currentDay > daysInMonth) {
+            calendar.push([...week]);
+            week = [];
+        }
+    }
+    
+    // Add next month's days if needed
+    if (week.length > 0) {
+        let nextMonthDay = 1;
+        while (week.length < 7) {
+            week.push(new Date(year, month + 1, nextMonthDay));
+            nextMonthDay++;
+        }
+        calendar.push(week);
+    }
+    
+    return calendar;
+},
+
+        // Date helper functions
+        isToday(date) {
+            const today = new Date();
+            return date.toDateString() === today.toDateString();
+        },
+
+        isCurrentMonth(date) {
+            return date.getMonth() === this.currentDate.getMonth();
+        },
+
+        // Calendar navigation
+        previousMonth() {
+            this.currentDate = new Date(
+                this.currentDate.getFullYear(),
+                this.currentDate.getMonth() - 1,
+                1
+            );
+        },
+
+        nextMonth() {
+            this.currentDate = new Date(
+                this.currentDate.getFullYear(),
+                this.currentDate.getMonth() + 1,
+                1
+            );
+        },
+
+        // Event handling
+        // Update getEventsForDate method
+getEventsForDate(date) {
+    console.log('Getting events for date:', date);
+    const eventsForDate = this.events.filter(event => {
+        if (!event.date) {
+            console.log('Event with no date:', event);
+            return false;
+        }
+        const eventDate = event.date instanceof Date ? event.date : new Date(event.date);
+        const match = eventDate.toDateString() === date.toDateString();
+        if (match) {
+            console.log('Found matching event:', event);
+        }
+        return match;
+    });
+    
+    return eventsForDate.map(event => ({
+        ...event,
+        className: this.getEventClassName(event)
+    }));
+},
+
+
+
+getEventClassName(event) {
+        if (event.type === 'reminder') {
+            const baseClasses = 'flex items-center gap-1 p-1 rounded-md text-xs';
+            const priorityClasses = {
+                low: 'bg-blue-100 text-blue-800',
+                medium: 'bg-yellow-100 text-yellow-800',
+                high: 'bg-red-100 text-red-800'
+            };
+            
+            let classes = `${baseClasses} ${priorityClasses[event.priority] || priorityClasses.medium}`;
+            
+            if (event.is_flagged) {
+                classes += ' border-l-4 border-red-500';
+            }
+            if (event.is_completed) {
+                classes += ' line-through opacity-50';
+            }
+            
+            return classes;
+        }
+        return 'bg-primary/10 text-primary flex items-center gap-1 p-1 rounded-md text-xs';
+    },
+
+    
+
+        // Function to select a date
+        selectDate(date) {
+            this.newEvent.date = date;
+            this.showEventModal = true;
+            this.editMode = false;
+        },
+
+        openEvent(event) {
+            this.editMode = true;
+            this.selectedEventId = event.id;
+            this.newEvent = {
+                title: event.title,
+                description: event.description || '',
+                date: event.date,
+                startTime: event.startTime || '',
+                priority: event.priority || 'medium',
+                is_flagged: event.is_flagged || false,
+                is_completed: event.is_completed || false
+            };
+            this.showEventModal = true;
+        },
+
+        closeModal() {
+            this.showEventModal = false;
+            this.editMode = false;
+            this.selectedEventId = null;
+            this.newEvent = {
+                title: '',
+                description: '',
+                category: 'reminder',
+                date: null,
+                startTime: '',
+                priority: 'medium',
+                is_flagged: false,
+                is_completed: false
+            };
+        },
+
+        // Event CRUD operations
+        async loadEvents() {
+            try {
+                const response = await apiClient.get('/api/events/', {
+                    withCredentials: true,
+                    headers: {
+                        'X-CSRFToken': Cookies.get('csrftoken')
+                    }
+                });
+                
+                if (response.data) {
+                    this.events = response.data.map(event => ({
+                        ...event,
+                        date: new Date(event.date),
+                        type: 'event'
+                    }));
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+        },
+
+        // Function to add a new reminder
+        async addEvent() {
+            if (!this.newEvent.title || !this.newEvent.date) return;
+            
+            try {
+                const reminderData = {
+                    title: this.newEvent.title,
+                    notes: this.newEvent.description,
+                    due_date: this.newEvent.date instanceof Date 
+                        ? this.newEvent.date.toISOString() 
+                        : new Date(this.newEvent.date).toISOString(),
+                    priority: this.newEvent.priority || 'medium',
+                    is_flagged: this.newEvent.is_flagged || false
+                };
+
+                const response = await apiClient.post('/api/reminders/create/', reminderData, {
+                    withCredentials: true,
+                    headers: {
+                        'X-CSRFToken': Cookies.get('csrftoken'),
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.data) {
+                    await this.refreshCalendar();
+                }
+                this.closeModal();
+            } catch (error) {
+                console.error('Error adding reminder:', error);
+            }
+        },
+
+         // Function to update an existing reminder
+         async updateEvent() {
+            if (!this.selectedEventId || !this.newEvent.title) return;
+            
+            try {
+                const reminderData = {
+                    title: this.newEvent.title,
+                    notes: this.newEvent.description,
+                    due_date: this.newEvent.date instanceof Date 
+                        ? this.newEvent.date.toISOString() 
+                        : new Date(this.newEvent.date).toISOString(),
+                    priority: this.newEvent.priority || 'medium',
+                    is_flagged: this.newEvent.is_flagged || false
+                };
+
+                const response = await apiClient.patch(`/api/reminders/${this.selectedEventId}/update/`, reminderData, {
+                    withCredentials: true,
+                    headers: {
+                        'X-CSRFToken': Cookies.get('csrftoken'),
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.data) {
+                    await this.refreshCalendar();
+                }
+                this.closeModal();
+            } catch (error) {
+                console.error('Error updating reminder:', error);
+            }
+        },
+        // Add this function to your calendar object:
+checkReminders() {
+    const now = new Date();
+    
+    this.events
+        .filter(event => event.type === 'reminder' || event.category === 'reminder')
+        .forEach(event => {
+            if (!event.reminder || event.reminder === 'none' || event.reminderSent) return;
+
+            const eventDate = new Date(event.date);
+            const eventTime = event.startTime ? event.startTime.split(':') : ['00', '00'];
+            eventDate.setHours(parseInt(eventTime[0]), parseInt(eventTime[1]));
+
+            // Calculate reminder time based on minutes before
+            const reminderMinutes = parseInt(event.reminder);
+            const reminderTime = new Date(eventDate.getTime() - (reminderMinutes * 60000));
+            
+            // If it's time for the reminder
+            if (now >= reminderTime && now < eventDate) {
+                this.showReminder(event);
+                
+                // Mark reminder as sent
+                const index = this.events.findIndex(e => e.id === event.id);
+                if (index !== -1) {
+                    this.events[index].reminderSent = true;
+                }
+            }
+        });
+},
+
+// Add this function too for displaying reminders:
+showReminder(event) {
+    // Browser notification
+    if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(`Reminder: ${event.title}`, {
+            body: `${event.description || ''}\nDue ${new Date(event.date).toLocaleString()}`,
+            icon: '/path/to/your/icon.png'
+        });
+    }
+
+    // Create unique ID for this reminder
+    const reminderId = `reminder-${event.id}-${Date.now()}`;
+
+    // Create in-app alert if it doesn't already exist
+    if (!document.getElementById(reminderId)) {
+        const alertDiv = document.createElement('div');
+        alertDiv.id = reminderId;
+        alertDiv.className = 'fixed bottom-4 right-4 w-80 z-50 animate-slide-up';
+        alertDiv.innerHTML = `
+            <div class="reminder-alert rounded-lg p-4 text-white">
+                <div class="flex items-center gap-3">
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                            <h5 class="font-semibold text-lg">
+                                ${event.title}
+                            </h5>
+                            <button onclick="this.closest('.fixed').remove()" 
+                                    class="reminder-close text-white hover:text-white">
+                                ×
+                            </button>
+                        </div>
+                        <p class="mt-1 opacity-90">
+                            ${event.description || ''}
+                        </p>
+                        <div class="mt-2 flex gap-2">
+                            <span class="text-xs px-2 py-1 bg-white/20 rounded-full">
+                                ${new Date(event.date).toLocaleDateString()}
+                            </span>
+                            <span class="text-xs px-2 py-1 bg-white/20 rounded-full">
+                                ${event.startTime || new Date(event.date).toLocaleTimeString()}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(alertDiv);
+
+        // Remove the alert after 10 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 10000);
+    }
+},
+
+// Function to delete a reminder
+async deleteEvent() {
+            if (!this.selectedEventId) return;
+            
+            if (!confirm('Are you sure you want to delete this reminder?')) {
+                return;
+            }
+
+            try {
+                await apiClient.delete(`/api/reminders/${this.selectedEventId}/delete/`, {
+                    withCredentials: true,
+                    headers: {
+                        'X-CSRFToken': Cookies.get('csrftoken')
+                    }
+                });
+                
+                await this.refreshCalendar();
+                this.closeModal();
+            } catch (error) {
+                console.error('Error deleting reminder:', error);
+            }
+        },
+
+          // Add method to handle reminder creation
+        async handleReminderCreated(reminder) {
+            await this.loadReminders();
+            this.generateCalendar();
+        },
+
+        // Add method to handle reminder updates
+        async handleReminderUpdated(reminder) {
+            await this.loadReminders();
+            this.generateCalendar();
+        },
+        // Reminder refresh function
+        async refreshReminders() {
+            await this.loadReminders();
+            // Force calendar re-render
+            this.currentDate = new Date(this.currentDate);
+        }
+    };
+}
+
+// Initialize the calendar
+document.addEventListener('alpine:init', () => {
+    Alpine.data('calendar', calendar);
+});
+
+// Listen for reminder updates
+document.addEventListener('reminderCreated', async (event) => {
+    const calendarInstance = document.querySelector('[x-data="calendar"]')?.__x.$data;
+    if (calendarInstance) {
+        await calendarInstance.refreshReminders();
+    }
+});
+
+document.addEventListener('reminderUpdated', async (event) => {
+    const calendarInstance = document.querySelector('[x-data="calendar"]')?.__x.$data;
+    if (calendarInstance) {
+        await calendarInstance.refreshReminders();
+    }
+});
+
+document.addEventListener('reminderDeleted', async (event) => {
+    const calendarInstance = document.querySelector('[x-data="calendar"]')?.__x.$data;
+    if (calendarInstance) {
+        await calendarInstance.refreshReminders();
+    }
+});
+// Add global handler for reminder creation
+document.addEventListener('DOMContentLoaded', function() {
+    const createReminderOriginal = window.createReminder;
+    window.createReminder = async function(event) {
+        const result = await createReminderOriginal(event);
+        
+        // Dispatch event for calendar update
+        document.dispatchEvent(new CustomEvent('reminderCreated', {
+            detail: result
+        }));
+        
+        return result;
+    };
+});
+    </script>
   </body>
 </html>

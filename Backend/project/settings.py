@@ -293,7 +293,7 @@ connect(db=MONGODB_NAME, host=MONGODB_URI, port=MONGO_PORT)
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10 MB
 
 
-#PORT = int(os.environ.get('PORT', 8000))
+PORT = int(os.environ.get('PORT', 8000))
 
 
 

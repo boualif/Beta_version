@@ -57,7 +57,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-f)l)p86gl$^1y&)wu#zj@hm5pddn*%+a4lgf4_zayuz#i4gls-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # Elasticsearch configurations
 ELASTICSEARCH_HOST = 'http://localhost:9200'  # Update with your Elasticsearch host
@@ -135,7 +135,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-ALLOWED_HOSTS = ['*', '.onrender.com']
+ALLOWED_HOSTS = []
 
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 SESSION_SAVE_EVERY_REQUEST = True  # Refresh session on every request
@@ -245,17 +245,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'project.wsgi.application'
-import dj_database_url
 
-DATABASE_URL = os.getenv('DATABASE_URL')
-if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
@@ -292,8 +283,6 @@ connect(db=MONGODB_NAME, host=MONGODB_URI, port=MONGO_PORT)
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10 MB
 
-
-PORT = int(os.environ.get('PORT', 8000))
 
 
 
@@ -344,9 +333,6 @@ LOCALE_PATHS = [
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

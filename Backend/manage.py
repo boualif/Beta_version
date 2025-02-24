@@ -4,7 +4,6 @@ import os
 import sys
 
 
-
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
@@ -20,6 +19,4 @@ def main():
 
 
 if __name__ == '__main__':
-    port = os.environ.get('PORT', '8000')
-    print(f"Application is running on port: {port}")
     main()

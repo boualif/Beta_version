@@ -3,6 +3,8 @@
 import os
 import sys
 
+port = os.environ.get('PORT', '8000')
+print(f"Application is running on port: {port}")
 
 def main():
     """Run administrative tasks."""

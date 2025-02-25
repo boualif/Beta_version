@@ -16,8 +16,7 @@ npm run build  # or yarn build
 cd ../Backend  # Go back to the backend directory after Frontend has been built
 
 
-echo "Collecting static files..."
-python3 manage.py collectstatic --noinput
+python3 manage.py runserver
 
 echo "Applying database migrations..."
 python3 manage.py migrate

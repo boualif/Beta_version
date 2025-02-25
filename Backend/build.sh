@@ -1,10 +1,18 @@
 #!/bin/bash
-set -e  # Exit immediately if a command exits with a non-zero status.
+set -e
 
 echo "Starting build process..."
 
-echo "Installing dependencies..."
+# Install backend dependencies
+echo "Installing backend dependencies..."
 python3 -m pip install -r requirements.txt
+
+# Build frontend
+echo "Building frontend..."
+cd ../Frontend  # Navigate to the frontend directory
+npm install #or yarn install, depending on what you use
+npm run build #or yarn build, depending on what you use
+cd ../Backend # go back to the backend directory
 
 echo "Collecting static files..."
 python3 manage.py collectstatic --noinput

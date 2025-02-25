@@ -29,12 +29,12 @@ if [ -d "../Frontend" ]; then
     cd ../Frontend
     npm install
     npm run build
-    
+
     # Copy frontend build to Django static directory
     echo "Copying frontend build to Django static..."
     mkdir -p ../Backend/static/frontend
     cp -r build/* ../Backend/static/frontend/
-    
+
     cd ../Backend
 else
     echo "Frontend directory not found, skipping frontend build"
@@ -47,9 +47,5 @@ python manage.py migrate
 # Collect static files
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
-
-# Note: For production, you would use gunicorn or similar instead of runserver
-# Render automatically runs the start command specified in the dashboard
-# so we don't need to start the server here
 
 echo "Build process complete."

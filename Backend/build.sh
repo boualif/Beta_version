@@ -10,14 +10,14 @@ python3 -m pip install -r requirements.txt
 # Build frontend
 echo "Building frontend..."
 cd ../Frontend  # Navigate to the frontend directory
-npm install #or yarn install, depending on what you use
-npm run build #or yarn build, depending on what you use
+npm install  # or yarn install
+npm run build  # or yarn build
 
-cd ../Backend # go back to the backend directory after Frontend has been built
+cd ../Backend  # Go back to the backend directory after Frontend has been built
 
-echo "Move Frontend files to static file directory:"
-mkdir -p static
-cp -r ../Frontend/build/* static/.  # Copy Frontend build output to static
+echo "Moving Frontend files to Django's static directory..."
+mkdir -p staticfiles
+cp -r ../Frontend/build/* staticfiles/.  # Copy Frontend build output to staticfiles
 
 echo "Collecting static files..."
 python3 manage.py collectstatic --noinput

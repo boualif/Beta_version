@@ -16,8 +16,8 @@ npm run build  # or yarn build
 cd ../Backend  # Go back to the backend directory after Frontend has been built
 
 echo "Moving Frontend files to Django's static directory..."
-mkdir -p staticfiles
-cp -r ../Frontend/build/* staticfiles/.  # Copy Frontend build output to staticfiles
+mkdir -p Backend/staticfiles
+cp -r ../Frontend/build/* Backend/staticfiles/.  # Copy Frontend build output to staticfiles
 
 echo "Collecting static files..."
 python3 manage.py collectstatic --noinput

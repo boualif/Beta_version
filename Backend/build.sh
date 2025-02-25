@@ -13,10 +13,13 @@ cd ../Frontend  # Navigate to the frontend directory
 npm install #or yarn install, depending on what you use
 npm run build #or yarn build, depending on what you use
 
-echo "Collecting static files..."
 cd ../Backend # go back to the backend directory after Frontend has been built
 
-echo "Copying static files individually..."
+echo "Move Frontend files to static file directory:"
+mkdir -p static
+cp -r ../Frontend/build/* static/.  # Copy Frontend build output to static
+
+echo "Collecting static files..."
 python3 manage.py collectstatic --noinput
 
 echo "Applying database migrations..."

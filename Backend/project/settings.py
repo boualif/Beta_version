@@ -280,11 +280,11 @@ print("DB_PORT:", env("DB_PORT"))
 
 from mongoengine import connect
 
-MONGODB_NAME = 'Resume'  # Replace with your MongoDB database name
-MONGODB_URI = 'localhost'
-MONGO_PORT = 27017
+MONGODB_NAME = os.getenv('MONGODB_NAME', 'Resume')
+MONGODB_URI = os.getenv('MONGODB_URI', 'localhost')
+MONGODB_PORT = int(os.getenv('MONGODB_PORT', '27017'))
 
-connect(db=MONGODB_NAME, host=MONGODB_URI, port=MONGO_PORT)
+connect(db=MONGODB_NAME, host=MONGODB_URI, port=MONGODB_PORT)
 
 # MONGODB_URI = "mongodb+srv://sa:sa@cluster0.vyi0itk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 # MONGODB_NAME = 'Resume'

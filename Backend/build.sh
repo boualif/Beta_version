@@ -40,9 +40,13 @@ else
     echo "Frontend directory not found, skipping frontend build"
 fi
 
-# Apply database migrations
+# Apply database migrations with timeout
 echo "Applying database migrations..."
-python manage.py migrate
+python manage.py migrate --noinput || {
+    echo "ERROR: Database migration failed!"
+    echo "Please check your database configuration and connection."
+    exit 1
+}
 
 # Collect static files
 echo "Collecting static files..."

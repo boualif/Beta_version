@@ -12,9 +12,11 @@ echo "Building frontend..."
 cd ../Frontend  # Navigate to the frontend directory
 npm install #or yarn install, depending on what you use
 npm run build #or yarn build, depending on what you use
-cd ../Backend # go back to the backend directory
 
 echo "Collecting static files..."
+cd ../Backend # go back to the backend directory after Frontend has been built
+
+echo "Copying static files individually..."
 python3 manage.py collectstatic --noinput
 
 echo "Applying database migrations..."

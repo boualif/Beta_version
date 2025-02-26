@@ -114,10 +114,7 @@ INSTALLED_APPS = [
 
 ]
 
-# For production
-if not DEBUG:
-    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')  # Add WhiteNoise
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # User model settings
 AUTH_USER_MODEL = 'Recruiter.Matching'  # Your custom user model
 

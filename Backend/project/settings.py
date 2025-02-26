@@ -57,7 +57,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-f)l)p86gl$^1y&)wu#zj@hm5pddn*%+a4lgf4_zayuz#i4gls-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # Elasticsearch configurations
 ELASTICSEARCH_HOST = 'http://localhost:9200'  # Update with your Elasticsearch host
@@ -113,8 +113,19 @@ INSTALLED_APPS = [
     
 
 ]
+#Add on 25/02/2025 by tasnim
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Render will serve from here
+# Extra places for collectstatic to find static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # Or wherever your frontend build is copied to
+]
 
-
+# For production
+if not DEBUG:
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')  # Add WhiteNoise
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # User model settings
 AUTH_USER_MODEL = 'Recruiter.Matching'  # Your custom user model
 

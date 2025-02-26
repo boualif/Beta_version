@@ -57,7 +57,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-f)l)p86gl$^1y&)wu#zj@hm5pddn*%+a4lgf4_zayuz#i4gls-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # Elasticsearch configurations
 ELASTICSEARCH_HOST = 'http://localhost:9200'  # Update with your Elasticsearch host
@@ -112,14 +112,6 @@ INSTALLED_APPS = [
     # 'allauth.socialaccount.providers.linkedin_oauth2', 
     
 
-]
-#Add on 25/02/2025 by tasnim
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Render will serve from here
-# Extra places for collectstatic to find static files
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # Or wherever your frontend build is copied to
 ]
 
 # For production

@@ -21,7 +21,7 @@ MEDIA_URL = '/media/'  # URL to access media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Directory to store media files
 # Load environment variables from .env file
 load_dotenv()
-
+#fff
 # Your existing settings...
 
 # Add OpenAI configuration

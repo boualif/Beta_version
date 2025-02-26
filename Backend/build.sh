@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "Starting build process..."
+echo "Starting backend build process..."
 
 # Install backend dependencies
 echo "Installing backend dependencies..."
@@ -20,24 +20,12 @@ if [ ! -f .env ]; then
     echo "EMAIL_HOST_USER=$EMAIL_HOST_USER" >> .env
     echo "EMAIL_HOST_PASSWORD=$EMAIL_HOST_PASSWORD" >> .env
     echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env
-fi
-
-# Check if we need to build the frontend
-if [ -d "../Frontend" ]; then
-    # Build frontend
-    echo "Building frontend..."
-    cd ../Frontend
-    npm install
-    npm run build
-
-    # Copy frontend build to Django static directory
-    echo "Copying frontend build to Django static..."
-    mkdir -p ../Backend/static/frontend
-    cp -r build/* ../Backend/static/frontend/
-
-    cd ../Backend
-else
-    echo "Frontend directory not found, skipping frontend build"
+    echo "MONGODB_NAME=$MONGODB_NAME" >> .env
+    echo "MONGODB_URI=$MONGODB_URI" >> .env
+    echo "MONGODB_PORT=$MONGODB_PORT" >> .env
+    echo "DEBUG=False" >> .env
+    echo "ELASTICSEARCH_HOST=$ELASTICSEARCH_HOST" >> .env
+    echo "ELASTICSEARCH_INDEX=$ELASTICSEARCH_INDEX" >> .env
 fi
 
 # Apply database migrations with timeout
@@ -52,4 +40,4 @@ python manage.py migrate --noinput || {
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
-echo "Build process complete."
+echo "Backend build process complete."
